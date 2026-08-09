@@ -53,7 +53,7 @@ export default function ProfileClient({ initialProfile }: ProfileClientProps) {
       toast.error(result.error);
     } else {
       setAvatarUrl(undefined);
-      router.refresh(); // navbar da güncellensin
+      router.refresh();
     }
     setIsDeletingAvatar(false);
   };
@@ -80,11 +80,9 @@ export default function ProfileClient({ initialProfile }: ProfileClientProps) {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Dosyayı hemen yüklemiyoruz, önce kırpma modalını açıyoruz
     const objectUrl = URL.createObjectURL(file);
     setCropModalImage(objectUrl);
 
-    // input'u sıfırla ki aynı dosya tekrar seçilebilsin
     e.target.value = "";
   };
 
@@ -99,7 +97,7 @@ export default function ProfileClient({ initialProfile }: ProfileClientProps) {
 
     setIsUploadingAvatar(true);
     try {
-      const urlResult = await requestAvatarUploadUrl("jpg"); // her zaman jpg, çünkü çıktımız hep JPEG
+      const urlResult = await requestAvatarUploadUrl("jpg");
       if (!urlResult.success) throw new Error(urlResult.error);
 
       const uploadRes = await fetch(urlResult.data.signedUrl, {
@@ -129,7 +127,7 @@ export default function ProfileClient({ initialProfile }: ProfileClientProps) {
       {confirmDialog}
       <Reveal>
 
-        {/* Hero banner */}
+        {}
         <div className="relative bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
           <div className="h-40 bg-gradient-to-r from-purple-600 via-purple-500 to-blue-500" />
 
@@ -232,7 +230,7 @@ export default function ProfileClient({ initialProfile }: ProfileClientProps) {
           </div>
         </div>
 
-        {/* İstatistikler */}
+        {}
         <div className="mt-6 bg-white rounded-lg shadow-sm border border-gray-100 p-6">
           <h3 className="text-lg font-semibold text-gray-800 mb-4">
             {t("statsTitle")}

@@ -18,15 +18,12 @@ type StudyMode = 1 | 2 | 3;
 const STUDY_MODE_KEY = "studyMode";
 const SPEAK_KEY = "studySpeak";
 
-// Uygulama dil kodu → aksan (BCP-47). Ses cihazda yüklüyse o aksanla okunur.
 const LANG_TO_BCP: Record<string, string> = {
   en: "en-GB", tr: "tr-TR", de: "de-DE", fr: "fr-FR", es: "es-ES",
   it: "it-IT", ru: "ru-RU", ar: "ar-SA", zh: "zh-CN", ja: "ja-JP",
   ko: "ko-KR", pt: "pt-PT", nl: "nl-NL",
 };
 
-// Web Speech API ile kelimeyi doğru aksanla sesli okur. Ses/aksan cihaza bağlıdır;
-// dil sesi yüklü değilse tarayıcı varsayılana düşer.
 function speak(text: string, langCode?: string) {
   if (typeof window === "undefined" || !("speechSynthesis" in window) || !text) return;
   const bcp = (langCode && LANG_TO_BCP[langCode]) || langCode || "";
@@ -135,7 +132,7 @@ export default function StudyClient({ group }: StudyClientProps) {
       confettiRef.current?.addConfetti();
       setRoundCompleted(true);
       setTimeout(() => setRoundCompleted(false), 2500);
-      void recordStudyCompleteAction(); // günlük seri + tamamlanan tur (fire-and-forget)
+      void recordStudyCompleteAction();
 
       let reshuffled = shuffle(quizItems.map((_, i) => i));
       if (reshuffled[0] === queue[pointer] && reshuffled.length > 1) {
@@ -178,13 +175,11 @@ export default function StudyClient({ group }: StudyClientProps) {
 
   const activeQuestion = manualOverride ?? autoQuestion;
 
-  // Gösterilen kelimenin dili: yöne göre kaynak ya da hedef dil.
   const displayLang =
     activeQuestion?.direction === "term-to-translation"
       ? currentGroup.languages?.[0]
       : currentGroup.languages?.[1];
 
-  // Kelime ekrana gelince (switch açıksa) doğru aksanla sesli oku.
   useEffect(() => {
     if (speakEnabled && activeQuestion) {
       speak(activeQuestion.displayWord, displayLang);
@@ -257,7 +252,6 @@ export default function StudyClient({ group }: StudyClientProps) {
       setUserAnswer("");
       goToNextQuestion();
     }
-    // Mobil klavye açık kalsın diye odağı input'ta tut
     answerInputRef.current?.focus();
   };
 
@@ -285,7 +279,6 @@ export default function StudyClient({ group }: StudyClientProps) {
       <div
         className="relative flex flex-col items-center justify-center min-h-[400px] bg-white rounded-lg shadow-lg p-8"
         onClick={(e) => {
-          // Boş bir alana basınca mobil klavyeyi kapat (input/buton hariç)
           const el = e.target as HTMLElement;
           if (el.closest("input, button, a, [role=button]")) return;
           answerInputRef.current?.blur();

@@ -14,7 +14,7 @@ export class MarketPlaceRepository {
         targetLanguage?: string;
         page: number;
         pageSize: number;
-        ownerUserId?: number;   // sadece "benim gruplarım" filtresi için
+        ownerUserId?: number;
     }): Promise<{ items: MarketplaceEntry[]; total: number }> {
         const conditions: SQL[] = [];
 

@@ -11,7 +11,7 @@ export class AdminService {
 
     async banUser(userId: number): Promise<void> {
         await this.userRepo.setBanned(userId, true);
-        await this.userSessionRepo.revokeAllForUser(userId); // tüm oturumları anında düşür
+        await this.userSessionRepo.revokeAllForUser(userId);
     }
 
     async unbanUser(userId: number): Promise<void> {

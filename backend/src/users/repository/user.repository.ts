@@ -48,8 +48,6 @@ export class UserRepository {
 
     }
 
-    // Sadece AKTİF (silinmemiş) kullanıcılar sayılır — soft-delete sonrası
-    // kimlik zaten serbest bırakıldığı için orijinal değer eşleşmez; yine de net olsun.
     existByUserName = async (userName: string) => await this.db.select().from(users).where(and(eq(users.user_name, userName), isNull(users.deleted_at))).limit(1);
 
     existByEmail = async (email: string) => await this.db.select().from(users).where(and(eq(users.email, email), isNull(users.deleted_at))).limit(1);
@@ -208,8 +206,6 @@ export class UserRepository {
             .where(eq(users.id, userId));
     };
 
-    // Soft-delete: satırı korur ama email/user_name/google_id'yi "serbest bırakır"
-    // (benzersiz kimlik prefix'le mangle edilir) → aynı bilgiyle tekrar kayıt olunabilir.
     softDelete = async (userId: number): Promise<void> => {
         const [u] = await this.db
             .select({ email: users.email, user_name: users.user_name })

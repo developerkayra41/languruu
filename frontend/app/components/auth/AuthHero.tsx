@@ -34,7 +34,7 @@ export default function AuthHero({ headline, subtext }: AuthHeroProps) {
 
   return (
     <div className="relative hidden md:flex flex-col justify-between w-1/2 min-h-screen p-12 overflow-hidden bg-gradient-to-br from-purple-700 via-purple-600 to-blue-500">
-      {/* Ambient doku */}
+      {}
       <div
         className="absolute inset-0 opacity-10"
         style={{

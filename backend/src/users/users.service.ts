@@ -21,8 +21,6 @@ export class UsersService {
     private readonly mailService: MailService,
     private readonly authTokenRepo: AuthTokenRepository, private readonly config: ConfigService) { }
 
-  // Görüntülenecek günlük seri: son gün bugün ya da dün ise seriyi göster,
-  // daha eskiyse kırılmış demektir → 0.
   private displayedStreak(
     stats: { study_streak: number; last_study_date: string | null } | null,
   ): number {

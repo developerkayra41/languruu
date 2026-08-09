@@ -24,22 +24,16 @@ export default function WordsClient({ group }: WordsClientProps) {
 
   const [isPending, startTransition] = useTransition();
 
-  // --- Arama ---
   const [search, setSearch] = useState("");
-  const [searchOpen, setSearchOpen] = useState(false); // kapalı başlar
+  const [searchOpen, setSearchOpen] = useState(false);
 
-  // --- Pagination ---
-  const [currentPage, setCurrentPage] = useState(0); // 0-indexed
+  const [currentPage, setCurrentPage] = useState(0);
 
-  // Gerçek index'i her elemana ETİKETLEYİP sonra dilimliyoruz —
-  // böylece "2. sayfadaki 3. satır" ile "asıl dizideki 13. eleman"
-  // arasındaki bağ hiç kopmuyor.
   const indexedPool = wordPool.map((entry, realIndex) => ({
     entry,
     realIndex,
   }));
 
-  // Aramaya göre süz (kelime VEYA anlam eşleşsin)
   const q = search.trim().toLocaleLowerCase();
   const filteredPool = q
     ? indexedPool.filter(({ entry }) =>
@@ -57,7 +51,6 @@ export default function WordsClient({ group }: WordsClientProps) {
     setCurrentPage(Math.min(Math.max(page, 0), totalPages - 1));
   };
 
-  // Mobilde parmakla sağa/sola kaydırınca sayfa değiştir
   const swipe = useSwipe(
     () => goToPage(currentPage + 1),
     () => goToPage(currentPage - 1),
@@ -110,8 +103,6 @@ export default function WordsClient({ group }: WordsClientProps) {
 
     setWordPool(nextPool);
 
-    // Bu sayfadaki son eleman silindiyse ve daha önceki bir sayfa
-    // artık geçerli son sayfaysa, kullanıcıyı boş bir sayfada bırakmayalım.
     const newTotalPages = Math.max(1, Math.ceil(nextPool.length / PAGE_SIZE));
     if (currentPage > newTotalPages - 1) {
       setCurrentPage(newTotalPages - 1);

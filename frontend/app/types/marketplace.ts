@@ -12,7 +12,7 @@ export interface MarketplaceEntry {
   languages: string[];
   downloads: number;
   created_at: string;
-   is_own: boolean;   
+   is_own: boolean;
 }
 
 export interface MarketplaceSearchResult {
@@ -26,5 +26,5 @@ export interface PoolDetail {
   languages: string[];
   author_name: string;
   author_username: string;
-  wordPool: WordPool[];   // WordPool zaten types/word.ts'te tanımlıydı
+  wordPool: WordPool[];
 }

@@ -1,4 +1,3 @@
-// app/(dashboard)/users/[username]/page.tsx
 import { getProfile, getPublicProfile } from "@/app/lib/api-client";
 import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
@@ -24,7 +23,6 @@ export default async function PublicProfilePage({
     myUsername = null;
   }
 
-  // redirect() burada, HİÇBİR try/catch'in içinde değil
   if (myUsername === username) {
     redirect("/profile");
   }

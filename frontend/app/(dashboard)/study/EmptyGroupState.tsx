@@ -1,4 +1,3 @@
-// app/components/study/EmptyGroupState.tsx
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 

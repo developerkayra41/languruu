@@ -21,19 +21,15 @@ export default function SettingsClient({
 }) {
   const t = useTranslations("settings");
   const router = useRouter();
-  // Her aksiyon için AYRI pending state — yoksa tek transition tüm butonları
-  // aynı anda disable eder (Enter'da "iki buton tetiklenmiş gibi" görünür).
   const [emailPending, startEmail] = useTransition();
   const [passwordPending, startPassword] = useTransition();
   const [logoutPending, startLogout] = useTransition();
   const [deletePending, startDelete] = useTransition();
   const { confirm, confirmDialog } = useConfirm();
 
-  // E-posta formu
   const [newEmail, setNewEmail] = useState("");
   const [emailPassword, setEmailPassword] = useState("");
 
-  // Şifre formu
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -89,7 +85,7 @@ export default function SettingsClient({
   const handleLogoutAll = async () => {
     if (!(await confirm({ message: t("logoutAllConfirm") }))) return;
     startLogout(async () => {
-      await logoutAllAction(); // başarıda /login'e yönlendirir
+      await logoutAllAction();
     });
   };
 
@@ -101,7 +97,7 @@ export default function SettingsClient({
     if (!(await confirm({ message: t("deleteConfirm"), danger: true }))) return;
     startDelete(async () => {
       const r = await deleteAccountAction(deletePassword);
-      if (r && !r.success) toast.error(r.error); // başarıda zaten /login'e yönlenir
+      if (r && !r.success) toast.error(r.error);
     });
   };
 
@@ -115,7 +111,7 @@ export default function SettingsClient({
 
       {hasPassword ? (
         <>
-          {/* E-posta */}
+          {}
           <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
             <h2 className="text-lg font-semibold text-gray-800 mb-1">
               {t("emailTitle")}
@@ -151,7 +147,7 @@ export default function SettingsClient({
             </form>
           </div>
 
-          {/* Şifre */}
+          {}
           <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
             <h2 className="text-lg font-semibold text-gray-800 mb-4">
               {t("passwordTitle")}
@@ -200,7 +196,7 @@ export default function SettingsClient({
         </div>
       )}
 
-      {/* Güvenlik */}
+      {}
       <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
         <h2 className="text-lg font-semibold text-gray-800 mb-1">
           {t("securityTitle")}
@@ -215,7 +211,7 @@ export default function SettingsClient({
         </button>
       </div>
 
-      {/* Tehlikeli alan */}
+      {}
       <div className="bg-white rounded-lg shadow-sm border border-red-200 p-6">
         <h2 className="text-lg font-semibold text-red-600 mb-1">
           {t("dangerTitle")}

@@ -163,7 +163,8 @@
     "submit": "Kelimeyi Ekle",
     "submitting": "Ekleniyor...",
     "recent": "Son eklenenler",
-    "errEmpty": "En az bir yabancı kelime ve bir karşılık girin."
+    "errEmpty": "En az bir yabancı kelime ve bir karşılık girin.",
+    "errDuplicate": "Bu kelime ve anlamı zaten ekli."
   },
   "groups": {
     "wordCount": "{count} kelime",

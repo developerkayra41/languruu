@@ -14,9 +14,6 @@ export class JwtAuthGuard implements CanActivate {
         const [type, token] = authHeader.split(' ');
         if (type !== 'Bearer' || !token) throw new UnauthorizedException();
 
-        // SADECE JWT doğrulaması try/catch içinde olmalı; aşağıdaki iş kuralları
-        // (ban/silme/token geçerliliği) DEĞİL — yoksa ForbiddenException catch'e
-        // düşüp yanlışlıkla 401'e dönüşür ve frontend ban'i ayırt edemez.
         let payload: any;
         try {
             payload = await this.jwtService.verifyAsync(token);
@@ -34,7 +31,6 @@ export class JwtAuthGuard implements CanActivate {
 
         req.user = { id: payload.sub };
         return true;
-
 
     }
 }

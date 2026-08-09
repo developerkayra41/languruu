@@ -17,10 +17,6 @@ export interface RankingRow {
 export class TopPerformerRepository {
     constructor(@Inject('DRIZZLE') private readonly db) { }
 
-    // "En aktif çalışanlar" sıralaması:
-    //  1) Etkin günlük seri (son gün bugün/dün değilse 0 sayılır) — BASKIN
-    //  2) Tamamlanan tur  3) Toplam kelime  4) Havuz sayısı
-    // Böylece serisi olan, diğer sayıları az olsa da serisi 0 olanın önüne geçer.
     async computeRanking(limit: number): Promise<RankingRow[]> {
         const result = await this.db.execute(sql`
             SELECT

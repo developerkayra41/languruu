@@ -4,8 +4,6 @@ import { BaseResponse, NewWordColumn, TopPerformer, WordColumn, WordColumnWithou
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001'
 
-// TODO: Auth sistemi kurulunca gerçek jwt gelecek
-
 async function getAuthHeaders(): Promise<HeadersInit> {
     const cookieStore = await cookies();
     const token = cookieStore.get("access_token")?.value;

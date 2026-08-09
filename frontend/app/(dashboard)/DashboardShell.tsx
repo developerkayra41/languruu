@@ -12,7 +12,6 @@ import Logo from "../components/ui/Logo";
 import Reveal from "../components/ui/Reveal";
 import ThemeToggle from "../components/ui/ThemeToggle";
 
-// Masaüstü üst sekme çubuğu (mevcut davranış)
 const TABS = [
   { href: "/study", key: "study" },
   { href: "/words", key: "words" },
@@ -22,8 +21,6 @@ const TABS = [
   { href: "/marketplace", key: "marketplace" },
 ];
 
-// Mobil alt navigasyon çubuğu — native uygulama hissi için 5 ana hedef.
-// Kısa etiketler (nav.*Short) + ikon kullanılır. Top Performers avatar menüsünde.
 const MOBILE_NAV = [
   { href: "/study", key: "studyShort", icon: "fa-graduation-cap" },
   { href: "/words", key: "wordsShort", icon: "fa-list" },
@@ -32,7 +29,6 @@ const MOBILE_NAV = [
   { href: "/marketplace", key: "marketplaceShort", icon: "fa-store" },
 ];
 
-// Tab çubuğunun (masaüstü) GÖSTERİLMEYECEĞİ route'lar
 const NO_TAB_BAR_ROUTES = ["/profile", "/settings", "/users/", "/admin"];
 
 interface DashboardShellProps {
@@ -60,7 +56,6 @@ export default function DashboardShell({
   const languageMenuRef = useRef<HTMLDivElement>(null);
   const profileMenuRef = useRef<HTMLDivElement>(null);
 
-  // Sayfanın herhangi bir yerine basınca açık menüleri kapat
   useEffect(() => {
     const handleOutside = (e: Event) => {
       const target = e.target as Node;

@@ -11,7 +11,7 @@ import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.set('trust proxy', 1) // sadece gerçekten bir proxy arkasındaysan
+  app.set('trust proxy', 1)
   app.use(helmet({ contentSecurityPolicy: false }));
   app.enableCors({
     origin: process.env.FRONTEND_URL ?? 'http://localhost:3000',

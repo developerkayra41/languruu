@@ -9,7 +9,7 @@ import { AuthModule } from "src/auth/auth.module";
 import { ReportsModule } from "src/reports/reports.module";
 
 @Module({
-    imports: [DrizzleModule, UsersModule, AuthModule, ReportsModule],   // UsersModule → UserRepository (AdminGuard için)
+    imports: [DrizzleModule, UsersModule, AuthModule, ReportsModule],
     controllers: [AdminController],
     providers: [AdminRepository, AdminGuard, AdminService],
 })

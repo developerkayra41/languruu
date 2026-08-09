@@ -6,14 +6,13 @@ import { useState, useEffect } from "react";
 interface AvatarProps {
   src?: string;
   name: string;
-  size?: number; // px cinsinden
+  size?: number;
   className?: string;
 }
 
 export default function Avatar({ src, name, size = 40, className = "" }: AvatarProps) {
   const [hasError, setHasError] = useState(false);
 
-  // src değiştiğinde (örn. kullanıcı yeni fotoğraf yüklediğinde) hata durumunu sıfırla
   useEffect(() => {
     setHasError(false);
   }, [src]);

@@ -12,7 +12,7 @@ export default function VerifyEmailClient({ token }: { token: string }) {
   const ranRef = useRef(false);
 
   useEffect(() => {
-    if (ranRef.current) return; // token'ın iki kez tüketilmesini engelle
+    if (ranRef.current) return;
     ranRef.current = true;
     if (!token) {
       setStatus("error");

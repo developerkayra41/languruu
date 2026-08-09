@@ -36,7 +36,6 @@ export class AuthService {
         private readonly authTokenRepo: AuthTokenRepository
     ) { }
 
-    /** Refresh token / oturum satırının son kullanma tarihi. Süre jwt config'inden gelir. */
     private refreshExpiresAt(): Date {
         const days = this.config.get<number>('jwt.REFRESH_EXPIRES_IN_DAYS') ?? 30;
         return new Date(Date.now() + days * 24 * 60 * 60 * 1000);
@@ -69,7 +68,7 @@ export class AuthService {
 
     private async assertUserQuotaAvailable(): Promise<void> {
         const maxUsers = this.config.get<number>('app.MAX_USERS') ?? 0;
-        if (maxUsers <= 0) return; // 0 = sınırsız
+        if (maxUsers <= 0) return;
         const count = await this.userService.countActiveUsers();
         if (count >= maxUsers) {
             throw new ForbiddenException(`Kayıt kontenjanı dolu (maksimum ${maxUsers} kullanıcı).`);
@@ -360,7 +359,7 @@ export class AuthService {
         const user = await this.userService.findById(userId);
         if (!user) throw new NotFoundException();
         if (user.password) {
-            //şifreli hesabı mevcut şifreyle doğrula 
+            //şifreli hesabı mevcut şifreyle doğrula
             const ok = await bcrypt.compare(confirmation, user.password);
             if (!ok) throw new BadRequestException("Mevcut şifre yanlış");
         }

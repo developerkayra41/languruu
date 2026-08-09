@@ -1,4 +1,3 @@
-// app/(dashboard)/profile/actions.ts
 "use server";
 import { deleteAvatar as deleteAvatarApi } from "@/app/lib/api-client";
 import { getAvatarUploadUrl, updateProfile as updateProfileApi } from "@/app/lib/api-client";

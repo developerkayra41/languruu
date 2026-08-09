@@ -51,7 +51,6 @@ export class WordRepository {
 
         if (containsProfanity(word.name)) throw new BadRequestException("Grup adı uygunsuz içerik barındırıyor.");
 
-        // Sadece PAYLAŞILACAK içerik denetlenir — özel çalışma kelimelerine dokunulmaz
         const willShare = word.isShared && !word.sourceShareId && word.wordPool.length > 0;
         if (willShare) {
             const flat = word.wordPool.flatMap((p) => [...(p.term ?? []), ...(p.translation ?? [])]);
@@ -65,7 +64,7 @@ export class WordRepository {
         const resolveShareId = (existing?: string, isCopiedGroup?: boolean, wordPoolLength?: number): string | undefined => {
             if (isCopiedGroup) return undefined;
             if (!word.isShared) return existing;
-            if (wordPoolLength === 0) return existing;   // boş havuz -> paylaşım isteğini görmezden gel
+            if (wordPoolLength === 0) return existing;
             return existing ?? randomUUID();
         };
 

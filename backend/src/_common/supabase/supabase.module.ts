@@ -1,5 +1,4 @@
 import { Module } from "@nestjs/common";
-// import { ConfigModule } from "@nestjs/config";
 import { SupabaseProvider } from "./supabase.provider";
 
 

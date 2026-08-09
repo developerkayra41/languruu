@@ -42,7 +42,6 @@ export default function GoogleSignInButton({
           text: "continue_with",
         });
       } else if (attempts < 20) {
-        // Google script'i henüz yüklenmemiş olabilir, kısa aralıklarla tekrar dene
         attempts++;
         setTimeout(tryInit, 150);
       }

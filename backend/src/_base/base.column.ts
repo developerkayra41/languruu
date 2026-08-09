@@ -1,4 +1,3 @@
-// src/db/base-columns.ts
 import { serial, timestamp } from "drizzle-orm/pg-core";
 
 export const baseColumns = {

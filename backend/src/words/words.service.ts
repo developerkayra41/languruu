@@ -8,7 +8,7 @@ import { EventEmitter2 } from '@nestjs/event-emitter';
 export class WordsService {
   constructor(
     private readonly wordsRepo: WordRepository,
-    private readonly eventEmitter: EventEmitter2,   // UsersService ve MarketPlaceRepository GİTTİ
+    private readonly eventEmitter: EventEmitter2,
   ) { }
 
   getWordsById = async (userId: number, wordId: number): Promise<WordColumn> => {
@@ -18,12 +18,12 @@ export class WordsService {
   };
 
   getWordsInfo = async (userId: number) => {
-    
+
     const words = await this.wordsRepo.getWordsByUserId(userId);
     if (!words) return [];
     return words.words.map(({ wordPool, ...rest }) => ({
         ...rest,
-        word_count: wordPool.length,   // <- eklendi
+        word_count: wordPool.length,
     }));
 };
 

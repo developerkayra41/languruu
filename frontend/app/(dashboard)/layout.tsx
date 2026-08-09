@@ -10,7 +10,6 @@ export default async function DashboardLayout({
   try {
     profile = await getProfile();
   } catch {
-    // Profil çekilemezse (örn. token süresi dolmuş), navbar varsayılan haliyle gösterilir
   }
 
   return <DashboardShell profile={profile}>{children}</DashboardShell>;

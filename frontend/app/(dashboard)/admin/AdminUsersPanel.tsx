@@ -53,7 +53,7 @@ export default function AdminUsersPanel({ stats, initial }: { stats: AdminStats;
 
   return (
     <div className="space-y-5">
-      {/* Tıklanabilir filtre kartları */}
+      {}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {filterCards.map((f) => {
           const active = filter === f.key;

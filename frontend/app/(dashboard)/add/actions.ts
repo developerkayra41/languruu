@@ -15,14 +15,12 @@ export async function addWordEntry(group: WordColumn, newEntry: WordPool): Promi
 
         const mergedPool = mergeNewEntryIntoPool(group.wordPool, newEntry)
 
-        // Mevcut tüm kelimelerin üstüne yeni girdiyi ekleyip TAMAMINI geri yolluyoruz
         const updatedGroup: WordColumn = {
             ...group,
             wordPool: mergedPool
         };
 
         const saved = await upsertWord(updatedGroup);
-        // Bu grubun verisini kullanan sayfaları (study, words) bir sonraki ziyarette tazele
         revalidatePath("/study");
         revalidatePath("/words");
         revalidatePath("/add");
