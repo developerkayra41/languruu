@@ -18,7 +18,6 @@ import { TopPerformersDTO } from 'src/top-performers/dto/TopPerformers.response.
 export class WordsController extends BaseController {
   constructor(
     private readonly wordsService: WordsService,
-    // private readonly usersService: UsersService,
   ) {
     super('WordsController');
   }

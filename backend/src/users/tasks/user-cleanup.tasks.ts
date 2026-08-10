@@ -8,9 +8,6 @@ export class UserCleanupTasks {
 
   constructor(private readonly usersService: UsersService) {}
 
-  // Her gün gece yarısı: 7 günden eski, hâlâ doğrulanmamış hesapları soft-delete et.
-  // softDelete kimlikleri serbest bıraktığı için o e-postalarla tekrar kayıt olunabilir.
-  // (Google kullanıcıları email_verified: true olduğundan etkilenmez.)
   @Cron(CronExpression.EVERY_DAY_AT_MIDNIGHT)
   async handleUnverifiedCleanup() {
     const cutoff = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);

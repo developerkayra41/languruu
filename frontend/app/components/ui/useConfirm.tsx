@@ -12,14 +12,6 @@ interface ConfirmOptions {
   danger?: boolean;
 }
 
-/**
- * Native `confirm()` yerine tema-uyumlu, promise-tabanlı onay modalı.
- * Kullanım:
- *   const { confirm, confirmDialog } = useConfirm();
- *   if (!(await confirm({ message: "...", danger: true }))) return;
- *   ...
- *   return <>{confirmDialog} ...</>;
- */
 export function useConfirm() {
   const t = useTranslations("common");
   const [state, setState] = useState<{ open: boolean; opts: ConfirmOptions }>({

@@ -9,7 +9,7 @@ interface LanguageSelectProps {
   label: string;
   value: string | null;
   onChange: (code: string) => void;
-  excludeCode?: string | null; // diğer kutuda seçili olanı burada tekrar önermemek için
+  excludeCode?: string | null;
 }
 
 export default function LanguageSelect({

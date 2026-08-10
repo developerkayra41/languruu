@@ -1,4 +1,3 @@
-// app/lib/word-pool-utils.ts
 import { WordPool } from "@/app/types/word";
 
 function normalize(word: string): string {
@@ -51,7 +50,6 @@ export function mergeNewEntryIntoPool(
     return [...untouched, merged];
 }
 
-// "run, sprint, jog" -> ["run", "sprint", "jog"]
 export function parseCommaList(input: string): string[] {
   return input
     .split(",")
@@ -59,7 +57,6 @@ export function parseCommaList(input: string): string[] {
     .filter((s) => s.length > 0);
 }
 
-// ["run", "sprint", "jog"] -> "run, sprint, jog"
 export function formatCommaList(arr: string[]): string {
   return arr.join(", ");
 }

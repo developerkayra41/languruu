@@ -9,7 +9,6 @@ export default async function SettingsPage() {
     currentEmail = profile.email;
     hasPassword = profile.has_password;
   } catch {
-    // profil çekilemezse boş göster
   }
   return (
     <SettingsClient currentEmail={currentEmail} hasPassword={hasPassword} />

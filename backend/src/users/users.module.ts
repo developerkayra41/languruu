@@ -12,11 +12,10 @@ import { MailModule } from 'src/mail/mail.module';
 import { MailService } from 'src/mail/mail.service';
 import { UserCleanupTasks } from './tasks/user-cleanup.tasks';
 
-// users.module.ts
 @Module({
   imports: [DrizzleModule, SupabaseModule, WordsModule, MailModule, forwardRef(() => AuthModule)],
   providers: [UsersService, UserRepository, TopPerformerRepository, MailService, UserCleanupTasks],
   controllers: [UsersController],
-  exports: [UsersService, UserRepository]   // <- UserRepository eklendi
+  exports: [UsersService, UserRepository]
 })
 export class UsersModule { }

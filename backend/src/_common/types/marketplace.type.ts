@@ -1,4 +1,3 @@
-// src/_common/types/marketplace.type.ts
 export type MarketplaceEntry = {
     id: number;
     share_id: string;

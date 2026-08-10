@@ -46,8 +46,6 @@ export class MarketplaceService {
             ownerUserId: params.onlyMine ? requestingUserId : undefined,
         });
 
-        // is_own bilgisini burada, backend'de hesaplıyoruz — frontend'in
-        // "ben böyle bir kullanıcıyım" demesine hiç güvenmiyoruz.
         const withOwnership = items.map((item) => ({
             ...item,
             is_own: item.owner_user_id === requestingUserId,
@@ -68,10 +66,6 @@ export class MarketplaceService {
         const column = myWords?.words.find((c) => c.shareId === shareId);
         if (!column) throw new NotFoundException();
 
-        // Aynı akış: toggleGroupShare'de olduğu gibi WordsService.upsertWord çağırıyoruz.
-        // Bu, event emitter üzerinden marketplace kaydının silinmesini OTOMATİK tetikler —
-        // marketplaceRepo.removeMarketplaceEntry'yi burada elle çağırmamıza gerek yok,
-        // tek doğruluk kaynağı (isShared alanı) korunmuş oluyor.
         const updated = await this.wordsService.upsertWord(userId, {
             id: column.id,
             name: column.name,
@@ -117,12 +111,11 @@ export class MarketplaceService {
         const sourceColumn = ownerWords?.words.find((c) => c.shareId === shareId);
         if (!sourceColumn) throw new NotFoundException();
 
-        // Kullanıcının bu share_id'den DAHA ÖNCE bir kopyası var mı diye kendi listesine bakıyoruz.
         const myWords = await this.wordsRepo.getWordsByUserId(userId);
         const existingCopy = myWords?.words.find((c) => c.sourceShareId === shareId);
 
         const newColumnInput = {
-            id: existingCopy?.id,   // varsa mevcut kaydın id'si -> UPDATE, yoksa undefined -> INSERT
+            id: existingCopy?.id,
             name: sourceColumn.name,
             description: sourceColumn.description,
             wordPool: sourceColumn.wordPool,
@@ -136,8 +129,6 @@ export class MarketplaceService {
         const copied = await this.wordsRepo.upsertWord(userId, newColumnInput as any);
         if (!copied) throw new NotFoundException();
 
-        // İndirme sayacı SADECE ilk kez kopyalanıyorsa artıyor.
-        // Yeniden senkronize etmek "yeni bir indirme" sayılmamalı.
         if (!existingCopy) {
             await this.marketplaceRepo.incrementDownloads(shareId);
         }

@@ -1,7 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsArray, IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from "class-validator";
 
-// dto/request/SearchMarketplace.request.dto.ts
 export class SearchMarketplaceRequestDTO {
     @ApiProperty({ required: false })
     @IsOptional()

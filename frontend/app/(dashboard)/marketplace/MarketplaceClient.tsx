@@ -38,7 +38,6 @@ export default function MarketplaceClient({
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  // Dil adlarını mevcut arayüz diline göre göster (tr → "İngilizce", en → "English")
   const langDisplay = useMemo(() => {
     try {
       return new Intl.DisplayNames([locale], { type: "language" });
@@ -62,12 +61,10 @@ export default function MarketplaceClient({
   const [unsharingId, setUnsharingId] = useState<string | null>(null);
   const { confirm, confirmDialog } = useConfirm();
 
-  // Debounce: kullanıcı yazmayı bıraktıktan 400ms sonra ara
   const debounceTimer = useRef<ReturnType<typeof setTimeout> | undefined>(
     undefined,
   );
 
-  // URL'i günceller, page'i 1'e sıfırlar (yeni arama = yeni sonuç seti)
   const updateUrl = (updates: Record<string, string | null>) => {
     const next = new URLSearchParams(searchParams.toString());
     Object.entries(updates).forEach(([key, value]) => {
@@ -78,7 +75,7 @@ export default function MarketplaceClient({
       }
     });
     if (!("page" in updates)) {
-      next.delete("page"); // arama/filtre değişince sayfa 1'e döner
+      next.delete("page");
     }
     startTransition(() => {
       router.push(`${pathname}?${next.toString()}`);

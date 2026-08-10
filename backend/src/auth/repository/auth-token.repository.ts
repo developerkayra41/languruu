@@ -9,7 +9,6 @@ export class AuthTokenRepository {
         await this.db.insert(authTokens).values(data).execute();
     }
 
-    /** Kullanılmamış + süresi geçmemiş token'ı hash + amaç ile bulur. */
     async findValid(tokenHash: string, purpose: string) {
         const [row] = await this.db
             .select()

@@ -7,13 +7,13 @@ export class WordPoolDTO {
   @IsNotEmpty({ message: getValidationMessage(DtoPrefix.TERM, ValidationType.NOT_EMPTY) })
   @IsArray({ message: getValidationMessage(DtoPrefix.TERM, ValidationType.MUST_BE_ARRAY) })
   @IsString({ each: true, message: 'Kelime metni geçersiz' })
-  @MaxLength(24, { each: true, message: 'Bir kelime/anlam en fazla 24 karakter olabilir.' })
+  @MaxLength(50, { each: true, message: 'Bir kelime/anlam en fazla 50 karakter olabilir.' })
   term: string[]
 
   @ApiProperty()
   @IsNotEmpty({ message: getValidationMessage(DtoPrefix.TRANSLATION, ValidationType.NOT_EMPTY) })
   @IsArray({ message: getValidationMessage(DtoPrefix.TRANSLATION, ValidationType.MUST_BE_ARRAY) })
   @IsString({ each: true, message: 'Kelime metni geçersiz' })
-  @MaxLength(24, { each: true, message: 'Bir kelime/anlam en fazla 24 karakter olabilir.' })
+  @MaxLength(50, { each: true, message: 'Bir kelime/anlam en fazla 50 karakter olabilir.' })
   translation: string[]
 }

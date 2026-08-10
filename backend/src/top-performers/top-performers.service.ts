@@ -28,7 +28,6 @@ export class TopPerformersService implements OnModuleInit {
     }
 
     updateTopPerformer = async (): Promise<TopPerformerRow> => {
-        // Sıralama tek sorguda (seri baskın) — users + words join'i repository'de.
         const ranking = await this.topPerformerRepo.computeRanking(10);
 
         const data: TopPerformerData[] = ranking.map((r) => ({

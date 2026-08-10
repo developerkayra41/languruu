@@ -1,9 +1,8 @@
-// app/(dashboard)/actions.ts (ya da uygun bir yer)
 "use server";
 import { buildRefreshCookieHeader } from "@/app/lib/auth-utils";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { resendVerification } from "@/app/lib/api-client"; // dosya başına
+import { resendVerification } from "@/app/lib/api-client";
 
 export async function logout() {
   const cookieStore = await cookies();

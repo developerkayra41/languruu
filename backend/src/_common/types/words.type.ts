@@ -18,9 +18,8 @@ export type WordColumn = {
     languages: string[];
     createdAt: Date;
     isShared: boolean;
-    sourceShareId?: string;         // bu grup bir marketplace kopyasıysa, orijinalin share_id'si
-    sourceAuthorUsername?: string;  // orijinal sahibin kullanıcı adı (denormalize, gösterim için)
+    sourceShareId?: string;
+    sourceAuthorUsername?: string;
 }
 
-// types/word.ts
 export type WordColumnWithoutPool = Omit<WordColumn, "wordPool"> & { word_count: number };

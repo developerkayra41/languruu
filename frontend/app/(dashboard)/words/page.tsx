@@ -1,4 +1,3 @@
-// app/(dashboard)/words/page.tsx
 import { cookies } from "next/headers";
 import EmptyGroupState from "../study/EmptyGroupState";
 import WordsClient from "./WordsClient";

@@ -7,9 +7,6 @@ import { ErrorLogRepository } from "./error-log.repository";
 import { MailService } from "src/mail/mail.service";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
-// Nest'in, mesaj verilmeden çağrılan exception'larda (örn. `new UnauthorizedException()`)
-// ürettiği VARSAYILAN metinler. Bunlar jeneriktir — geliştiricinin bilerek yazdığı
-// mesajlarla (örn. "Email veya şifre hatalı") ASLA karıştırılmamalı.
 const DEFAULT_HTTP_MESSAGES = [
     'Bad Request',
     'Unauthorized',
@@ -33,11 +30,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     private maybeAlert(err: Error, context: { path?: string; method?: string; userId?: number | null }) {
         const to = this.config.get<string>("mail.ALERT_EMAIL");
-        if (!to) return; // adres yoksa hiç gönderme (lokalde sessiz)
+        if (!to) return;
         const key = err.message.slice(0, 200);
         const now = Date.now();
         const last = this.alertThrottle.get(key) ?? 0;
-        if (now - last < 10 * 60 * 1000) return; // aynı hata için 10 dk'da 1 mail
+        if (now - last < 10 * 60 * 1000) return;
         this.alertThrottle.set(key, now);
         void this.mailService.sendErrorAlert(to, { message: err.message, stack: err.stack, ...context });
     }

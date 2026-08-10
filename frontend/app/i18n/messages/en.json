@@ -163,7 +163,8 @@
     "submit": "Add Word",
     "submitting": "Adding...",
     "recent": "Recently added",
-    "errEmpty": "Enter at least one foreign word and one translation."
+    "errEmpty": "Enter at least one foreign word and one translation.",
+    "errDuplicate": "This word and its meaning are already added."
   },
   "groups": {
     "wordCount": "{count} words",

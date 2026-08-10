@@ -1,7 +1,7 @@
 export interface Language {
-    code: string;      // ISO 639-1, küçük harf (dil kodu — languages kolonuna bu yazılır)
-    label: string;      // Türkçe görünen ad
-    flagCode: string;   // ISO 3166-1 ülke kodu (bayrak için, dil koduyla HER ZAMAN aynı değil)
+    code: string;
+    label: string;
+    flagCode: string;
 }
 
 export const LANGUAGES: Language[] = [

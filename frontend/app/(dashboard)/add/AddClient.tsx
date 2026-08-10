@@ -28,25 +28,38 @@ export default function AddClient({ group }: AddClientProps) {
       return;
     }
 
+    const normalizeSet = (arr: string[]) =>
+      new Set(arr.map((w) => w.trim().toLocaleLowerCase()).filter(Boolean));
+    const overlaps = (a: Set<string>, b: Set<string>) =>
+      [...a].some((x) => b.has(x));
+
+    const newTerms = normalizeSet(terms);
+    const newTrans = normalizeSet(translations);
+    const isDuplicate = wordPool.some((p) => {
+      const pTerms = normalizeSet(p.term);
+      const pTrans = normalizeSet(p.translation);
+      return overlaps(newTerms, pTerms) && overlaps(newTrans, pTrans);
+    });
+    if (isDuplicate) {
+      toast.error(t("errDuplicate"));
+      return;
+    }
+
     const newEntry: WordPool = { term: terms, translation: translations };
 
-    // Optimistic update: sunucu cevabını beklemeden ekranda göster
     const previousPool = wordPool;
     setWordPool((prev) => [...prev, newEntry]);
     setTermInput("");
     setTranslationInput("");
-    // Odak tekrar yabancı kelime input'una kaysın; mobil klavye açık kalsın
     termRef.current?.focus();
 
     startTransition(async () => {
       const result = await addWordEntry(group, newEntry);
 
       if (!result.success) {
-        // Başarısız olursa optimistic ekleme geri alınır
         setWordPool(previousPool);
         toast.error(result.error);
       } else {
-        // Backend'in döndürdüğü kesin veriyle senkronize ol
         setWordPool(result.data.wordPool);
       }
     });
@@ -56,7 +69,6 @@ export default function AddClient({ group }: AddClientProps) {
     <div
       className="bg-white rounded-lg shadow-sm p-6 border border-gray-100"
       onClick={(e) => {
-        // Boş bir alana basınca mobil klavyeyi kapat (input/buton hariç)
         const el = e.target as HTMLElement;
         if (el.closest("input, button, a, textarea, [role=button]")) return;
         (document.activeElement as HTMLElement | null)?.blur();
@@ -81,7 +93,7 @@ export default function AddClient({ group }: AddClientProps) {
             type="text"
             ref={termRef}
             value={termInput}
-            maxLength={24}
+            maxLength={50}
             autoCapitalize="none"
             autoCorrect="off"
             spellCheck={false}
@@ -106,7 +118,7 @@ export default function AddClient({ group }: AddClientProps) {
             type="text"
             ref={translationRef}
             value={translationInput}
-            maxLength={24}
+            maxLength={50}
             autoCapitalize="none"
             autoCorrect="off"
             spellCheck={false}

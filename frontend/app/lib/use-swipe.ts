@@ -1,10 +1,5 @@
 import { useRef } from "react";
 
-/**
- * Dokunmatik yatay kaydırma (swipe) algılar. Sola kaydırınca `onLeft`,
- * sağa kaydırınca `onRight` çağrılır. Dikey scroll ile karışmaması için
- * sadece yatay hareket dikeyden baskınsa tetiklenir.
- */
 export function useSwipe(
   onLeft: () => void,
   onRight: () => void,

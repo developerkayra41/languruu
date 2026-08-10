@@ -32,7 +32,7 @@ export default function GroupsClient({ groups }: GroupsClientProps) {
 
   const handleStudy = (groupId: number) => {
     startTransition(() => {
-      setActiveGroup(groupId); // içeride redirect("/study") var
+      setActiveGroup(groupId);
     });
   };
 

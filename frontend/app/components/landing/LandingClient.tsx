@@ -18,7 +18,6 @@ const steps = [
   { n: "3", key: "s3" },
 ];
 
-// Hero: yukarıdan "düşme" (spring), sırayla
 const heroContainer: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.12, delayChildren: 0.05 } } };
 
 const dropIn: Variants = {
@@ -43,7 +42,7 @@ export default function LandingClient({ isLoggedIn }: { isLoggedIn: boolean }) {
   return (
     <MotionConfig reducedMotion="user">
       <div className="min-h-screen bg-white text-gray-800">
-        {/* Nav */}
+        {}
         <header className="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2 text-purple-600 font-bold text-xl">
             <Logo className="w-7 h-7" /> Languruu
@@ -58,7 +57,7 @@ export default function LandingClient({ isLoggedIn }: { isLoggedIn: boolean }) {
           </nav>
         </header>
 
-        {/* Hero — sırayla yukarıdan düşer */}
+        {}
         <motion.section
           className="max-w-3xl mx-auto px-5 pt-16 pb-20 text-center"
           variants={heroContainer} initial="hidden" animate="show"
@@ -88,7 +87,7 @@ export default function LandingClient({ isLoggedIn }: { isLoggedIn: boolean }) {
           </motion.div>
         </motion.section>
 
-        {/* Features — kaydırınca belirir, sırayla */}
+        {}
         <section className="max-w-6xl mx-auto px-5 py-16">
           <motion.h2 variants={fadeUp} initial="hidden" whileInView="show" viewport={viewport}
             className="text-2xl md:text-3xl font-bold text-center text-gray-900 mb-12">

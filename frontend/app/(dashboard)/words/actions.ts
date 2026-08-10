@@ -1,4 +1,3 @@
-// app/(dashboard)/words/actions.ts
 "use server";
 
 import { revalidatePath } from "next/cache";
@@ -9,10 +8,6 @@ type UpdateWordPoolResult =
   | { success: true; data: WordColumn }
   | { success: false; error: string };
 
-/**
- * wordPool dizisinin TAMAMINI yeni haliyle değiştirir (backend "komple replace"
- * yaptığı için, silme veya düzenleme sonrası oluşan tüm diziyi geri yolluyoruz).
- */
 export async function updateWordPool(
   group: WordColumn,
   updatedPool: WordPool[]

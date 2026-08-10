@@ -10,7 +10,6 @@ export class ErrorLogRepository {
         try {
             await this.db.insert(errorLogs).values(data).execute();
         } catch (err) {
-            // Hata loglamanın kendisi patlarsa asıl akışı bozmasın — sadece konsola düş.
             this.logger.error('error_logs yazılamadı', err as Error);
         }
     }

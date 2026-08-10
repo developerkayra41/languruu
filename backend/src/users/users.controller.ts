@@ -34,7 +34,6 @@ export class UsersController extends BaseController {
     return this.createSuccessResponse({ data: result, message: 'success', success: true }, req);
   }
 
-  // users.controller.ts'e eklenecek endpoint'ler
   @UseGuards(JwtAuthGuard)
   @Post('profile/update')
   @ApiBody({ type: UpdateProfileRequestDTO })
@@ -55,7 +54,6 @@ export class UsersController extends BaseController {
     return this.createSuccessResponse({ data: result, message: 'success', success: true }, req);
   }
 
-  // users.controller.ts
   @UseGuards(JwtAuthGuard)
   @Post('avatar/delete')
   @ApiOperation({ summary: 'avatar/delete-url API', description: 'Bu API userin avatarını siler' })

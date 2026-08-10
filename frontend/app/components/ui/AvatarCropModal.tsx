@@ -10,7 +10,7 @@ interface AvatarCropModalProps {
   onCropComplete: (blob: Blob) => void;
 }
 
-const OUTPUT_SIZE = 512; // px — hem navbar hem profil sayfası için yeterli, dosya küçük kalır
+const OUTPUT_SIZE = 512;
 
 export default function AvatarCropModal({
   imageSrc,
@@ -95,7 +95,6 @@ export default function AvatarCropModal({
   );
 }
 
-// Kırpılan alanı canvas'a çizip, sabit boyutta ve JPEG olarak sıkıştırılmış bir Blob üretir.
 async function getCroppedImageBlob(
   imageSrc: string,
   cropArea: Area,
@@ -128,7 +127,7 @@ async function getCroppedImageBlob(
         else reject(new Error("Resim işlenemedi"));
       },
       "image/jpeg",
-      0.85 // kalite: %85, görsel kalite kaybı fark edilmez ama dosya boyutu belirgin düşer
+      0.85
     );
   });
 }

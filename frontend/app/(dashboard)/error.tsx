@@ -1,4 +1,3 @@
-// app/(dashboard)/error.tsx — güncellenmiş
 "use client";
 
 import { useEffect } from "react";
@@ -22,7 +21,7 @@ export default function DashboardError({
   }, [error, router]);
 
   if (error.message.toLowerCase().includes("unauth")) {
-    return null; // yönlendirme gerçekleşene kadar boş ekran, hata mesajı hiç yanıp sönmesin
+    return null;
   }
 
   return (

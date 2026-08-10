@@ -31,7 +31,7 @@ export class AuthController extends BaseController {
     }
 
     @Post('register')
-    @Throttle({ default: { ttl: 60_000, limit: 3 } }) // 60sn'de 3 kayıt denemesi
+    @Throttle({ default: { ttl: 60_000, limit: 3 } })
     @UsePipes(new ValidationPipe({ whitelist: true }))
     @ApiCreatedResponse({ type: RegisterResponseDTO })
     @ApiOperation({ summary: 'Register API', description: 'Bu API user kayıt işlemlerini yapar' })
@@ -48,7 +48,7 @@ export class AuthController extends BaseController {
     }
 
     @Post('login')
-    @Throttle({ default: { ttl: 60_000, limit: 5 } }) // 60sn'de 5 login denemesi
+    @Throttle({ default: { ttl: 60_000, limit: 5 } })
     @UsePipes(new ValidationPipe({ whitelist: true }))
     @ApiOkResponse({ type: LoginResponseDTO })
     @ApiOperation({ summary: 'Login API', description: 'Bu API user giriş işlemlerini yapar' })
@@ -80,7 +80,7 @@ export class AuthController extends BaseController {
     }
 
     @Post('refresh')
-    @Throttle({ default: { ttl: 60_000, limit: 20 } })  // refresh daha sık olur, biraz gevşek
+    @Throttle({ default: { ttl: 60_000, limit: 20 } })
     @UsePipes(new ValidationPipe({ whitelist: true }))
     @ApiOkResponse({ type: RefreshTokenResponseDTO })
     @ApiOperation({ summary: 'Refresh API', description: 'Bu API refresh işlemlerini yapar' })
@@ -98,7 +98,7 @@ export class AuthController extends BaseController {
     }
 
     @Post('google')
-    @Throttle({ default: { ttl: 60_000, limit: 5 } })   // login ile aynı mantık
+    @Throttle({ default: { ttl: 60_000, limit: 5 } })
     @UsePipes(new ValidationPipe({ whitelist: true }))
     @ApiOkResponse({ type: LoginResponseDTO })
     @ApiOperation({ summary: 'Google ile giriş/kayıt', description: 'Google ID token doğrulanır, kullanıcı bulunur/oluşturulur' })

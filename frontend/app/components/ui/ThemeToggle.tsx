@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 import { setTheme } from "@/app/theme/actions";
 
 export default function ThemeToggle() {
-  // Başlangıçta (SSR + ilk render) temayı bilmiyoruz; mount'ta <html>'den okuyoruz.
-  // Böylece hydration uyuşmazlığı olmaz.
   const [dark, setDark] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -15,13 +13,10 @@ export default function ThemeToggle() {
   const toggle = () => {
     const next = !dark;
     setDark(next);
-    // Anında görsel geri bildirim
     document.documentElement.classList.toggle("dark", next);
-    // Kalıcılık: cookie'ye yaz (fire-and-forget)
     setTheme(next ? "dark" : "light");
   };
 
-  // dark === null iken nötr bir ikon göster (mount öncesi kısa an)
   const icon =
     dark === null ? "fa-circle-half-stroke" : dark ? "fa-sun" : "fa-moon";
 

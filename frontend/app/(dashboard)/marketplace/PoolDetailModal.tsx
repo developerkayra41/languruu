@@ -53,7 +53,6 @@ export default function PoolDetailModal({ shareId, onClose }: PoolDetailModalPro
     setCurrentPage(Math.min(Math.max(page, 0), totalPages - 1));
   };
 
-  // Mobilde parmakla sağa/sola kaydırınca sayfa değiştir
   const swipe = useSwipe(
     () => goToPage(currentPage + 1),
     () => goToPage(currentPage - 1),
@@ -68,7 +67,7 @@ export default function PoolDetailModal({ shareId, onClose }: PoolDetailModalPro
         className="bg-white rounded-lg shadow-lg w-full max-w-2xl max-h-[85vh] flex flex-col overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
-        {/* Header */}
+        {}
         <div className="flex justify-between items-start p-6 border-b border-gray-100 flex-shrink-0">
           <div>
             {isLoading ? (
@@ -92,7 +91,7 @@ export default function PoolDetailModal({ shareId, onClose }: PoolDetailModalPro
           </button>
         </div>
 
-        {/* Açıklama + diller (varsa) */}
+        {}
         {!isLoading && detail && (detail.description || detail.languages.length > 0) && (
           <div className="px-6 py-3 border-b border-gray-100 flex-shrink-0">
             {detail.description && (
@@ -113,7 +112,7 @@ export default function PoolDetailModal({ shareId, onClose }: PoolDetailModalPro
           </div>
         )}
 
-        {/* İçerik */}
+        {}
         <div
           className="overflow-y-auto flex-1 px-4 py-4"
           onTouchStart={swipe.onTouchStart}

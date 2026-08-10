@@ -25,7 +25,6 @@ export async function logoutAllAction() {
   try {
     await logoutAllDevices();
   } catch {
-    // yine de yerel cookie'leri temizleyip login'e atacağız
   }
   const cookieStore = await cookies();
   cookieStore.delete("access_token");

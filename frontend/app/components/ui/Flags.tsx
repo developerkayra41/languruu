@@ -4,8 +4,6 @@ import { useState } from "react";
 import Image from "next/image";
 import { LANGUAGES } from "@/app/lib/languages";
 
-// Tek bir dil kodunun bayrağı. Kodu (ör. "en") alır, LANGUAGES'ten ülke koduna
-// çevirir (en→gb). Bilinmeyen kod ya da yüklenemezse hiçbir şey göstermez.
 export default function Flag({ code, className = "" }: { code: string; className?: string }) {
   const [failed, setFailed] = useState(false);
   const flagCode = LANGUAGES.find((l) => l.flagCode === code)?.flagCode;

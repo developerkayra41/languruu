@@ -1,4 +1,3 @@
-// app/components/ui/ProfileNotFound.tsx
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
 
