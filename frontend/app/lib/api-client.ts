@@ -82,6 +82,10 @@ export async function upsertWord(
     return result;
 }
 
+export async function deleteWord(wordId: number): Promise<WordColumn> {
+    return apiPost<WordColumn>("/words/deleteWord", { word_id: wordId });
+}
+
 export async function getTopPerformers(): Promise<TopPerformer[]> {
     return apiPost<TopPerformer[]>("/top-performers");
 }

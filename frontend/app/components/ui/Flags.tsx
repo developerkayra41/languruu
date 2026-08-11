@@ -26,7 +26,7 @@ export function LanguagePair({ languages, className = "" }: { languages?: string
   if (!languages || languages.length === 0) return null;
   const [source, target] = languages;
   return (
-    <span className={`inline-flex items-center gap-1 text-xs font-medium text-white ${className}`}>
+    <span className={`inline-flex items-center gap-1 text-xs font-medium ${className}`}>
       {source && (
         <>
           <Flag code={source === 'en' ? 'gb' : source} />

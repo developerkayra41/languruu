@@ -1,3 +1,4 @@
+import { DeleteWordRequestDTO } from './dto/request/DeleteWord.request.dto';
 import { Body, Controller, Post, Req, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOkResponse, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { BaseController } from 'src/_base/base.controller';
@@ -59,4 +60,16 @@ export class WordsController extends BaseController {
     const result: WordColumn = await this.wordsService.upsertWord(req.user.id, body.words);
     return this.createSuccessResponse({ data: result, message: 'success', success: true }, req);
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('deleteWord')
+  @UsePipes(new ValidationPipe({ whitelist: true }))
+  @ApiOkResponse({ type: WordColumnDTO })
+  @ApiOperation({ summary: 'DeleteWord API', description: 'Bu API verilen word_id\'li kelime grubunu siler; grup paylaşılmışsa marketplace kaydı da kaldırılır' })
+  @ApiBody({ type: DeleteWordRequestDTO })
+  async deleteWordByWordId(@Req() req, @Body() body: DeleteWordRequestDTO): Promise<BaseResponse<WordColumn>> {
+    const result: WordColumn = await this.wordsService.deleteWord(req.user.id, body.word_id);
+    return this.createSuccessResponse({ data: result, message: 'success', success: true }, req);
+  }
+
 }
