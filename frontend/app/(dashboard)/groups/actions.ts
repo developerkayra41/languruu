@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { cookies } from "next/headers";
-import { getWordsByWordId, upsertWord } from "@/app/lib/api-client";
+import { deleteWord, getWordsByWordId, upsertWord } from "@/app/lib/api-client";
 import { NewWordColumn, WordColumn } from "@/app/types/word";
 
 const ACTIVE_GROUP_COOKIE = "activeGroupId";
@@ -55,9 +55,7 @@ export async function createGroup(
     }
 }
 
-type ToggleShareResult =
-    | { success: true; isShared: boolean }
-    | { success: false; error: string };
+type ToggleShareResult = | { success: true; isShared: boolean } | { success: false; error: string };
 
 export async function toggleGroupShare(
     groupId: number,
@@ -69,6 +67,24 @@ export async function toggleGroupShare(
         await upsertWord(updatedGroup);
         revalidatePath("/groups");
         return { success: true, isShared };
+    } catch (err) {
+        return {
+            success: false,
+            error: err instanceof Error ? err.message : "Bilinmeyen bir hata oluştu",
+        };
+    }
+}
+
+type DeleteGroupResult =
+    | { success: true }
+    | { success: false; error: string };
+
+export async function deleteGroup(groupId: number): Promise<DeleteGroupResult> {
+    try {
+        await deleteWord(groupId);
+        revalidatePath("/groups");
+        revalidatePath("/study");
+        return { success: true };
     } catch (err) {
         return {
             success: false,

@@ -192,7 +192,12 @@
     "saving": "Saving...",
     "errNameEmpty": "Group name cannot be empty.",
     "errPickLangs": "Please select both languages.",
-    "errSameLang": "The two languages can't be the same, pick different ones."
+    "errSameLang": "The two languages can't be the same, pick different ones.",
+    "delete": "Delete",
+    "deleteTitle": "Delete Group",
+    "deleteConfirm": "Are you sure you want to delete the group \"{name}\"? This action cannot be undone.",
+    "deleteSharedWarning": "Since this group is shared on the marketplace, it will also be removed from there. It stays with anyone who already copied it.",
+    "deleted": "Group \"{name}\" deleted."
   },
   "marketplace": {
     "title": "Word Groups Marketplace",
@@ -350,6 +355,21 @@
     "cancel": "Cancel",
     "processing": "Processing...",
     "confirm": "Confirm"
+  },
+  "languages": {
+    "en": "English",
+    "tr": "Turkish",
+    "de": "German",
+    "fr": "French",
+    "es": "Spanish",
+    "it": "Italian",
+    "ru": "Russian",
+    "ar": "Arabic",
+    "zh": "Chinese",
+    "ja": "Japanese",
+    "ko": "Korean",
+    "pt": "Portuguese",
+    "nl": "Dutch"
   },
   "languageSelect": {
     "placeholder": "Select a language",

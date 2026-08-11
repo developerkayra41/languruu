@@ -57,6 +57,7 @@
 .dark .bg-gray-200 { background-color: #475569; }
 
 /* Metin */
+.dark .text-black { color: #ffffff; }
 .dark .text-gray-900,
 .dark .text-gray-800 { color: #f1f5f9; }
 .dark .text-gray-700 { color: #e2e8f0; }

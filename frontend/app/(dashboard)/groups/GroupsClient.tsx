@@ -4,11 +4,17 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { WordColumnWithoutPool } from "@/app/types/word";
-import { setActiveGroup, createGroup, toggleGroupShare } from "./actions";
+import {
+  setActiveGroup,
+  createGroup,
+  toggleGroupShare,
+  deleteGroup,
+} from "./actions";
 import LanguageSelect from "@/app/components/ui/LanguageSelect";
 import { toast } from "sonner";
 import { LanguagePair } from "@/app/components/ui/Flags";
 import Link from "next/link";
+import { useConfirm } from "@/app/components/ui/useConfirm";
 
 interface GroupsClientProps {
   groups: WordColumnWithoutPool[];
@@ -18,7 +24,7 @@ export default function GroupsClient({ groups }: GroupsClientProps) {
   const t = useTranslations("groups");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-
+  const { confirm, confirmDialog } = useConfirm();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [newGroupName, setNewGroupName] = useState("");
   const [newGroupDescription, setNewGroupDescription] = useState("");
@@ -90,6 +96,28 @@ export default function GroupsClient({ groups }: GroupsClientProps) {
     });
   };
 
+  const handleDelete = async (group: WordColumnWithoutPool) => {
+    const ok = await confirm({
+      title: t("deleteTitle"),
+      message: group.isShared
+        ? `${t("deleteConfirm", { name: group.name })} ${t("deleteSharedWarning")}`
+        : t("deleteConfirm", { name: group.name }),
+      confirmText: t("delete"),
+      danger: true,
+    });
+    if (!ok) return;
+
+    startTransition(async () => {
+      const result = await deleteGroup(group.id);
+      if (!result.success) {
+        toast.error(result.error);
+        return;
+      }
+      toast.success(t("deleted", { name: group.name }));
+      router.refresh();
+    });
+  };
+
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -155,6 +183,14 @@ export default function GroupsClient({ groups }: GroupsClientProps) {
                   className="flex-1 bg-blue-100 text-blue-700 hover:bg-blue-200 px-3 py-2 rounded-md text-sm font-medium transition cursor-pointer"
                 >
                   <i className="fas fa-share-alt mr-1"></i> {t("share")}
+                </button>
+                <button
+                  onClick={() => handleDelete(group)}
+                  disabled={isPending}
+                  title={t("delete")}
+                  className="bg-red-100 text-red-600 hover:bg-red-200 px-3 py-2 rounded-md text-sm font-medium transition cursor-pointer disabled:opacity-50"
+                >
+                  <i className="fas fa-trash"></i>
                 </button>
               </div>
             </div>
@@ -330,6 +366,8 @@ export default function GroupsClient({ groups }: GroupsClientProps) {
           </div>
         </div>
       )}
+
+      {confirmDialog}
     </div>
   );
 }

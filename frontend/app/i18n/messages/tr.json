@@ -192,7 +192,12 @@
     "saving": "Kaydediliyor...",
     "errNameEmpty": "Grup adı boş olamaz.",
     "errPickLangs": "Lütfen iki dili de seçin.",
-    "errSameLang": "İki dil de aynı olamaz, farklı diller seçin."
+    "errSameLang": "İki dil de aynı olamaz, farklı diller seçin.",
+    "delete": "Sil",
+    "deleteTitle": "Grubu Sil",
+    "deleteConfirm": "\"{name}\" grubunu silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
+    "deleteSharedWarning": "Bu grup marketplace'te paylaşıldığı için oradan da kaldırılacak. Grubu daha önce kendine kopyalayan kişilerde kalmaya devam eder.",
+    "deleted": "\"{name}\" grubu silindi."
   },
   "marketplace": {
     "title": "Kelime Grupları Marketplace",
@@ -350,6 +355,21 @@
     "cancel": "İptal",
     "processing": "İşleniyor...",
     "confirm": "Onayla"
+  },
+  "languages": {
+    "en": "İngilizce",
+    "tr": "Türkçe",
+    "de": "Almanca",
+    "fr": "Fransızca",
+    "es": "İspanyolca",
+    "it": "İtalyanca",
+    "ru": "Rusça",
+    "ar": "Arapça",
+    "zh": "Çince",
+    "ja": "Japonca",
+    "ko": "Korece",
+    "pt": "Portekizce",
+    "nl": "Hollandaca"
   },
   "languageSelect": {
     "placeholder": "Dil seçin",

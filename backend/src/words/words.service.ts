@@ -22,10 +22,10 @@ export class WordsService {
     const words = await this.wordsRepo.getWordsByUserId(userId);
     if (!words) return [];
     return words.words.map(({ wordPool, ...rest }) => ({
-        ...rest,
-        word_count: wordPool.length,
+      ...rest,
+      word_count: wordPool.length,
     }));
-};
+  };
 
   getWords = async (): Promise<WordRow[]> => {
     const words = await this.wordsRepo.getWords();
@@ -41,4 +41,13 @@ export class WordsService {
 
     return updatedWord;
   };
+
+  deleteWord = async (userId: number, wordId: number): Promise<WordColumn> => {
+    const deleted = await this.wordsRepo.deleteWord(userId, wordId);
+    if (!deleted) throw new NotFoundException();
+
+    this.eventEmitter.emit('word-column.deleted', { userId, column: deleted });
+
+    return deleted;
+  }
 }

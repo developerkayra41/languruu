@@ -36,6 +36,13 @@ export class MarketplaceService {
         }
     }
 
+    @OnEvent('word-column.deleted')
+    async handleWordColumnDeleted(payload: { userId: number; column: WordColumn }) {
+        const { column } = payload;
+        if (column.shareId) {
+            await this.marketplaceRepo.removeMarketplaceEntry(column.shareId);
+        }
+    }
 
     search = async (
         params: { search?: string; languages?: string[]; sourceLanguage?: string; targetLanguage?: string; page: number; pageSize: number; onlyMine?: boolean },

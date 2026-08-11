@@ -33,6 +33,7 @@ export default function MarketplaceClient({
   initialTargetLanguage,
 }: MarketplaceClientProps) {
   const t = useTranslations("marketplace");
+  const tLang = useTranslations("languages");
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
@@ -45,10 +46,12 @@ export default function MarketplaceClient({
       return null;
     }
   }, [locale]);
-  const langLabel = (l: { code: string; label: string }) => {
+  const langLabel = (l: { code: string }) => {
     const name = langDisplay?.of(l.code);
-    if (!name || name === l.code) return l.label;
-    return name.charAt(0).toLocaleUpperCase(locale) + name.slice(1);
+    if (name && name !== l.code) {
+      return name.charAt(0).toLocaleUpperCase(locale) + name.slice(1);
+    }
+    return tLang.has(l.code) ? tLang(l.code) : l.code.toUpperCase();
   };
 
   const [searchInput, setSearchInput] = useState(initialSearch);
@@ -229,7 +232,7 @@ export default function MarketplaceClient({
                   <div className="mb-3">
                     <LanguagePair
                       languages={entry.languages}
-                      className="text-black "
+                      className=" text-black"
                     />
                   </div>
                 )}

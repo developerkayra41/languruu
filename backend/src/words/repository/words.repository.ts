@@ -142,4 +142,17 @@ export class WordRepository {
         `);
         return result.rows as { user_id: number; total_word: number }[];
     }
+
+    async deleteWord(userId: number, wordId: number): Promise<WordColumn | null> {
+        const words = await this.getWordsByUserId(userId);
+        if (!words) return null;
+
+        const index = words.words.findIndex(c => c.id === wordId);
+        if (index === -1) return null;
+
+        const [deleted] = words.words.splice(index, 1);
+
+        await this.db.update(Words).set({ words: words.words }).where(eq(Words.user_id, userId))
+        return deleted;
+    }
 }

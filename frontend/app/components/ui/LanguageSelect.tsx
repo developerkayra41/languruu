@@ -19,19 +19,20 @@ export default function LanguageSelect({
   excludeCode,
 }: LanguageSelectProps) {
   const t = useTranslations("languageSelect");
+  const tLang = useTranslations("languages");
+  const nameOf = (code: string) =>
+    tLang.has(code) ? tLang(code) : code.toUpperCase();
   const [isOpen, setIsOpen] = useState(false);
   const [query, setQuery] = useState("");
   const containerRef = useRef<HTMLDivElement>(null);
 
-  const selected =
-    LANGUAGES.find((l) => l.code === value) ??
-    (value
-      ? { code: value, label: value.toUpperCase(), flagCode: value }
-      : null);
+  const selected = value
+    ? LANGUAGES.find((l) => l.code === value) ?? { code: value, flagCode: value }
+    : null;
   const filtered = LANGUAGES.filter(
     (l) =>
       l.code !== excludeCode &&
-      (l.label.toLowerCase().includes(query.toLowerCase()) ||
+      (nameOf(l.code).toLowerCase().includes(query.toLowerCase()) ||
         l.code.includes(query.toLowerCase())),
   );
 
@@ -82,7 +83,9 @@ export default function LanguageSelect({
             <span className="font-medium text-gray-700">
               {selected.code.toUpperCase()}
             </span>
-            <span className="text-gray-400 text-sm">{selected.label}</span>
+            <span className="text-gray-400 text-sm">
+              {nameOf(selected.code)}
+            </span>
           </span>
         ) : (
           <span className="text-gray-400">{t("placeholder")}</span>
@@ -110,7 +113,7 @@ export default function LanguageSelect({
             >
               <Flag code={lang.flagCode} />
               <span className="font-medium w-8">{lang.code.toUpperCase()}</span>
-              <span className="text-gray-500">{lang.label}</span>
+              <span className="text-gray-500">{nameOf(lang.code)}</span>
             </button>
           ))}
 
