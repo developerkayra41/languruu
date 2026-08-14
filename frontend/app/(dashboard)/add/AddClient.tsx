@@ -65,6 +65,8 @@ export default function AddClient({ group }: AddClientProps) {
     });
   };
 
+  const isLong = termInput.length > 40 || translationInput.length > 40;
+
   return (
     <div
       className="bg-white rounded-lg shadow-sm p-6 border border-gray-100"
@@ -84,7 +86,11 @@ export default function AddClient({ group }: AddClientProps) {
         {t("wordCount", { count: wordPool.length })}
       </p>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div
+        className={`grid grid-cols-1 gap-4 mb-4 ${
+          isLong ? "" : "md:grid-cols-2"
+        }`}
+      >
         <div>
           <label className="block text-gray-700 text-sm font-medium mb-2">
             {t("foreignWords")}
@@ -93,7 +99,7 @@ export default function AddClient({ group }: AddClientProps) {
             type="text"
             ref={termRef}
             value={termInput}
-            maxLength={50}
+            maxLength={100}
             autoCapitalize="none"
             autoCorrect="off"
             spellCheck={false}
@@ -118,7 +124,7 @@ export default function AddClient({ group }: AddClientProps) {
             type="text"
             ref={translationRef}
             value={translationInput}
-            maxLength={50}
+            maxLength={100}
             autoCapitalize="none"
             autoCorrect="off"
             spellCheck={false}
