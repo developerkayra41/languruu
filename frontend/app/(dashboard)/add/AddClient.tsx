@@ -16,6 +16,8 @@ export default function AddClient({ group }: AddClientProps) {
   const [wordPool, setWordPool] = useState<WordPool[]>(group.wordPool);
   const [termInput, setTermInput] = useState("");
   const [translationInput, setTranslationInput] = useState("");
+  const [noteInput, setNoteInput] = useState("");
+  const [showNote, setShowNote] = useState(false);
   const [isPending, startTransition] = useTransition();
   const termRef = useRef<HTMLInputElement>(null);
   const translationRef = useRef<HTMLInputElement>(null);
@@ -45,12 +47,19 @@ export default function AddClient({ group }: AddClientProps) {
       return;
     }
 
-    const newEntry: WordPool = { term: terms, translation: translations };
+    const trimmedNote = noteInput.trim();
+    const newEntry: WordPool = {
+      term: terms,
+      translation: translations,
+      ...(trimmedNote ? { note: trimmedNote } : {}),
+    };
 
     const previousPool = wordPool;
     setWordPool((prev) => [...prev, newEntry]);
     setTermInput("");
     setTranslationInput("");
+    setNoteInput("");
+    setShowNote(false);
     termRef.current?.focus();
 
     startTransition(async () => {
@@ -143,6 +152,48 @@ export default function AddClient({ group }: AddClientProps) {
         </div>
       </div>
 
+      <div className="mb-4">
+        {showNote ? (
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="block text-gray-700 text-sm font-medium">
+                {t("noteLabel")}
+              </label>
+              <button
+                type="button"
+                onClick={() => {
+                  setNoteInput("");
+                  setShowNote(false);
+                }}
+                className="text-xs text-gray-400 hover:text-gray-600 cursor-pointer"
+              >
+                <i className="fas fa-times mr-1"></i>
+                {t("removeNote")}
+              </button>
+            </div>
+            <textarea
+              value={noteInput}
+              onChange={(e) => setNoteInput(e.target.value)}
+              maxLength={200}
+              rows={2}
+              autoFocus
+              placeholder={t("notePlaceholder")}
+              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+            />
+            <p className="text-xs text-gray-400 mt-1">{t("noteHint")}</p>
+          </div>
+        ) : (
+          <button
+            type="button"
+            onClick={() => setShowNote(true)}
+            className="text-sm text-purple-600 hover:text-purple-700 font-medium cursor-pointer"
+          >
+            <i className="fas fa-plus text-xs mr-1"></i>
+            {t("addNote")}
+          </button>
+        )}
+      </div>
+
       <button
         onClick={handleAddWord}
         disabled={isPending}
@@ -165,6 +216,12 @@ export default function AddClient({ group }: AddClientProps) {
                   <span className="font-medium">{pool.term.join(" / ")}</span>
                   <span className="text-gray-400">→</span>
                   <span>{pool.translation.join(" / ")}</span>
+                  {pool.note && (
+                    <i
+                      className="fas fa-circle-info text-purple-400 self-center"
+                      title={pool.note}
+                    ></i>
+                  )}
                 </div>
               ))}
           </div>

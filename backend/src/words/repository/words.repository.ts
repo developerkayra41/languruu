@@ -53,7 +53,7 @@ export class WordRepository {
 
         const willShare = word.isShared && !word.sourceShareId && word.wordPool.length > 0;
         if (willShare) {
-            const flat = word.wordPool.flatMap((p) => [...(p.term ?? []), ...(p.translation ?? [])]);
+            const flat = word.wordPool.flatMap((p) => [...(p.term ?? []), ...(p.translation ?? []), ...(p.note ? [p.note] : [])]);
             if (flat.some(containsProfanity)) {
                 throw new BadRequestException("Paylaşmak istediğin grupta uygunsuz içerik var. Paylaşmadan önce düzelt.");
             }

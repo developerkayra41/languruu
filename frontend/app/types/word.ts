@@ -1,6 +1,7 @@
 export interface WordPool {
   term: string[];
   translation: string[];
+  note?: string;
 }
 
 export interface WordColumn {

@@ -1,5 +1,5 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsArray, IsNotEmpty, IsString, MaxLength } from "class-validator";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { IsArray, IsNotEmpty, IsOptional, IsString, MaxLength } from "class-validator";
 import { DtoPrefix, getValidationMessage, ValidationType } from "src/_common/enums/ValidationMessages.enum";
 
 export class WordPoolDTO {
@@ -16,4 +16,10 @@ export class WordPoolDTO {
   @IsString({ each: true, message: 'Kelime metni geçersiz' })
   @MaxLength(100, { each: true, message: 'Bir kelime/anlam en fazla 100 karakter olabilir.' })
   translation: string[]
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @IsString({ message: 'Not metni geçersiz' })
+  @MaxLength(200, { message: 'Not en fazla 200 karakter olabilir.' })
+  note?: string
 }

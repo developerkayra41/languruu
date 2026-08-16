@@ -18,13 +18,19 @@ function hasOverlap(a: WordPool, b: WordPool): boolean {
 function mergeEntries(entries: WordPool[]): WordPool {
     const terms = new Set<string>();
     const translations = new Set<string>();
+    let note: string | undefined;
 
     for (const entry of entries) {
         entry.term.forEach((t) => terms.add(t.trim()));
         entry.translation.forEach((t) => translations.add(t.trim()));
+        if (entry.note?.trim()) note = entry.note.trim();
     }
 
-    return { term: [...terms], translation: [...translations] };
+    return {
+        term: [...terms],
+        translation: [...translations],
+        ...(note ? { note } : {}),
+    };
 }
 
 export function mergeNewEntryIntoPool(

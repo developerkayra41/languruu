@@ -149,7 +149,8 @@
     "check": "Check",
     "loading": "Loading...",
     "speak": "Read aloud",
-    "replay": "Play again"
+    "replay": "Play again",
+    "noteLabel": "Note"
   },
   "add": {
     "title": "Add Word",
@@ -164,7 +165,12 @@
     "submitting": "Adding...",
     "recent": "Recently added",
     "errEmpty": "Enter at least one foreign word and one translation.",
-    "errDuplicate": "This word and its meaning are already added."
+    "errDuplicate": "This word and its meaning are already added.",
+    "addNote": "Add note",
+    "noteLabel": "Note (optional)",
+    "notePlaceholder": "e.g. Usually used in formal writing",
+    "noteHint": "A reminder about this word — shown as a hint while studying",
+    "removeNote": "Remove"
   },
   "groups": {
     "wordCount": "{count} words",
