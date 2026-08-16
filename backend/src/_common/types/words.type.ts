@@ -1,6 +1,7 @@
 export type WordPool = {
     term: string[],
-    translation: string[]
+    translation: string[],
+    note?: string
 }
 
 export type WordRow = {

@@ -149,7 +149,8 @@
     "check": "Kontrol Et",
     "loading": "Yükleniyor...",
     "speak": "Sesli okuma",
-    "replay": "Tekrar dinlet"
+    "replay": "Tekrar dinlet",
+    "noteLabel": "Not"
   },
   "add": {
     "title": "Kelime Ekle",
@@ -164,7 +165,12 @@
     "submitting": "Ekleniyor...",
     "recent": "Son eklenenler",
     "errEmpty": "En az bir yabancı kelime ve bir karşılık girin.",
-    "errDuplicate": "Bu kelime ve anlamı zaten ekli."
+    "errDuplicate": "Bu kelime ve anlamı zaten ekli.",
+    "addNote": "Not ekle",
+    "noteLabel": "Not (opsiyonel)",
+    "notePlaceholder": "Örn: Genelde resmi yazışmalarda kullanılır",
+    "noteHint": "Bu kelimeyle ilgili hatırlatıcı — çalışırken ipucu olarak görünür",
+    "removeNote": "Kaldır"
   },
   "groups": {
     "wordCount": "{count} kelime",

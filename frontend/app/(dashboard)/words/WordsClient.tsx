@@ -78,9 +78,10 @@ export default function WordsClient({ group }: WordsClientProps) {
     }
 
     const previousPool = wordPool;
-    const updatedEntry: WordPool = { term: terms, translation: translations };
     const nextPool = wordPool.map((entry, i) =>
-      i === realIndex ? updatedEntry : entry,
+      i === realIndex
+        ? { ...entry, term: terms, translation: translations }
+        : entry,
     );
 
     setWordPool(nextPool);

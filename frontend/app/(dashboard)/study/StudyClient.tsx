@@ -10,6 +10,7 @@ interface QuizItem {
   id: number;
   terms: string[];
   translations: string[];
+  note?: string;
 }
 
 type Direction = "term-to-translation" | "translation-to-term";
@@ -46,6 +47,7 @@ function buildQuizItems(group: WordColumn): QuizItem[] {
     id: index,
     terms: pool.term,
     translations: pool.translation,
+    note: pool.note,
   }));
 }
 
@@ -169,8 +171,12 @@ export default function StudyClient({ group }: StudyClientProps) {
     displayWord: string;
   } | null>(null);
 
+  const [noteOpen, setNoteOpen] = useState(false);
+  const notePointerRef = useRef<string>("");
+
   useEffect(() => {
     setManualOverride(null);
+    setNoteOpen(false);
   }, [currentItem]);
 
   const activeQuestion = manualOverride ?? autoQuestion;
@@ -347,6 +353,35 @@ export default function StudyClient({ group }: StudyClientProps) {
             >
               <i className="fas fa-volume-high"></i>
             </button>
+          )}
+          {currentItem.note && (
+            <div className="relative">
+              <button
+                type="button"
+                aria-label={t("noteLabel")}
+                onPointerEnter={(e) => {
+                  notePointerRef.current = e.pointerType;
+                  if (e.pointerType === "mouse") setNoteOpen(true);
+                }}
+                onPointerLeave={(e) => {
+                  if (e.pointerType === "mouse") setNoteOpen(false);
+                }}
+                onFocus={() => setNoteOpen(true)}
+                onBlur={() => setNoteOpen(false)}
+                onClick={() => {
+                  if (notePointerRef.current === "mouse") return;
+                  setNoteOpen((o) => !o);
+                }}
+                className="w-7 h-7 rounded-full border border-purple-200 text-purple-500 hover:bg-purple-50 hover:text-purple-700 flex items-center justify-center text-sm transition-colors"
+              >
+                <i className="fas fa-info"></i>
+              </button>
+              {noteOpen && (
+                <div className="absolute left-1/2 -translate-x-1/2 top-full mt-2 w-56 max-w-[70vw] bg-gray-800 text-white text-sm font-normal leading-snug rounded-lg px-3 py-2 shadow-lg z-20 text-center">
+                  {currentItem.note}
+                </div>
+              )}
+            </div>
           )}
         </div>
         <div className="h-6 flex items-center justify-center mb-1">
