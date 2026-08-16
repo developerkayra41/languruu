@@ -1,7 +1,8 @@
 {
   "common": {
     "confirm": "Confirm",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "note": "Note"
   },
   "nav": {
     "study": "Study",
@@ -149,8 +150,7 @@
     "check": "Check",
     "loading": "Loading...",
     "speak": "Read aloud",
-    "replay": "Play again",
-    "noteLabel": "Note"
+    "replay": "Play again"
   },
   "add": {
     "title": "Add Word",
@@ -353,7 +353,8 @@
     "errEmpty": "Enter at least one word and one translation.",
     "searchToggle": "Search words",
     "searchPlaceholder": "Search word or meaning...",
-    "searchEmpty": "No matching words found."
+    "searchEmpty": "No matching words found.",
+    "notePlaceholder": "Note (optional)"
   },
   "avatarCrop": {
     "title": "Crop Photo",
