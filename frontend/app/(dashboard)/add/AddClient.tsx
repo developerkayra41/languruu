@@ -6,6 +6,7 @@ import { WordColumn, WordPool } from "@/app/types/word";
 import { addWordEntry } from "./actions";
 import { parseCommaList } from "@/app/lib/word-pool-utils";
 import { toast } from "sonner";
+import NoteTooltip from "@/app/components/ui/NoteTooltip";
 
 interface AddClientProps {
   group: WordColumn;
@@ -55,7 +56,7 @@ export default function AddClient({ group }: AddClientProps) {
     };
 
     const previousPool = wordPool;
-    setWordPool((prev) => [...prev, newEntry]);
+    setWordPool((prev) => [newEntry, ...prev]);
     setTermInput("");
     setTranslationInput("");
     setNoteInput("");
@@ -208,20 +209,14 @@ export default function AddClient({ group }: AddClientProps) {
             {t("recent")}
           </h3>
           <div className="space-y-1 max-h-48 overflow-y-auto">
-            {[...wordPool]
-              .reverse()
+            {wordPool
               .slice(0, 5)
               .map((pool, i) => (
                 <div key={i} className="text-sm text-gray-700 flex gap-2">
                   <span className="font-medium">{pool.term.join(" / ")}</span>
                   <span className="text-gray-400">→</span>
                   <span>{pool.translation.join(" / ")}</span>
-                  {pool.note && (
-                    <i
-                      className="fas fa-circle-info text-purple-400 self-center"
-                      title={pool.note}
-                    ></i>
-                  )}
+                  {pool.note && <NoteTooltip note={pool.note} />}
                 </div>
               ))}
           </div>

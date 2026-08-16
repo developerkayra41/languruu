@@ -1,7 +1,8 @@
 {
   "common": {
     "confirm": "Onayla",
-    "cancel": "İptal"
+    "cancel": "İptal",
+    "note": "Not"
   },
   "nav": {
     "study": "Kelime Çalış",
@@ -149,8 +150,7 @@
     "check": "Kontrol Et",
     "loading": "Yükleniyor...",
     "speak": "Sesli okuma",
-    "replay": "Tekrar dinlet",
-    "noteLabel": "Not"
+    "replay": "Tekrar dinlet"
   },
   "add": {
     "title": "Kelime Ekle",
@@ -353,7 +353,8 @@
     "errEmpty": "En az bir kelime ve bir karşılık girin",
     "searchToggle": "Kelimelerde ara",
     "searchPlaceholder": "Kelime veya anlam ara...",
-    "searchEmpty": "Eşleşen kelime bulunamadı."
+    "searchEmpty": "Eşleşen kelime bulunamadı.",
+    "notePlaceholder": "Not (opsiyonel)"
   },
   "avatarCrop": {
     "title": "Fotoğrafı Kırp",

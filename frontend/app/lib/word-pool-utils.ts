@@ -49,11 +49,11 @@ export function mergeNewEntryIntoPool(
     }
 
     if (overlapping.length === 0) {
-        return [...existingPool, newEntry];
+        return [newEntry, ...existingPool];
     }
 
     const merged = mergeEntries([...overlapping, newEntry]);
-    return [...untouched, merged];
+    return [merged, ...untouched];
 }
 
 export function parseCommaList(input: string): string[] {

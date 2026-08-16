@@ -7,6 +7,7 @@ import { updateWordPool } from "./actions";
 import { parseCommaList, formatCommaList } from "@/app/lib/word-pool-utils";
 import { useSwipe } from "@/app/lib/use-swipe";
 import { toast } from "sonner";
+import NoteTooltip from "@/app/components/ui/NoteTooltip";
 
 const PAGE_SIZE = 10;
 
@@ -21,6 +22,7 @@ export default function WordsClient({ group }: WordsClientProps) {
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editTermInput, setEditTermInput] = useState("");
   const [editTranslationInput, setEditTranslationInput] = useState("");
+  const [editNoteInput, setEditNoteInput] = useState("");
 
   const [isPending, startTransition] = useTransition();
 
@@ -60,12 +62,14 @@ export default function WordsClient({ group }: WordsClientProps) {
     setEditingIndex(realIndex);
     setEditTermInput(formatCommaList(wordPool[realIndex].term));
     setEditTranslationInput(formatCommaList(wordPool[realIndex].translation));
+    setEditNoteInput(wordPool[realIndex].note ?? "");
   };
 
   const handleCancelEdit = () => {
     setEditingIndex(null);
     setEditTermInput("");
     setEditTranslationInput("");
+    setEditNoteInput("");
   };
 
   const handleSaveEdit = (realIndex: number) => {
@@ -77,15 +81,23 @@ export default function WordsClient({ group }: WordsClientProps) {
       return;
     }
 
+    const trimmedNote = editNoteInput.trim();
     const previousPool = wordPool;
-    const nextPool = wordPool.map((entry, i) =>
-      i === realIndex
-        ? { ...entry, term: terms, translation: translations }
-        : entry,
-    );
+    const nextPool = wordPool.map((entry, i) => {
+      if (i !== realIndex) return entry;
+      const updated: WordPool = {
+        ...entry,
+        term: terms,
+        translation: translations,
+      };
+      if (trimmedNote) updated.note = trimmedNote;
+      else delete updated.note;
+      return updated;
+    });
 
     setWordPool(nextPool);
     setEditingIndex(null);
+    setEditNoteInput("");
 
     startTransition(async () => {
       const result = await updateWordPool(group, nextPool);
@@ -206,8 +218,9 @@ export default function WordsClient({ group }: WordsClientProps) {
                           className="w-full px-2 py-1 border border-gray-300 rounded text-center focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                       ) : (
-                        <span className="font-medium text-gray-700">
+                        <span className="font-medium text-gray-700 inline-flex items-center justify-center gap-2">
                           {formatCommaList(entry.term)}
+                          {entry.note && <NoteTooltip note={entry.note} />}
                         </span>
                       )}
                     </div>
@@ -262,6 +275,18 @@ export default function WordsClient({ group }: WordsClientProps) {
                         </div>
                       )}
                     </div>
+                    {isEditing && (
+                      <div className="col-span-12 pb-4">
+                        <input
+                          type="text"
+                          value={editNoteInput}
+                          onChange={(e) => setEditNoteInput(e.target.value)}
+                          maxLength={200}
+                          placeholder={t("notePlaceholder")}
+                          className="w-full px-2 py-1 border border-gray-300 rounded text-center focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
+                      </div>
+                    )}
                   </div>
                 );
               })}
@@ -291,6 +316,14 @@ export default function WordsClient({ group }: WordsClientProps) {
                           placeholder={t("colMeaning")}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
+                        <input
+                          type="text"
+                          value={editNoteInput}
+                          onChange={(e) => setEditNoteInput(e.target.value)}
+                          maxLength={200}
+                          placeholder={t("notePlaceholder")}
+                          className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                        />
                         <div className="flex justify-end gap-4 pt-1 text-lg">
                           <button
                             onClick={() => handleSaveEdit(realIndex)}
@@ -310,8 +343,9 @@ export default function WordsClient({ group }: WordsClientProps) {
                     ) : (
                       <div className="flex items-center justify-between gap-3">
                         <div className="min-w-0">
-                          <div className="font-medium text-gray-800 break-words">
+                          <div className="font-medium text-gray-800 break-words flex items-center gap-2">
                             {formatCommaList(entry.term)}
+                            {entry.note && <NoteTooltip note={entry.note} />}
                           </div>
                           <div className="text-sm text-gray-500 break-words">
                             {formatCommaList(entry.translation)}
