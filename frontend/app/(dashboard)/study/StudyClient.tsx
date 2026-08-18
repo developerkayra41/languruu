@@ -221,12 +221,19 @@ export default function StudyClient({ group }: StudyClientProps) {
   }, [currentItem, activeQuestion]);
 
   const [userAnswer, setUserAnswer] = useState("");
-  const answerInputRef = useRef<HTMLInputElement>(null);
+  const answerInputRef = useRef<HTMLTextAreaElement>(null);
   const [feedback, setFeedback] = useState<{
     visible: boolean;
     color: string;
     text: string;
   }>({ visible: false, color: "#0D7918", text: "" });
+
+  useEffect(() => {
+    const el = answerInputRef.current;
+    if (!el) return;
+    el.style.height = "auto";
+    el.style.height = `${el.scrollHeight}px`;
+  }, [userAnswer]);
 
   const showInfo = (isCorrect: boolean, result: string) => {
     setFeedback({
@@ -283,7 +290,7 @@ export default function StudyClient({ group }: StudyClientProps) {
         className="relative flex flex-col items-center justify-center min-h-[400px] bg-white rounded-lg shadow-lg p-8"
         onClick={(e) => {
           const el = e.target as HTMLElement;
-          if (el.closest("input, button, a, [role=button]")) return;
+          if (el.closest("input, button, a, textarea, [role=button]")) return;
           answerInputRef.current?.blur();
         }}
       >
@@ -374,16 +381,20 @@ export default function StudyClient({ group }: StudyClientProps) {
           )}
         </div>
 
-        <div className="w-full max-w-md">
+        <div
+          className={`w-full transition-all duration-300 ${
+            userAnswer.length > 30 ? "max-w-2xl" : "max-w-md"
+          }`}
+        >
           <div className="relative">
-            <input
+            <textarea
               ref={answerInputRef}
-              type="text"
+              rows={1}
               autoCapitalize="none"
               autoCorrect="off"
               spellCheck={false}
               enterKeyHint="done"
-              className="w-full px-6 py-3 pr-12 text-lg border rounded-full focus:outline-none focus:ring-2 text-center transition-colors"
+              className="w-full px-6 py-3 pr-12 text-lg border rounded-3xl focus:outline-none focus:ring-2 text-center transition-colors resize-none overflow-hidden block leading-7"
               placeholder={t("answerPlaceholder")}
               value={userAnswer}
               onChange={(e) => setUserAnswer(e.target.value)}
