@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isTokenExpiringSoon, extractCookieValue, buildRefreshCookieHeader } from "@/app/lib/auth-utils";
+import { Locale, LOCALE_HEADER } from "@/app/i18n/locales";
 
 const PROTECTED_PREFIXES = [
   "/study", "/words", "/add", "/groups", "/marketplace",
@@ -8,13 +9,48 @@ const PROTECTED_PREFIXES = [
 const AUTH_ONLY_PATHS = ["/login", "/register"];
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
-export async function proxy(req: NextRequest) {
-  const isPrefetch = req.headers.get("next-router-prefetch") === "1";
-  if (isPrefetch) {
-    return NextResponse.next(); // prefetch isteklerinde auth kontrolü atlanıyor, gerçek navigasyon zaten yapacak
+// Pazarlama sayfalarinda dili URL belirler. Cerezi olmayan ziyaretci ve
+// botlar / adresini Turkce, /en adresini Ingilizce gorur; boylece Google her
+// adresi sabit tek bir dilde indeksler.
+// Secilen dil ayrica cereze yazilir: layout client-side gecislerde yeniden
+// render edilmedigi icin, dil sayfadan sayfaya degisirse sunucu ve istemci
+// metinleri karisir (yari Turkce yari Ingilizce ekran).
+function forcedLocaleFor(pathname: string): Locale | null {
+  if (pathname === "/en" || pathname.startsWith("/en/")) return "en";
+  if (pathname === "/" || pathname === "/privacy" || pathname === "/terms") return "tr";
+  return null;
+}
+
+const LOCALE_PAIR_PATHS = new Set(["/", "/en"]);
+
+function passThrough(req: NextRequest, pathname: string) {
+  const cookieLocale = req.cookies.get("locale")?.value;
+  const locale = forcedLocaleFor(pathname);
+  if (!locale) return NextResponse.next();
+
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set(LOCALE_HEADER, locale);
+  const response = NextResponse.next({ request: { headers: requestHeaders } });
+
+  if (LOCALE_PAIR_PATHS.has(pathname) && cookieLocale !== locale) {
+    response.cookies.set("locale", locale, {
+      path: "/",
+      maxAge: 60 * 60 * 24 * 365,
+      sameSite: "lax",
+    });
   }
 
+  return response;
+}
+
+export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
+
+  const isPrefetch = req.headers.get("next-router-prefetch") === "1";
+  if (isPrefetch) {
+    return passThrough(req, pathname); // prefetch isteklerinde auth kontrolü atlanıyor, gerçek navigasyon zaten yapacak
+  }
+
   const accessToken = req.cookies.get("access_token")?.value;
   const refreshToken = req.cookies.get("refresh_token")?.value;
 
@@ -22,7 +58,7 @@ export async function proxy(req: NextRequest) {
     if (accessToken && !isTokenExpiringSoon(accessToken)) {
       return NextResponse.redirect(new URL("/study", req.url));
     }
-    return NextResponse.next();
+    return passThrough(req, pathname);
   }
 
   // Yalnızca bilinen uygulama rotaları korunur. Tanınmayan yollar Next.js'e
@@ -31,7 +67,7 @@ export async function proxy(req: NextRequest) {
   const isProtected = PROTECTED_PREFIXES.some(
     (p) => pathname === p || pathname.startsWith(`${p}/`),
   );
-  if (!isProtected) return NextResponse.next();
+  if (!isProtected) return passThrough(req, pathname);
 
   if (!accessToken && !refreshToken) {
     return NextResponse.redirect(new URL("/login", req.url));
