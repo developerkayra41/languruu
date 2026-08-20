@@ -5,7 +5,9 @@ import { Toaster } from "sonner";
 import { Analytics } from "@vercel/analytics/next";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 import { NextIntlClientProvider } from "next-intl";
-import { getLocale, getMessages } from "next-intl/server";
+import { getLocale, getMessages, getTranslations } from "next-intl/server";
+import { isLocale, DEFAULT_LOCALE } from "./i18n/locales";
+import { LANDING_URLS, SITE_URL } from "./lib/seo";
 import { cookies } from "next/headers";
 
 const spaceGrotesk = Space_Grotesk({
@@ -13,32 +15,36 @@ const spaceGrotesk = Space_Grotesk({
   weight: ["300", "400", "500", "600", "700"],
 });
 
-export const metadata: Metadata = {
-  metadataBase: new URL("https://www.languruu.com"),
-  title: {
-    default: "Languruu — Yabancı kelime öğrenme uygulaması",
-    template: "%s | Languruu",
-  },
-  description:
-    "Languruu ile yabancı dil kelimelerini kolayca öğren: kendi kelime gruplarını oluştur, çalış, marketplace'ten hazır setleri kullan. Learn foreign words with flashcards and daily practice.",
-  applicationName: "Languruu",
-  authors: [{ name: "Languruu" }],
-  openGraph: {
-    type: "website",
-    siteName: "Languruu",
-    url: "https://www.languruu.com",
-    title: "Languruu — Yabancı kelime öğrenme uygulaması",
-    description:
-      "Kelime gruplarını oluştur, çalış, paylaş. Learn foreign words the easy way.",
-    locale: "tr_TR",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "Languruu — Yabancı kelime öğren",
-    description: "Yabancı dil kelimelerini kolayca öğren ve pratik yap.",
-  },
-  robots: { index: true, follow: true },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const raw = await getLocale();
+  const locale = isLocale(raw) ? raw : DEFAULT_LOCALE;
+  const t = await getTranslations({ locale, namespace: "landing" });
+
+  return {
+    metadataBase: new URL(SITE_URL),
+    title: {
+      default: t("metaTitle"),
+      template: "%s | Languruu",
+    },
+    description: t("metaDescription"),
+    applicationName: "Languruu",
+    authors: [{ name: "Languruu" }],
+    openGraph: {
+      type: "website",
+      siteName: "Languruu",
+      url: LANDING_URLS[locale],
+      title: t("metaTitle"),
+      description: t("metaDescription"),
+      locale: locale === "tr" ? "tr_TR" : "en_US",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: t("metaTitle"),
+      description: t("metaDescription"),
+    },
+    robots: { index: true, follow: true },
+  };
+}
 
 export default async function RootLayout({
   children,

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { motion, MotionConfig, Variants } from "framer-motion";
 import { useTranslations } from "next-intl";
 import Logo from "@/app/components/ui/Logo";
+import { Locale } from "@/app/i18n/locales";
 
 const features = [
   { icon: "fa-layer-group", key: "groups" },
@@ -33,8 +34,16 @@ const fadeUp: Variants = {
 const gridContainer: Variants = { hidden: {}, show: { transition: { staggerChildren: 0.1 } } };
 const viewport = { once: true, margin: "-80px" };
 
-export default function LandingClient({ isLoggedIn }: { isLoggedIn: boolean }) {
+export default function LandingClient({
+  isLoggedIn,
+  locale,
+}: {
+  isLoggedIn: boolean;
+  locale: Locale;
+}) {
   const t = useTranslations("landing");
+  const home = locale === "en" ? "/en" : "/";
+  const other = locale === "en" ? { href: "/", label: "TR" } : { href: "/en", label: "EN" };
   const primary = isLoggedIn
     ? { href: "/study", label: t("goToApp") }
     : { href: "/register", label: t("getStarted") };
@@ -44,10 +53,17 @@ export default function LandingClient({ isLoggedIn }: { isLoggedIn: boolean }) {
       <div className="min-h-screen bg-white text-gray-800">
         {}
         <header className="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2 text-purple-600 font-bold text-xl">
+          <Link href={home} className="flex items-center gap-2 text-purple-600 font-bold text-xl">
             <Logo className="w-7 h-7" /> Languruu
           </Link>
           <nav className="flex items-center gap-3">
+            <a
+              href={other.href}
+              hrefLang={other.href === "/en" ? "en" : "tr"}
+              className="text-sm font-medium text-gray-500 hover:text-gray-900 px-2 py-2"
+            >
+              {other.label}
+            </a>
             {!isLoggedIn && (
               <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-2">{t("signIn")}</Link>
             )}

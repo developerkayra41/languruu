@@ -1,34 +1,26 @@
-import { cookies } from "next/headers";
-import { getTranslations } from "next-intl/server";
-import LandingClient from "./components/landing/LandingClient";
+import type { Metadata } from "next";
+import { getLocale, getTranslations } from "next-intl/server";
+import { DEFAULT_LOCALE, isLocale } from "./i18n/locales";
+import LandingPage from "./components/landing/LandingPage";
+import { landingAlternates } from "./lib/seo";
 
-export async function generateMetadata() {
-  const t = await getTranslations("landing");
+export async function generateMetadata(): Promise<Metadata> {
+  const raw = await getLocale();
+  const locale = isLocale(raw) ? raw : DEFAULT_LOCALE;
+  const t = await getTranslations({ locale, namespace: "landing" });
+
   return {
-    title: t("metaTitle"),
+    title: { absolute: t("metaTitle") },
     description: t("metaDescription"),
-    alternates: { canonical: "https://www.languruu.com" },
+    alternates: landingAlternates("tr"),
+    openGraph: {
+      title: t("metaTitle"),
+      description: t("metaDescription"),
+      locale: locale === "tr" ? "tr_TR" : "en_US",
+    },
   };
 }
 
-const jsonLd = {
-  "@context": "https://schema.org",
-  "@type": "WebApplication",
-  name: "Languruu",
-  applicationCategory: "EducationalApplication",
-  operatingSystem: "Web",
-  url: "https://www.languruu.com",
-  description:
-    "Yabancı kelime öğrenme uygulaması. Kendi kelime gruplarını oluştur, çalış ve paylaş.",
-  offers: { "@type": "Offer", price: "0", priceCurrency: "TRY" },
-};
-
-export default async function Home() {
-  const isLoggedIn = !!(await cookies()).get("access_token")?.value;
-  return (
-    <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
-      <LandingClient isLoggedIn={isLoggedIn} />
-    </>
-  );
+export default function Home() {
+  return <LandingPage />;
 }
