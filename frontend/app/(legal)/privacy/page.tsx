@@ -1,6 +1,7 @@
 export const metadata = {
   title: "Gizlilik Politikası ve KVKK Aydınlatma Metni - Languruu",
   description: "Languruu kişisel verilerinizin işlenmesi, saklanması ve korunmasına ilişkin detaylar.",
+  alternates: { canonical: "https://www.languruu.com/privacy" },
 };
 
 export default function PrivacyPage() {

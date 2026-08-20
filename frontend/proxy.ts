@@ -1,7 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isTokenExpiringSoon, extractCookieValue, buildRefreshCookieHeader } from "@/app/lib/auth-utils";
 
-const PUBLIC_PATHS = ["/login", "/register", "/verify-email", "/forgot-password", "/reset-password", "/privacy", "/terms"];
+const PROTECTED_PREFIXES = [
+  "/study", "/words", "/add", "/groups", "/marketplace",
+  "/settings", "/profile", "/top-performers", "/admin", "/users", "/suspended",
+];
 const AUTH_ONLY_PATHS = ["/login", "/register"];
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 
@@ -12,19 +15,23 @@ export async function proxy(req: NextRequest) {
   }
 
   const { pathname } = req.nextUrl;
-  const isPublic = PUBLIC_PATHS.some((p) => pathname.startsWith(p));
-
   const accessToken = req.cookies.get("access_token")?.value;
   const refreshToken = req.cookies.get("refresh_token")?.value;
-  if (pathname === "/") return NextResponse.next();
 
-  if (isPublic) {
-    const isAuthOnly = AUTH_ONLY_PATHS.some((p) => pathname.startsWith(p));
-    if (isAuthOnly && accessToken && !isTokenExpiringSoon(accessToken)) {
+  if (AUTH_ONLY_PATHS.some((p) => pathname.startsWith(p))) {
+    if (accessToken && !isTokenExpiringSoon(accessToken)) {
       return NextResponse.redirect(new URL("/study", req.url));
     }
     return NextResponse.next();
   }
+
+  // Yalnızca bilinen uygulama rotaları korunur. Tanınmayan yollar Next.js'e
+  // düşer ve gerçek 404 döner — aksi halde her yanlış URL /login'e yönlenip
+  // Google'a "bu sayfa var ama yönlendiriliyor" sinyali veriyordu.
+  const isProtected = PROTECTED_PREFIXES.some(
+    (p) => pathname === p || pathname.startsWith(`${p}/`),
+  );
+  if (!isProtected) return NextResponse.next();
 
   if (!accessToken && !refreshToken) {
     return NextResponse.redirect(new URL("/login", req.url));
@@ -75,6 +82,6 @@ export async function proxy(req: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|sitemap.xml|robots.txt|icon.svg|apple-icon|opengraph-image).*)",
+    "/((?!_next/static|_next/image|_vercel|favicon.ico|sitemap.xml|robots.txt|icon.svg|apple-icon|opengraph-image).*)",
   ],
 };

@@ -5,7 +5,12 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/study", "/words", "/add", "/groups", "/marketplace", "/settings", "/profile", "/top-performers", "/verify-email", "/reset-password"],
+      disallow: [
+        "/study", "/words", "/add", "/groups", "/marketplace",
+        "/settings", "/profile", "/top-performers", "/admin",
+        "/users/", "/suspended", "/verify-email", "/reset-password",
+        "/forgot-password",
+      ],
     },
     sitemap: "https://www.languruu.com/sitemap.xml",
   };

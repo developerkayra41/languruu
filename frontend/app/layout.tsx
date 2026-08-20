@@ -21,26 +21,8 @@ export const metadata: Metadata = {
   },
   description:
     "Languruu ile yabancı dil kelimelerini kolayca öğren: kendi kelime gruplarını oluştur, çalış, marketplace'ten hazır setleri kullan. Learn foreign words with flashcards and daily practice.",
-  keywords: [
-    "yabancı kelime öğrenme",
-    "kelime ezberleme",
-    "kelime öğren",
-    "dil öğrenme uygulaması",
-    "İngilizce kelime öğren",
-    "kelime kartları",
-    "flashcard",
-    "kelime pratiği",
-    "kelime ezberleme uygulaması",
-    "learn foreign words",
-    "vocabulary learning app",
-    "language learning app",
-    "learn new words",
-    "vocabulary flashcards",
-    "learn vocabulary online",
-  ],
   applicationName: "Languruu",
   authors: [{ name: "Languruu" }],
-  alternates: { canonical: "https://www.languruu.com" },
   openGraph: {
     type: "website",
     siteName: "Languruu",
@@ -68,6 +50,13 @@ export default async function RootLayout({
   const theme = (await cookies()).get("theme")?.value === "dark" ? "dark" : "";
   return (
     <html lang={locale} className={theme}>
+      <head>
+        <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossOrigin="anonymous" />
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+        />
+      </head>
       <body className={spaceGrotesk.className}>
         <NextIntlClientProvider locale={locale} messages={messages}>
           {children}
