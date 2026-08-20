@@ -1,6 +1,10 @@
 import ForgotPasswordForm from "./ForgotPasswordForm";
 import { getTranslations } from "next-intl/server";
 
+export const metadata = {
+  robots: { index: false, follow: true },
+};
+
 export default async function ForgotPasswordPage() {
   const t = await getTranslations("auth.forgot");
   return (

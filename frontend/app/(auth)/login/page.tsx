@@ -3,6 +3,10 @@ import LoginForm from "./LoginForm";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
+export const metadata = {
+  robots: { index: false, follow: true },
+};
+
 export default async function LoginPage() {
   const t = await getTranslations("auth.login");
   const th = await getTranslations("auth.hero");

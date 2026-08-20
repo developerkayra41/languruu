@@ -47,7 +47,8 @@
       "signUp": "Sign up",
       "errEmail": "Please enter a valid email address.",
       "errPassword": "Password must be at least 6 characters.",
-      "failed": "Login failed"
+      "failed": "Login failed",
+      "placeholderEmail": "example@email.com"
     },
     "register": {
       "title": "Create account",
@@ -72,7 +73,10 @@
       "errPassword": "Password must be at least 6 characters.",
       "errMatch": "Passwords do not match.",
       "errTerms": "You must accept the terms to continue.",
-      "failed": "Registration failed"
+      "failed": "Registration failed",
+      "placeholderFullName": "Name Surname",
+      "placeholderUsername": "user_name",
+      "placeholderEmail": "example@email.com"
     },
     "forgot": {
       "title": "Forgot your password?",

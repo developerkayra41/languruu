@@ -60,7 +60,7 @@ export default function RegisterForm() {
           type="text"
           value={fullName}
           onChange={(e) => setFullName(e.target.value)}
-          placeholder="Kayra Özgür"
+          placeholder={t("placeholderFullName")}
           className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
         />
       </div>
@@ -77,7 +77,7 @@ export default function RegisterForm() {
             type="text"
             value={userName}
             onChange={(e) => setUserName(e.target.value.trim())}
-            placeholder="kyr23"
+            placeholder={t("placeholderUsername")}
             className="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           />
         </div>
@@ -91,7 +91,7 @@ export default function RegisterForm() {
           type="email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          placeholder="ornek@mail.com"
+          placeholder={t("placeholderEmail")}
           className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
         />
       </div>

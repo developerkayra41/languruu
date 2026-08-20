@@ -1,6 +1,7 @@
 export const metadata = {
   title: "Kullanım Şartları - Languruu",
   description: "Languruu platformunun kullanım koşulları, hak ve yükümlülükler.",
+  alternates: { canonical: "https://www.languruu.com/terms" },
 };
 
 export default function TermsPage() {

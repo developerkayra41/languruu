@@ -3,6 +3,10 @@ import RegisterForm from "./RegisterForm";
 import { getTranslations } from "next-intl/server";
 import Link from "next/link";
 
+export const metadata = {
+  robots: { index: false, follow: true },
+};
+
 export default async function RegisterPage() {
   const t = await getTranslations("auth.register");
   const th = await getTranslations("auth.hero");

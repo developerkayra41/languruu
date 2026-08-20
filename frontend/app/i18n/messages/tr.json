@@ -47,7 +47,8 @@
       "signUp": "Kayıt ol",
       "errEmail": "Geçerli bir e-posta adresi girin.",
       "errPassword": "Şifre en az 6 karakter olmalı.",
-      "failed": "Giriş başarısız"
+      "failed": "Giriş başarısız",
+      "placeholderEmail" : "ornek@mail.com"
     },
     "register": {
       "title": "Hesap oluştur",
@@ -72,7 +73,10 @@
       "errPassword": "Şifre en az 6 karakter olmalı.",
       "errMatch": "Şifreler eşleşmiyor.",
       "errTerms": "Devam etmek için şartları kabul etmelisin.",
-      "failed": "Kayıt başarısız"
+      "failed": "Kayıt başarısız",
+      "placeholderFullName": "İsim Soyisim",
+      "placeholderUsername": "kullanici_adi",
+      "placeholderEmail": "ornek@mail.com"
     },
     "forgot": {
       "title": "Şifreni mi unuttun?",
