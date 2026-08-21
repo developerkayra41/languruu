@@ -44,6 +44,7 @@ export default function LandingClient({
   const t = useTranslations("landing");
   const home = locale === "en" ? "/en" : "/";
   const other = locale === "en" ? { href: "/", label: "TR" } : { href: "/en", label: "EN" };
+  const blogHref = locale === "en" ? "/en/blog" : "/blog";
   const primary = isLoggedIn
     ? { href: "/study", label: t("goToApp") }
     : { href: "/register", label: t("getStarted") };
@@ -52,11 +53,20 @@ export default function LandingClient({
     <MotionConfig reducedMotion="user">
       <div className="min-h-screen bg-white text-gray-800">
         {}
-        <header className="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between">
-          <Link href={home} className="flex items-center gap-2 text-purple-600 font-bold text-xl">
-            <Logo className="w-7 h-7" /> Languruu
+        <header className="max-w-6xl mx-auto px-4 sm:px-5 h-16 flex items-center justify-between gap-2">
+          <Link
+            href={home}
+            className="flex items-center gap-2 text-purple-600 font-bold text-lg sm:text-xl shrink-0"
+          >
+            <Logo className="w-6 h-6 sm:w-7 sm:h-7" /> Languruu
           </Link>
-          <nav className="flex items-center gap-3">
+          <nav className="flex items-center gap-1 sm:gap-3 shrink-0">
+            <Link
+              href={blogHref}
+              className="text-sm font-medium text-gray-600 hover:text-gray-900 px-2 sm:px-3 py-2 whitespace-nowrap"
+            >
+              {t("blogLink")}
+            </Link>
             <a
               href={other.href}
               hrefLang={other.href === "/en" ? "en" : "tr"}
@@ -65,9 +75,17 @@ export default function LandingClient({
               {other.label}
             </a>
             {!isLoggedIn && (
-              <Link href="/login" className="text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-2">{t("signIn")}</Link>
+              <Link
+                href="/login"
+                className="hidden sm:inline-block text-sm font-medium text-gray-600 hover:text-gray-900 px-3 py-2 whitespace-nowrap"
+              >
+                {t("signIn")}
+              </Link>
             )}
-            <Link href={primary.href} className="text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-blue-500 px-4 py-2 rounded-lg hover:opacity-90 active:scale-95 transition">
+            <Link
+              href={primary.href}
+              className="text-sm font-medium text-white bg-gradient-to-r from-purple-600 to-blue-500 px-3 sm:px-4 py-2 rounded-lg hover:opacity-90 active:scale-95 transition whitespace-nowrap"
+            >
               {primary.label}
             </Link>
           </nav>

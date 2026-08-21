@@ -17,11 +17,13 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";
 // metinleri karisir (yari Turkce yari Ingilizce ekran).
 function forcedLocaleFor(pathname: string): Locale | null {
   if (pathname === "/en" || pathname.startsWith("/en/")) return "en";
-  if (pathname === "/" || pathname === "/privacy" || pathname === "/terms") return "tr";
+  if (pathname === "/" || pathname === "/blog" || pathname.startsWith("/blog/")) return "tr";
+  if (pathname === "/privacy" || pathname === "/terms") return "tr";
   return null;
 }
 
 const LOCALE_PAIR_PATHS = new Set(["/", "/en"]);
+const LANDING_PATHS = new Set(["/", "/en"]);
 
 function passThrough(req: NextRequest, pathname: string) {
   const cookieLocale = req.cookies.get("locale")?.value;
@@ -54,7 +56,12 @@ export async function proxy(req: NextRequest) {
   const accessToken = req.cookies.get("access_token")?.value;
   const refreshToken = req.cookies.get("refresh_token")?.value;
 
-  if (AUTH_ONLY_PATHS.some((p) => pathname.startsWith(p))) {
+  // Giris yapmis kullaniciyi pazarlama sayfalarinda tutmanin anlami yok.
+  // Googlebot'un cerezi olmadigi icin o landing'i 200 olarak gormeye devam eder.
+  const isAuthOnly = AUTH_ONLY_PATHS.some((p) => pathname.startsWith(p));
+  const isLanding = LANDING_PATHS.has(pathname);
+
+  if (isAuthOnly || isLanding) {
     if (accessToken && !isTokenExpiringSoon(accessToken)) {
       return NextResponse.redirect(new URL("/study", req.url));
     }

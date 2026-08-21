@@ -42,3 +42,33 @@ export function landingJsonLd(locale: Locale, name: string, description: string)
     },
   ];
 }
+
+export function blogListUrl(locale: Locale): string {
+  return locale === "en" ? `${SITE_URL}/en/blog` : `${SITE_URL}/blog`;
+}
+
+export function blogPostUrl(locale: Locale, slug: string): string {
+  return `${blogListUrl(locale)}/${slug}`;
+}
+
+export function articleJsonLd(params: {
+  locale: Locale;
+  title: string;
+  description: string;
+  slug: string;
+  publishedAt: string;
+  updatedAt?: string;
+}) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: params.title,
+    description: params.description,
+    inLanguage: params.locale,
+    datePublished: params.publishedAt,
+    dateModified: params.updatedAt ?? params.publishedAt,
+    mainEntityOfPage: blogPostUrl(params.locale, params.slug),
+    author: { "@type": "Organization", name: "Languruu", url: SITE_URL },
+    publisher: { "@type": "Organization", name: "Languruu", url: SITE_URL },
+  };
+}
