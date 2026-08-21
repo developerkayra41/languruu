@@ -1,7 +1,11 @@
 const createNextIntlPlugin = require("next-intl/plugin");
+const createMDX = require("@next/mdx");
+
 const withNextIntl = createNextIntlPlugin("./app/i18n/request.ts");
+const withMDX = createMDX({});
 
 const nextConfig = {
+  pageExtensions: ["ts", "tsx", "js", "jsx", "md", "mdx"],
   images: {
     remotePatterns: [
       {
@@ -20,4 +24,4 @@ const nextConfig = {
   },
 };
 
-module.exports = withNextIntl(nextConfig);
+module.exports = withNextIntl(withMDX(nextConfig));

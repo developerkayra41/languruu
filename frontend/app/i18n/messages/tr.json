@@ -48,7 +48,7 @@
       "errEmail": "Geçerli bir e-posta adresi girin.",
       "errPassword": "Şifre en az 6 karakter olmalı.",
       "failed": "Giriş başarısız",
-      "placeholderEmail" : "ornek@mail.com"
+      "placeholderEmail": "ornek@mail.com"
     },
     "register": {
       "title": "Hesap oluştur",
@@ -141,7 +141,16 @@
     "ctaText": "Ücretsiz. Birkaç saniyede hesabını oluştur, ilk kelime grubunu ekle.",
     "footerPrivacy": "Gizlilik",
     "footerTerms": "Kullanım Şartları",
-    "footerLogin": "Giriş"
+    "footerLogin": "Giriş",
+    "blogLink": "Rehber"
+  },
+  "blog": {
+    "title": "Rehber",
+    "subtitle": "Yabancı kelime öğrenme üzerine yöntemler, teknikler ve pratik ipuçları.",
+    "readMore": "Yazıyı oku",
+    "ctaTitle": "Öğrendiklerini pratiğe dök",
+    "ctaText": "Kendi kelime gruplarını oluştur, aralıklı tekrarla çalış. Ücretsiz.",
+    "ctaButton": "Ücretsiz Başla"
   },
   "study": {
     "wordCount": "{count} kelime",

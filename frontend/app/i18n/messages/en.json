@@ -141,7 +141,16 @@
     "ctaText": "Free. Create your account in seconds and add your first word group.",
     "footerPrivacy": "Privacy",
     "footerTerms": "Terms of Use",
-    "footerLogin": "Log In"
+    "footerLogin": "Log In",
+    "blogLink": "Guides"
+  },
+  "blog": {
+    "title": "Guides",
+    "subtitle": "Methods, techniques and practical tips for learning foreign vocabulary.",
+    "readMore": "Read the article",
+    "ctaTitle": "Put it into practice",
+    "ctaText": "Build your own word groups and study with spaced repetition. Free.",
+    "ctaButton": "Get Started Free"
   },
   "study": {
     "wordCount": "{count} words",
