@@ -25,6 +25,58 @@ function forcedLocaleFor(pathname: string): Locale | null {
 const LOCALE_PAIR_PATHS = new Set(["/", "/en"]);
 const LANDING_PATHS = new Set(["/", "/en"]);
 
+type RefreshOutcome =
+  | { status: "ok"; accessToken: string; refreshToken: string | null }
+  | { status: "invalid" }
+  | { status: "unavailable" };
+
+// Backend'e refresh isteği. "invalid" = refresh token gerçekten geçersiz
+// (oturum kapatılmalı). "unavailable" = ağ/timeout/5xx — bu geçici bir durum,
+// kullanıcının cookie'leri SİLİNMEZ, bir sonraki istekte tekrar denenir.
+async function requestRefresh(refreshToken: string): Promise<RefreshOutcome> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
+      method: "POST",
+      headers: { Cookie: buildRefreshCookieHeader(refreshToken) },
+      signal: AbortSignal.timeout(10000), // Render cold start payı
+    });
+
+    if (res.status === 401 || res.status === 403) return { status: "invalid" };
+    if (!res.ok) return { status: "unavailable" };
+
+    const json = await res.json();
+    const accessToken = json?.data?.accessToken;
+    if (!accessToken) return { status: "unavailable" };
+
+    return {
+      status: "ok",
+      accessToken,
+      refreshToken: extractCookieValue(res.headers.get("set-cookie"), "refresh_token"),
+    };
+  } catch {
+    return { status: "unavailable" };
+  }
+}
+
+function applySessionCookies(response: NextResponse, accessToken: string, refreshToken: string | null) {
+  const isProduction = process.env.NODE_ENV === "production";
+  response.cookies.set("access_token", accessToken, {
+    httpOnly: true, secure: isProduction, sameSite: "strict", path: "/", maxAge: 60 * 15,
+  });
+  if (refreshToken) {
+    response.cookies.set("refresh_token", refreshToken, {
+      httpOnly: true, secure: isProduction, sameSite: "strict", path: "/", maxAge: 60 * 60 * 24 * 30,
+    });
+  }
+  return response;
+}
+
+function clearSessionCookies(response: NextResponse) {
+  response.cookies.delete("access_token");
+  response.cookies.delete("refresh_token");
+  return response;
+}
+
 function passThrough(req: NextRequest, pathname: string) {
   const cookieLocale = req.cookies.get("locale")?.value;
   const locale = forcedLocaleFor(pathname);
@@ -65,6 +117,21 @@ export async function proxy(req: NextRequest) {
     if (accessToken && !isTokenExpiringSoon(accessToken)) {
       return NextResponse.redirect(new URL("/study", req.url));
     }
+
+    // Access token 15 dakikada ölüyor; refresh token 30 gün yaşıyor. Burada
+    // refresh denenmezse kullanici 15 dk sonra languruu.com'a girdiginde
+    // oturumu duruyorken landing sayfasini gorup "cikis yapmisim" saniyor.
+    if (refreshToken) {
+      const refreshed = await requestRefresh(refreshToken);
+      if (refreshed.status === "ok") {
+        const response = NextResponse.redirect(new URL("/study", req.url));
+        return applySessionCookies(response, refreshed.accessToken, refreshed.refreshToken);
+      }
+      if (refreshed.status === "invalid") {
+        return clearSessionCookies(passThrough(req, pathname));
+      }
+    }
+
     return passThrough(req, pathname);
   }
 
@@ -83,42 +150,30 @@ export async function proxy(req: NextRequest) {
   if (!accessToken || isTokenExpiringSoon(accessToken)) {
     if (!refreshToken) return NextResponse.redirect(new URL("/login", req.url));
 
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
-        method: "POST",
-        headers: { Cookie: buildRefreshCookieHeader(refreshToken) },
-        signal: AbortSignal.timeout(5000), // backend 5sn'de yanıt vermezse iptal et
-      });
-      if (!res.ok) throw new Error("refresh failed");
+    const refreshed = await requestRefresh(refreshToken);
 
-      const json = await res.json();
-      const newAccessToken = json.data.accessToken;
-      const newRefreshToken = extractCookieValue(res.headers.get("set-cookie"), "refresh_token");
-
-      // KRİTİK: isteğin KENDİ cookie jar'ını da güncelliyoruz — bu request'in
-      // devamındaki Server Component'ler artık ESKİ değil, YENİ token'ı görecek.
-      req.cookies.set("access_token", newAccessToken);
-      if (newRefreshToken) req.cookies.set("refresh_token", newRefreshToken);
-
-      const response = NextResponse.next({ request: req });
-      const isProduction = process.env.NODE_ENV === "production";
-
-      // Tarayıcının GELECEKTEKİ istekler için de bu değerleri saklamasını sağlıyoruz.
-      response.cookies.set("access_token", newAccessToken, {
-        httpOnly: true, secure: isProduction, sameSite: "strict", path: "/", maxAge: 60 * 15,
-      });
-      if (newRefreshToken) {
-        response.cookies.set("refresh_token", newRefreshToken, {
-          httpOnly: true, secure: isProduction, sameSite: "strict", path: "/", maxAge: 60 * 60 * 24 * 30,
-        });
-      }
-      return response;
-    } catch {
-      const response = NextResponse.redirect(new URL("/login", req.url));
-      response.cookies.delete("access_token");
-      response.cookies.delete("refresh_token");
-      return response;
+    if (refreshed.status === "invalid") {
+      return clearSessionCookies(NextResponse.redirect(new URL("/login", req.url)));
     }
+
+    // Backend'e ulaşılamadı (cold start, timeout, 5xx). Oturum hâlâ geçerli
+    // olabilir — cookie'leri SİLMİYORUZ ki kullanıcı bir sonraki denemede
+    // kaldığı yerden devam edebilsin.
+    if (refreshed.status === "unavailable") {
+      return NextResponse.redirect(new URL("/login", req.url));
+    }
+
+    // KRİTİK: isteğin KENDİ cookie jar'ını da güncelliyoruz — bu request'in
+    // devamındaki Server Component'ler artık ESKİ değil, YENİ token'ı görecek.
+    req.cookies.set("access_token", refreshed.accessToken);
+    if (refreshed.refreshToken) req.cookies.set("refresh_token", refreshed.refreshToken);
+
+    // Tarayıcının GELECEKTEKİ istekler için de bu değerleri saklamasını sağlıyoruz.
+    return applySessionCookies(
+      NextResponse.next({ request: req }),
+      refreshed.accessToken,
+      refreshed.refreshToken,
+    );
   }
   return NextResponse.next();
 }
