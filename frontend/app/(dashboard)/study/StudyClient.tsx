@@ -287,7 +287,7 @@ export default function StudyClient({ group }: StudyClientProps) {
   return (
     <Reveal>
       <div
-        className="relative flex flex-col items-center justify-center min-h-[400px] bg-white rounded-lg shadow-lg p-8"
+        className="relative flex flex-col items-center justify-center min-h-[400px] bg-white rounded-lg shadow-lg p-6 sm:p-8"
         onClick={(e) => {
           const el = e.target as HTMLElement;
           if (el.closest("input, button, a, textarea, [role=button]")) return;
@@ -299,7 +299,7 @@ export default function StudyClient({ group }: StudyClientProps) {
           onClick={toggleSpeak}
           title={t("speak")}
           aria-label={t("speak")}
-          className={`absolute top-4 right-4 w-9 h-9 rounded-full flex items-center justify-center transition-colors ${
+          className={`absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center transition-colors z-10 ${
             speakEnabled
               ? "bg-purple-100 text-purple-600"
               : "text-gray-400 hover:bg-gray-100"
@@ -310,8 +310,8 @@ export default function StudyClient({ group }: StudyClientProps) {
           ></i>
         </button>
 
-        <div className="text-center mb-4">
-          <h2 className="text-2xl font-bold text-gray-800">
+        <div className="text-center mb-4 px-8 w-full">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-800 break-words">
             {currentGroup.name}
           </h2>
           <p className="text-gray-600 mt-1">
@@ -345,21 +345,18 @@ export default function StudyClient({ group }: StudyClientProps) {
           ))}
         </div>
 
-        <div className="flex items-center gap-3 mb-0">
-          <div className="text-4xl font-bold">{activeQuestion.displayWord}</div>
+        <div className="w-full text-4xl font-bold text-center break-words mb-0">
+          {activeQuestion.displayWord}
           {speakEnabled && (
             <button
               type="button"
               onClick={replaySpeak}
               title={t("replay")}
               aria-label={t("replay")}
-              className="text-purple-400 hover:text-purple-600 text-xl"
+              className="relative ml-3 align-middle text-purple-400 hover:text-purple-600 text-xl before:absolute before:-inset-2.5 before:content-['']"
             >
               <i className="fas fa-volume-high"></i>
             </button>
-          )}
-          {currentItem.note && (
-            <NoteTooltip key={currentItem.id} note={currentItem.note} size="md" />
           )}
         </div>
         <div className="h-6 flex items-center justify-center mb-1">
@@ -394,7 +391,9 @@ export default function StudyClient({ group }: StudyClientProps) {
               autoCorrect="off"
               spellCheck={false}
               enterKeyHint="done"
-              className="w-full px-6 py-3 pr-12 text-lg border rounded-3xl focus:outline-none focus:ring-2 text-center transition-colors resize-none overflow-hidden block leading-7"
+              className={`w-full py-3 text-lg border rounded-3xl focus:outline-none focus:ring-2 text-center transition-colors resize-none overflow-hidden block leading-7 pr-12 ${
+                currentItem.note ? "pl-12" : "pl-6"
+              }`}
               placeholder={t("answerPlaceholder")}
               value={userAnswer}
               onChange={(e) => setUserAnswer(e.target.value)}
@@ -405,12 +404,21 @@ export default function StudyClient({ group }: StudyClientProps) {
                 }
               }}
             />
+            {currentItem.note && (
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 flex items-center">
+                <NoteTooltip
+                  key={currentItem.id}
+                  note={currentItem.note}
+                  size="md"
+                />
+              </span>
+            )}
             <button
               type="button"
               onClick={revealAnswer}
               title={t("showAnswer")}
               aria-label={t("showAnswer")}
-              className="absolute right-5 top-1/2 -translate-y-1/2 text-purple-500 hover:text-purple-700 text-xl font-bold"
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 flex items-center justify-center rounded-full text-purple-500 hover:text-purple-700 hover:bg-purple-50 text-xl font-bold transition-colors"
             >
               ?
             </button>
