@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useTranslations } from "next-intl";
 
@@ -14,6 +14,7 @@ export default function NoteTooltip({ note, size = "sm" }: NoteTooltipProps) {
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
+  const tipRef = useRef<HTMLDivElement>(null);
   const pointerRef = useRef("");
 
   const show = () => {
@@ -28,6 +29,35 @@ export default function NoteTooltip({ note, size = "sm" }: NoteTooltipProps) {
   useEffect(() => {
     setOpen(false);
   }, [note]);
+
+  useLayoutEffect(() => {
+    if (!open || !pos) return;
+    const tip = tipRef.current;
+    const btn = buttonRef.current;
+    if (!tip || !btn) return;
+    const rect = tip.getBoundingClientRect();
+    const btnRect = btn.getBoundingClientRect();
+    const margin = 8;
+    const half = rect.width / 2;
+    let left = pos.left;
+    let top = pos.top;
+    if (window.innerWidth >= rect.width + margin * 2) {
+      left = Math.min(
+        Math.max(left, margin + half),
+        window.innerWidth - margin - half,
+      );
+    } else {
+      left = window.innerWidth / 2;
+    }
+    if (top + rect.height > window.innerHeight - margin) {
+      const above = btnRect.top - margin - rect.height;
+      top =
+        above >= margin
+          ? above
+          : Math.max(margin, window.innerHeight - margin - rect.height);
+    }
+    if (left !== pos.left || top !== pos.top) setPos({ top, left });
+  }, [open, pos]);
 
   useEffect(() => {
     if (!open) return;
@@ -63,7 +93,7 @@ export default function NoteTooltip({ note, size = "sm" }: NoteTooltipProps) {
           if (open) hide();
           else show();
         }}
-        className={`${sizeClass} shrink-0 rounded-full border border-purple-200 text-purple-500 hover:bg-purple-50 hover:text-purple-700 inline-flex items-center justify-center transition-colors cursor-pointer`}
+        className={`${sizeClass} relative shrink-0 rounded-full border border-purple-200 text-purple-500 hover:bg-purple-50 hover:text-purple-700 inline-flex items-center justify-center transition-colors cursor-pointer before:absolute before:-inset-2.5 before:content-[''] before:rounded-full`}
       >
         <i className="fas fa-info"></i>
       </button>
@@ -73,8 +103,9 @@ export default function NoteTooltip({ note, size = "sm" }: NoteTooltipProps) {
         typeof document !== "undefined" &&
         createPortal(
           <div
+            ref={tipRef}
             style={{ top: pos.top, left: pos.left }}
-            className="fixed -translate-x-1/2 w-56 max-w-[70vw] bg-gray-800 text-white text-sm font-normal leading-snug rounded-lg px-3 py-2 shadow-lg z-[90] text-center pointer-events-none"
+            className="fixed -translate-x-1/2 w-56 max-w-[calc(100vw-16px)] bg-gray-800 text-white text-sm font-normal leading-snug rounded-lg px-3 py-2 shadow-lg z-[90] text-center pointer-events-none"
           >
             {note}
           </div>,
