@@ -10,7 +10,7 @@
     "add": "Add Word",
     "groups": "My Groups",
     "topPerformers": "Top Learners",
-    "marketplace": "Marketplace",
+    "marketplace": "Library",
     "studyShort": "Study",
     "wordsShort": "Words",
     "addShort": "Add",
@@ -219,7 +219,7 @@
     "deleted": "Group \"{name}\" deleted."
   },
   "marketplace": {
-    "title": "Word Groups Marketplace",
+    "title": "Word Groups Library",
     "myGroups": "My Groups",
     "sourceAll": "Source: All",
     "targetAll": "Target: All",
