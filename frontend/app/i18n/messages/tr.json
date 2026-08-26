@@ -10,7 +10,7 @@
     "add": "Kelime Ekle",
     "groups": "Gruplarım",
     "topPerformers": "En Başarılılar",
-    "marketplace": "Marketplace",
+    "marketplace": "Kütüphane",
     "studyShort": "Çalış",
     "wordsShort": "Kelimeler",
     "addShort": "Ekle",
@@ -219,7 +219,7 @@
     "deleted": "\"{name}\" grubu silindi."
   },
   "marketplace": {
-    "title": "Kelime Grupları Marketplace",
+    "title": "Kelime Grupları Kütüphane",
     "myGroups": "Gruplarım",
     "sourceAll": "Kaynak: Tümü",
     "targetAll": "Hedef: Tümü",

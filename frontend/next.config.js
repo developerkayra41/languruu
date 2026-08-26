@@ -5,6 +5,7 @@ const withNextIntl = createNextIntlPlugin("./app/i18n/request.ts");
 const withMDX = createMDX({});
 
 const nextConfig = {
+  devIndicators: false,
   pageExtensions: ["ts", "tsx", "js", "jsx", "md", "mdx"],
   images: {
     remotePatterns: [
