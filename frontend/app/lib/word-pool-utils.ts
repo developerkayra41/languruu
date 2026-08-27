@@ -1,4 +1,11 @@
-import { WordPool } from "@/app/types/word";
+import { WordExample, WordPool } from "@/app/types/word";
+
+export const MAX_EXAMPLES = 3;
+export const MAX_EXAMPLE_LENGTH = 200;
+
+function exampleKey(example: WordExample): string {
+    return `${normalize(example.text)}|${normalize(example.translation)}`;
+}
 
 function normalize(word: string): string {
     return word.toLocaleLowerCase().trim();
@@ -18,18 +25,25 @@ function hasOverlap(a: WordPool, b: WordPool): boolean {
 function mergeEntries(entries: WordPool[]): WordPool {
     const terms = new Set<string>();
     const translations = new Set<string>();
+    const examples = new Map<string, WordExample>();
     let note: string | undefined;
 
     for (const entry of entries) {
         entry.term.forEach((t) => terms.add(t.trim()));
         entry.translation.forEach((t) => translations.add(t.trim()));
         if (entry.note?.trim()) note = entry.note.trim();
+        entry.examples?.forEach((example) => {
+            if (examples.size >= MAX_EXAMPLES) return;
+            const key = exampleKey(example);
+            if (!examples.has(key)) examples.set(key, example);
+        });
     }
 
     return {
         term: [...terms],
         translation: [...translations],
         ...(note ? { note } : {}),
+        ...(examples.size > 0 ? { examples: [...examples.values()] } : {}),
     };
 }
 

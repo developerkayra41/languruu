@@ -6,10 +6,25 @@ sürümleme [SemVer](https://semver.org/lang/tr/) kurallarına uyar.
 
 ## [Yayınlanmamış]
 
-### Değişti
-- Marketplace etiketi arayüzde "Kütüphane" olarak değiştirildi (route ve tablo adları aynı kaldı).
+## [1.1.0] - 2026-08-27
 
-## [1.0.0] - 2026-08-25
+### Eklendi
+- Kelimelere örnek cümle ve çevirisi eklenebiliyor (kelime başına en fazla 3).
+- Çalışma ekranına "Cümleli" modu: önce kelime sorulur, doğru bilinince aynı
+  kelimenin örnek cümlesi sorulur (yaz → çeviriyi göster → bildim/bilemedim).
+  Enter ve Esc kısayolları destekleniyor.
+- Çalışma ekranı mod altyapısı: modlar `study/modes/` altında kayıt defterinden
+  besleniyor, yeni mod eklemek bir klasör + bir kayıt.
+- Cümleli mod yalnızca grupta örnek cümleli kelime varsa listeleniyor.
+
+### Düzeltildi
+- Karanlık modda mor yüzeyler (`bg-purple-50`, `bg-purple-100`) açık renk
+  kalıyordu; karanlık mod karşılıkları eklendi.
+
+Cümle özelliği `NEXT_PUBLIC_FEATURE_SENTENCE_MODE` bayrağı arkasındadır;
+bayrak tanımlı değilken kullanıcı arayüzünde hiçbir değişiklik görünmez.
+
+## [1.0.0] - 2026-08-26
 
 İlk sürümlenmiş yayın. Bu tarihe kadar geliştirilen özellikler tek bir başlangıç
 noktası olarak kayıt altına alınmıştır.
@@ -26,3 +41,7 @@ noktası olarak kayıt altına alınmıştır.
 - Yönetim paneli: kullanıcı yönetimi, raporlar, hata kayıtları.
 - Pazarlama ve SEO: TR/EN ana sayfa, MDX blog, sitemap, JSON-LD, dinamik OG görseli.
 - i18n: Türkçe ve İngilizce.
+- Sürüm altyapısı: CHANGELOG, SemVer sürüm numaraları, branch/sürüm rehberi (docs/BRANCHING.md).
+
+### Değişti
+- Marketplace etiketi arayüzde "Kütüphane" olarak değiştirildi (route ve tablo adları aynı kaldı).

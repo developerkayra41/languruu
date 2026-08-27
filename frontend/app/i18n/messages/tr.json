@@ -163,7 +163,19 @@
     "check": "Kontrol Et",
     "loading": "Yükleniyor...",
     "speak": "Sesli okuma",
-    "replay": "Tekrar dinlet"
+    "replay": "Tekrar dinlet",
+    "modeClassic": "Klasik",
+    "modeSentence": "Cümleli",
+    "modeSentenceEmpty": "Cümleli mod için bu grupta örnek cümleli kelime yok. Kelimeler sayfasından cümle ekleyebilirsin.",
+    "stepWord": "Kelime",
+    "stepSentence": "Cümle",
+    "sentencePrompt": "Şimdi bu cümleyi çevir",
+    "showSentenceAnswer": "Çeviriyi göster",
+    "knewIt": "Bildim",
+    "didntKnow": "Bilemedim",
+    "sentenceAnswerPlaceholder": "Cümlenin çevirisini yaz",
+    "correctSentence": "Doğru cevap",
+    "shortcutHint": "Enter: bildim · Esc: bilemedim"
   },
   "add": {
     "title": "Kelime Ekle",
@@ -183,7 +195,14 @@
     "noteLabel": "Not (opsiyonel)",
     "notePlaceholder": "Örn: Genelde resmi yazışmalarda kullanılır",
     "noteHint": "Bu kelimeyle ilgili hatırlatıcı — çalışırken ipucu olarak görünür",
-    "removeNote": "Kaldır"
+    "removeNote": "Kaldır",
+    "addExample": "+ örnek cümle",
+    "exampleLabel": "Örnek cümle",
+    "examplePlaceholder": "Örn: I jump every day",
+    "exampleTranslationPlaceholder": "Örn: Her gün zıplarım",
+    "exampleHint": "Cümle ve çevirisi birlikte girilmeli. Cümle modunda bu cümle sorulur.",
+    "removeExample": "Kaldır",
+    "errExampleIncomplete": "Örnek cümle ve çevirisinin ikisi de dolu olmalı."
   },
   "groups": {
     "wordCount": "{count} kelime",
@@ -367,7 +386,10 @@
     "searchToggle": "Kelimelerde ara",
     "searchPlaceholder": "Kelime veya anlam ara...",
     "searchEmpty": "Eşleşen kelime bulunamadı.",
-    "notePlaceholder": "Not (opsiyonel)"
+    "notePlaceholder": "Not (opsiyonel)",
+    "examplePlaceholder": "Örnek cümle",
+    "exampleTranslationPlaceholder": "Örnek cümlenin çevirisi",
+    "errExampleIncomplete": "Örnek cümle ve çevirisinin ikisi de dolu olmalı."
   },
   "avatarCrop": {
     "title": "Fotoğrafı Kırp",

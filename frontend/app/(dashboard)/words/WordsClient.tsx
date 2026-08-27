@@ -4,7 +4,8 @@ import { useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { WordColumn, WordPool } from "@/app/types/word";
 import { updateWordPool } from "./actions";
-import { parseCommaList, formatCommaList } from "@/app/lib/word-pool-utils";
+import { parseCommaList, formatCommaList, MAX_EXAMPLE_LENGTH } from "@/app/lib/word-pool-utils";
+import { SENTENCE_MODE_ENABLED } from "@/app/lib/features";
 import { useSwipe } from "@/app/lib/use-swipe";
 import { toast } from "sonner";
 import NoteTooltip from "@/app/components/ui/NoteTooltip";
@@ -23,6 +24,8 @@ export default function WordsClient({ group }: WordsClientProps) {
   const [editTermInput, setEditTermInput] = useState("");
   const [editTranslationInput, setEditTranslationInput] = useState("");
   const [editNoteInput, setEditNoteInput] = useState("");
+  const [editExampleInput, setEditExampleInput] = useState("");
+  const [editExampleTranslationInput, setEditExampleTranslationInput] = useState("");
 
   const [isPending, startTransition] = useTransition();
 
@@ -63,6 +66,10 @@ export default function WordsClient({ group }: WordsClientProps) {
     setEditTermInput(formatCommaList(wordPool[realIndex].term));
     setEditTranslationInput(formatCommaList(wordPool[realIndex].translation));
     setEditNoteInput(wordPool[realIndex].note ?? "");
+    setEditExampleInput(wordPool[realIndex].examples?.[0]?.text ?? "");
+    setEditExampleTranslationInput(
+      wordPool[realIndex].examples?.[0]?.translation ?? "",
+    );
   };
 
   const handleCancelEdit = () => {
@@ -70,6 +77,8 @@ export default function WordsClient({ group }: WordsClientProps) {
     setEditTermInput("");
     setEditTranslationInput("");
     setEditNoteInput("");
+    setEditExampleInput("");
+    setEditExampleTranslationInput("");
   };
 
   const handleSaveEdit = (realIndex: number) => {
@@ -82,6 +91,14 @@ export default function WordsClient({ group }: WordsClientProps) {
     }
 
     const trimmedNote = editNoteInput.trim();
+    const exampleText = editExampleInput.trim();
+    const exampleTranslation = editExampleTranslationInput.trim();
+
+    if (SENTENCE_MODE_ENABLED && Boolean(exampleText) !== Boolean(exampleTranslation)) {
+      toast.error(t("errExampleIncomplete"));
+      return;
+    }
+
     const previousPool = wordPool;
     const nextPool = wordPool.map((entry, i) => {
       if (i !== realIndex) return entry;
@@ -92,12 +109,26 @@ export default function WordsClient({ group }: WordsClientProps) {
       };
       if (trimmedNote) updated.note = trimmedNote;
       else delete updated.note;
+      if (SENTENCE_MODE_ENABLED) {
+        if (exampleText && exampleTranslation) {
+          updated.examples = [
+            { text: exampleText, translation: exampleTranslation },
+            ...(entry.examples?.slice(1) ?? []),
+          ];
+        } else if (entry.examples?.length) {
+          const rest = entry.examples.slice(1);
+          if (rest.length) updated.examples = rest;
+          else delete updated.examples;
+        }
+      }
       return updated;
     });
 
     setWordPool(nextPool);
     setEditingIndex(null);
     setEditNoteInput("");
+    setEditExampleInput("");
+    setEditExampleTranslationInput("");
 
     startTransition(async () => {
       const result = await updateWordPool(group, nextPool);
@@ -221,6 +252,14 @@ export default function WordsClient({ group }: WordsClientProps) {
                         <span className="font-medium text-gray-700 inline-flex items-center justify-center gap-2">
                           {formatCommaList(entry.term)}
                           {entry.note && <NoteTooltip note={entry.note} />}
+                          {SENTENCE_MODE_ENABLED && entry.examples?.length ? (
+                            <span
+                              title={entry.examples[0].text}
+                              className="text-purple-400"
+                            >
+                              <i className="fas fa-quote-right text-[0.65rem]"></i>
+                            </span>
+                          ) : null}
                         </span>
                       )}
                     </div>
@@ -285,6 +324,28 @@ export default function WordsClient({ group }: WordsClientProps) {
                           placeholder={t("notePlaceholder")}
                           className="w-full px-2 py-1 border border-gray-300 rounded text-center focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
+                        {SENTENCE_MODE_ENABLED && (
+                          <div className="mt-2 space-y-2">
+                            <input
+                              type="text"
+                              value={editExampleInput}
+                              onChange={(e) => setEditExampleInput(e.target.value)}
+                              maxLength={MAX_EXAMPLE_LENGTH}
+                              placeholder={t("examplePlaceholder")}
+                              className="w-full px-2 py-1 border border-gray-300 rounded text-center focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            />
+                            <input
+                              type="text"
+                              value={editExampleTranslationInput}
+                              onChange={(e) =>
+                                setEditExampleTranslationInput(e.target.value)
+                              }
+                              maxLength={MAX_EXAMPLE_LENGTH}
+                              placeholder={t("exampleTranslationPlaceholder")}
+                              className="w-full px-2 py-1 border border-gray-300 rounded text-center focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            />
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>
@@ -324,6 +385,28 @@ export default function WordsClient({ group }: WordsClientProps) {
                           placeholder={t("notePlaceholder")}
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
+                        {SENTENCE_MODE_ENABLED && (
+                          <>
+                            <input
+                              type="text"
+                              value={editExampleInput}
+                              onChange={(e) => setEditExampleInput(e.target.value)}
+                              maxLength={MAX_EXAMPLE_LENGTH}
+                              placeholder={t("examplePlaceholder")}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            />
+                            <input
+                              type="text"
+                              value={editExampleTranslationInput}
+                              onChange={(e) =>
+                                setEditExampleTranslationInput(e.target.value)
+                              }
+                              maxLength={MAX_EXAMPLE_LENGTH}
+                              placeholder={t("exampleTranslationPlaceholder")}
+                              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                            />
+                          </>
+                        )}
                         <div className="flex justify-end gap-4 pt-1 text-lg">
                           <button
                             onClick={() => handleSaveEdit(realIndex)}
@@ -346,6 +429,14 @@ export default function WordsClient({ group }: WordsClientProps) {
                           <div className="font-medium text-gray-800 break-words flex items-center gap-2">
                             {formatCommaList(entry.term)}
                             {entry.note && <NoteTooltip note={entry.note} />}
+                          {SENTENCE_MODE_ENABLED && entry.examples?.length ? (
+                            <span
+                              title={entry.examples[0].text}
+                              className="text-purple-400"
+                            >
+                              <i className="fas fa-quote-right text-[0.65rem]"></i>
+                            </span>
+                          ) : null}
                           </div>
                           <div className="text-sm text-gray-500 break-words">
                             {formatCommaList(entry.translation)}

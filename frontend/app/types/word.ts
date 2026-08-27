@@ -1,7 +1,13 @@
+export interface WordExample {
+  text: string;
+  translation: string;
+}
+
 export interface WordPool {
   term: string[];
   translation: string[];
   note?: string;
+  examples?: WordExample[];
 }
 
 export interface WordColumn {
