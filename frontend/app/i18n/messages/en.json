@@ -163,7 +163,19 @@
     "check": "Check",
     "loading": "Loading...",
     "speak": "Read aloud",
-    "replay": "Play again"
+    "replay": "Play again",
+    "modeClassic": "Classic",
+    "modeSentence": "Sentences",
+    "modeSentenceEmpty": "No word in this group has an example sentence yet. You can add one from the words page.",
+    "stepWord": "Word",
+    "stepSentence": "Sentence",
+    "sentencePrompt": "Now translate this sentence",
+    "showSentenceAnswer": "Show translation",
+    "knewIt": "I knew it",
+    "didntKnow": "I didn't know",
+    "sentenceAnswerPlaceholder": "Type the translation",
+    "correctSentence": "Correct answer",
+    "shortcutHint": "Enter: I knew it · Esc: I didn't know"
   },
   "add": {
     "title": "Add Word",
@@ -183,7 +195,14 @@
     "noteLabel": "Note (optional)",
     "notePlaceholder": "e.g. Usually used in formal writing",
     "noteHint": "A reminder about this word — shown as a hint while studying",
-    "removeNote": "Remove"
+    "removeNote": "Remove",
+    "addExample": "+ example sentence",
+    "exampleLabel": "Example sentence",
+    "examplePlaceholder": "e.g. I jump every day",
+    "exampleTranslationPlaceholder": "e.g. Her gün zıplarım",
+    "exampleHint": "The sentence and its translation must be filled in together. Sentence mode asks this sentence.",
+    "removeExample": "Remove",
+    "errExampleIncomplete": "Both the example sentence and its translation are required."
   },
   "groups": {
     "wordCount": "{count} words",
@@ -367,7 +386,10 @@
     "searchToggle": "Search words",
     "searchPlaceholder": "Search word or meaning...",
     "searchEmpty": "No matching words found.",
-    "notePlaceholder": "Note (optional)"
+    "notePlaceholder": "Note (optional)",
+    "examplePlaceholder": "Example sentence",
+    "exampleTranslationPlaceholder": "Translation of the example sentence",
+    "errExampleIncomplete": "Both the example sentence and its translation are required."
   },
   "avatarCrop": {
     "title": "Crop Photo",
