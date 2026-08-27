@@ -4,7 +4,8 @@ import { useRef, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { WordColumn, WordPool } from "@/app/types/word";
 import { addWordEntry } from "./actions";
-import { parseCommaList } from "@/app/lib/word-pool-utils";
+import { MAX_EXAMPLE_LENGTH, parseCommaList } from "@/app/lib/word-pool-utils";
+import { SENTENCE_MODE_ENABLED } from "@/app/lib/features";
 import { toast } from "sonner";
 import NoteTooltip from "@/app/components/ui/NoteTooltip";
 
@@ -19,8 +20,13 @@ export default function AddClient({ group }: AddClientProps) {
   const [translationInput, setTranslationInput] = useState("");
   const [noteInput, setNoteInput] = useState("");
   const [showNote, setShowNote] = useState(false);
+  const [exampleInput, setExampleInput] = useState("");
+  const [exampleTranslationInput, setExampleTranslationInput] = useState("");
+  const [showExample, setShowExample] = useState(false);
   const [isPending, startTransition] = useTransition();
   const termRef = useRef<HTMLInputElement>(null);
+  const exampleRef = useRef<HTMLInputElement>(null);
+  const exampleTranslationRef = useRef<HTMLInputElement>(null);
   const translationRef = useRef<HTMLInputElement>(null);
   const handleAddWord = () => {
     const terms = parseCommaList(termInput);
@@ -49,10 +55,21 @@ export default function AddClient({ group }: AddClientProps) {
     }
 
     const trimmedNote = noteInput.trim();
+    const exampleText = exampleInput.trim();
+    const exampleTranslation = exampleTranslationInput.trim();
+
+    if (SENTENCE_MODE_ENABLED && Boolean(exampleText) !== Boolean(exampleTranslation)) {
+      toast.error(t("errExampleIncomplete"));
+      return;
+    }
+
     const newEntry: WordPool = {
       term: terms,
       translation: translations,
       ...(trimmedNote ? { note: trimmedNote } : {}),
+      ...(SENTENCE_MODE_ENABLED && exampleText && exampleTranslation
+        ? { examples: [{ text: exampleText, translation: exampleTranslation }] }
+        : {}),
     };
 
     const previousPool = wordPool;
@@ -61,6 +78,9 @@ export default function AddClient({ group }: AddClientProps) {
     setTranslationInput("");
     setNoteInput("");
     setShowNote(false);
+    setExampleInput("");
+    setExampleTranslationInput("");
+    setShowExample(false);
     termRef.current?.focus();
 
     startTransition(async () => {
@@ -195,6 +215,77 @@ export default function AddClient({ group }: AddClientProps) {
         )}
       </div>
 
+      {SENTENCE_MODE_ENABLED && (
+        <div className="mb-4">
+          {showExample ? (
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-gray-700 text-sm font-medium">
+                  {t("exampleLabel")}
+                </label>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setExampleInput("");
+                    setExampleTranslationInput("");
+                    setShowExample(false);
+                  }}
+                  className="text-xs text-gray-400 hover:text-gray-600 cursor-pointer"
+                >
+                  <i className="fas fa-times mr-1"></i>
+                  {t("removeExample")}
+                </button>
+              </div>
+              <div className="space-y-2">
+                <input
+                  type="text"
+                  ref={exampleRef}
+                  value={exampleInput}
+                  onChange={(e) => setExampleInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      exampleTranslationRef.current?.focus();
+                    }
+                  }}
+                  maxLength={MAX_EXAMPLE_LENGTH}
+                  autoFocus
+                  enterKeyHint="next"
+                  placeholder={t("examplePlaceholder")}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+                <input
+                  type="text"
+                  ref={exampleTranslationRef}
+                  value={exampleTranslationInput}
+                  onChange={(e) => setExampleTranslationInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault();
+                      handleAddWord();
+                    }
+                  }}
+                  maxLength={MAX_EXAMPLE_LENGTH}
+                  enterKeyHint="done"
+                  placeholder={t("exampleTranslationPlaceholder")}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+              </div>
+              <p className="text-xs text-gray-400 mt-1">{t("exampleHint")}</p>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => setShowExample(true)}
+              className="text-sm text-purple-600 hover:text-purple-700 font-medium cursor-pointer"
+            >
+              <i className="fas fa-plus text-xs mr-1"></i>
+              {t("addExample")}
+            </button>
+          )}
+        </div>
+      )}
+
       <button
         onClick={handleAddWord}
         disabled={isPending}
@@ -217,6 +308,14 @@ export default function AddClient({ group }: AddClientProps) {
                   <span className="text-gray-400">→</span>
                   <span>{pool.translation.join(" / ")}</span>
                   {pool.note && <NoteTooltip note={pool.note} />}
+                  {SENTENCE_MODE_ENABLED && pool.examples?.length ? (
+                    <span
+                      title={pool.examples[0].text}
+                      className="text-purple-400 self-center"
+                    >
+                      <i className="fas fa-quote-right text-[0.65rem]"></i>
+                    </span>
+                  ) : null}
                 </div>
               ))}
           </div>
