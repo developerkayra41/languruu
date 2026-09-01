@@ -278,6 +278,31 @@ git push origin v1.1.0
 
 **8.** Canlıyı doğrula: siteyi aç, backend `/health` sürümünü kontrol et.
 
+**9. Production'ı `development`'a geri merge et — atlama.**
+
+```bash
+git fetch origin
+git checkout development
+git merge origin/production -m "merge: production geri akisi (squash), agac development esas"
+git push origin development
+```
+
+Squash merge, `development`'taki onlarca commit'i `production`'da **tek yeni
+commit**'e ezer. `development` o commit'i tanımadığı için bir sonraki PR'da
+git aynı dosyaları "iki tarafta da bağımsız değişmiş" sayar ve **conflict**
+üretir — hem de dokunmadığın dosyalarda. Geri akış bunu kapatır.
+
+Conflict çıkarsa: `production`'da `development`'ta olmayan bir şey **yoksa**
+(tek commit squash'ın kendisiyse) hepsini development lehine al —
+
+```bash
+git merge -X ours origin/production -m "merge: production geri akisi"
+```
+
+`-X ours` yalnızca çakışan hunk'larda `development`'ı seçer. Önce
+`git log --oneline development..origin/production` ile production tarafında
+gerçek bir hotfix olmadığını doğrula; varsa `-X ours` onu yutar.
+
 ---
 
 ## Sürümleme (SemVer)
