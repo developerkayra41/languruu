@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { copyMarketplaceEntry, getGameRooms, getGameTicket } from "@/app/lib/api-client";
-import { GameRoomSummary } from "@/app/types/game";
+import { GameActionError, GameRoomSummary } from "@/app/types/game";
 
 function isRedirect(error: unknown): boolean {
     return (
@@ -13,12 +13,13 @@ function isRedirect(error: unknown): boolean {
     );
 }
 
-function toErrorCode(error: unknown): string {
-    const message = error instanceof Error ? error.message : "";
-    return /^[A-Z_]+$/.test(message) ? message : "GAME_ERROR";
+function toActionError(error: unknown): GameActionError {
+    const message = error instanceof Error ? error.message : String(error ?? "");
+    if (/^[A-Z_]+$/.test(message)) return { code: message, detail: message };
+    return { code: "GAME_ERROR", detail: message || "GAME_ERROR" };
 }
 
-type TicketResult = { success: true; ticket: string } | { success: false; error: string };
+type TicketResult = { success: true; ticket: string } | { success: false; error: GameActionError };
 
 export async function requestGameTicket(): Promise<TicketResult> {
     try {
@@ -26,11 +27,11 @@ export async function requestGameTicket(): Promise<TicketResult> {
         return { success: true, ticket: data.ticket };
     } catch (error) {
         if (isRedirect(error)) throw error;
-        return { success: false, error: toErrorCode(error) };
+        return { success: false, error: toActionError(error) };
     }
 }
 
-type RoomsResult = { success: true; rooms: GameRoomSummary[] } | { success: false; error: string };
+type RoomsResult = { success: true; rooms: GameRoomSummary[] } | { success: false; error: GameActionError };
 
 export async function fetchGameRooms(shareId: string): Promise<RoomsResult> {
     try {
@@ -38,7 +39,7 @@ export async function fetchGameRooms(shareId: string): Promise<RoomsResult> {
         return { success: true, rooms };
     } catch (error) {
         if (isRedirect(error)) throw error;
-        return { success: false, error: toErrorCode(error) };
+        return { success: false, error: toActionError(error) };
     }
 }
 

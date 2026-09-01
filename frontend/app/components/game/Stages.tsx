@@ -239,7 +239,11 @@ export function RevealStage({
 
       <div className="bg-white rounded-lg shadow-lg p-6">
         <h2 className="text-sm font-medium text-gray-700 mb-3">{t("scoreboard")}</h2>
-        <Scoreboard rows={reveal.scoreboard} currentUserId={currentUserId} />
+        <Scoreboard
+          rows={reveal.scoreboard}
+          currentUserId={currentUserId}
+          results={reveal.results}
+        />
       </div>
     </div>
   );

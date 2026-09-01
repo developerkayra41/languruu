@@ -378,7 +378,8 @@
     "completedRounds": "Completed Rounds",
     "dailyStreak": "Daily Streak",
     "dayUnit": " days",
-    "wordPool": "Word Pools"
+    "wordPool": "Word Pools",
+    "gameScore": "Game score"
   },
   "topPerformers": {
     "title": "Top Learners",

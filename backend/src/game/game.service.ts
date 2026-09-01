@@ -214,6 +214,13 @@ export class GameService {
         if (next) room.hostUserId = next.userId;
     }
 
+    async persistScores(room: GameRoom): Promise<void> {
+        const scorers = [...room.players.values()].filter((player) => player.score > 0);
+        await Promise.all(
+            scorers.map((player) => this.userRepository.addGameScore(player.userId, player.score)),
+        );
+    }
+
     markDisconnected(userId: number, socketId: string): GameRoom | null {
         const room = this.registry.roomOfUser(userId);
         if (!room) return null;

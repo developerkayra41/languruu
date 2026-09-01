@@ -270,14 +270,23 @@ export class UserRepository {
         }).where(eq(users.id, userId));
     };
 
-    getStudyStats = async (userId: number): Promise<{ study_streak: number; last_study_date: string | null; completed_rounds: number } | null> => {
+    getStudyStats = async (userId: number): Promise<{ study_streak: number; last_study_date: string | null; completed_rounds: number; game_score: number } | null> => {
         const [row] = await this.db
             .select({
                 study_streak: users.study_streak,
                 last_study_date: users.last_study_date,
                 completed_rounds: users.completed_rounds,
+                game_score: users.game_score,
             })
             .from(users).where(eq(users.id, userId)).limit(1);
         return row ?? null;
+    };
+
+    addGameScore = async (userId: number, points: number): Promise<void> => {
+        if (!Number.isFinite(points) || points <= 0) return;
+        await this.db
+            .update(users)
+            .set({ game_score: sql`${users.game_score} + ${Math.round(points)}` })
+            .where(eq(users.id, userId));
     };
 }
