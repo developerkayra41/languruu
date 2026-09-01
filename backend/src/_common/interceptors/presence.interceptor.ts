@@ -8,6 +8,8 @@ export class PresenceInterceptor implements NestInterceptor {
     constructor(private readonly userRepo: UserRepository) {}
 
     intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
+        if (context.getType() !== 'http') return next.handle();
+
         const req = context.switchToHttp().getRequest();
         const userId = req.user?.id;
         if (userId) {

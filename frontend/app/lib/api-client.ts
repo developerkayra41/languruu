@@ -16,6 +16,7 @@ async function getAuthHeaders(): Promise<HeadersInit> {
 // lib/api-client.ts
 import { redirect } from "next/navigation";
 import { AdminError, AdminSecurityEvent, AdminStats, AdminUsersPage } from "../types/admin";
+import { GameRoomSummary, GameTicket } from "../types/game";
 
 async function apiPost<T>(path: string, body?: unknown): Promise<T> {
     const res = await fetch(`${API_BASE_URL}/api${path}`, {
@@ -239,6 +240,14 @@ export async function getAdminErrors(): Promise<AdminError[]> { return apiGet("/
 export async function getAdminSecurityEvents(): Promise<AdminSecurityEvent[]> { return apiGet("/admin/security-events"); }
 export async function banUser(id: number) { return apiPost(`/admin/users/${id}/ban`); }
 export async function unbanUser(id: number) { return apiPost(`/admin/users/${id}/unban`); }
+
+export async function getGameTicket(): Promise<GameTicket> {
+    return apiPost<GameTicket>("/game/ticket");
+}
+
+export async function getGameRooms(shareId: string): Promise<GameRoomSummary[]> {
+    return apiPost<GameRoomSummary[]>("/game/rooms", { share_id: shareId });
+}
 
 export async function createReport(payload: { target_type: string; target_ref: string; reason: string; description?: string }) {
     return apiPost('/reports', payload)

@@ -41,6 +41,20 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     catch(exception: unknown, host: ArgumentsHost) {
 
+        if (host.getType() !== 'http') {
+            const err = exception instanceof Error ? exception : new Error(String(exception));
+            this.logger.error(`ws - ${err.message}`, err.stack);
+            void this.errorLogRepo.log({
+                message: err.message,
+                stack: err.stack,
+                path: 'ws',
+                method: 'WS',
+                status: 500,
+                user_id: null
+            });
+            return;
+        }
+
         const ctx = host.switchToHttp();
         const response: Response = ctx.getResponse<Response>();
         const request: Request = ctx.getRequest<Request>();

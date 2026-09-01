@@ -3,7 +3,7 @@ import { isTokenExpiringSoon, extractCookieValue, buildRefreshCookieHeader } fro
 import { Locale, LOCALE_HEADER } from "@/app/i18n/locales";
 
 const PROTECTED_PREFIXES = [
-  "/study", "/words", "/add", "/groups", "/marketplace",
+  "/study", "/words", "/add", "/groups", "/marketplace", "/game",
   "/settings", "/profile", "/top-performers", "/admin", "/users", "/suspended",
 ];
 const AUTH_ONLY_PATHS = ["/login", "/register"];

@@ -28,7 +28,7 @@ export class WordRequestDTO {
     @ApiProperty({ type: [WordPoolDTO] })
     @IsNotEmpty({ message: getValidationMessage(WordDtoPrefix.WORD_POOL, ValidationType.NOT_EMPTY) })
     @IsArray({ message: getValidationMessage(WordDtoPrefix.WORD_POOL, ValidationType.MUST_BE_ARRAY) })
-    @ArrayMaxSize(250, { message: 'Bir kelime grubunda en fazla 250 kelime olabilir.' })
+    @ArrayMaxSize(500, { message: 'Bir kelime grubunda en fazla 500 kelime olabilir.' })
     @ValidateNested({ each: true })
     @Type(() => WordPoolDTO)
     wordPool: WordPoolDTO[];
