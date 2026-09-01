@@ -22,6 +22,7 @@ import { AdminModule } from './admin/admin.module';
 import { PresenceInterceptor } from './_common/interceptors/presence.interceptor';
 import { ReportsModule } from './reports/reports.module';
 import { AuthStateModule } from './_common/auth-state/auth-state.module';
+import { GameModule } from './game/game.module';
 
 @Module({
   imports: [
@@ -44,7 +45,8 @@ import { AuthStateModule } from './_common/auth-state/auth-state.module';
     MailModule,
     AdminModule,
     ReportsModule,
-    AuthStateModule 
+    AuthStateModule,
+    GameModule
   ],
   controllers: [HealthController],
   providers: [{ provide: APP_GUARD, useClass: CustomThrottlerGuard },

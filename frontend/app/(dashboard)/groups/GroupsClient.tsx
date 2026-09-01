@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { LanguagePair } from "@/app/components/ui/Flags";
 import Link from "next/link";
 import { useConfirm } from "@/app/components/ui/useConfirm";
+import GameStartButton from "@/app/components/game/GameStartButton";
 
 interface GroupsClientProps {
   groups: WordColumnWithoutPool[];
@@ -147,6 +148,11 @@ export default function GroupsClient({ groups }: GroupsClientProps) {
               <p className="text-sm text-blue-100 mt-1">
                 {t("wordCount", { count: group.word_count })}
               </p>
+              <GameStartButton
+                shareId={group.shareId ?? group.sourceShareId ?? null}
+                languages={group.languages}
+                groupName={group.name}
+              />
             </div>
             <div className="p-4">
               {group.description && (

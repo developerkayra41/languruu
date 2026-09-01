@@ -1,6 +1,5 @@
 import ClassicMode from "./classic/ClassicMode";
 import SentenceMode, { buildSentenceItems } from "./sentence/SentenceMode";
-import { SENTENCE_MODE_ENABLED } from "@/app/lib/features";
 import { StudyModeDef, StudyModeId } from "./types";
 
 export const STUDY_MODES: StudyModeDef[] = [
@@ -11,20 +10,16 @@ export const STUDY_MODES: StudyModeDef[] = [
     isAvailable: () => ({ ok: true }),
     Component: ClassicMode,
   },
-  ...(SENTENCE_MODE_ENABLED
-    ? [
-        {
-          id: "sentence" as StudyModeId,
-          labelKey: "modeSentence",
-          icon: "fa-quote-right",
-          isAvailable: (group) =>
-            buildSentenceItems(group).length > 0
-              ? ({ ok: true } as const)
-              : ({ ok: false, reasonKey: "modeSentenceEmpty" } as const),
-          Component: SentenceMode,
-        } satisfies StudyModeDef,
-      ]
-    : []),
+  {
+    id: "sentence",
+    labelKey: "modeSentence",
+    icon: "fa-quote-right",
+    isAvailable: (group) =>
+      buildSentenceItems(group).length > 0
+        ? { ok: true }
+        : { ok: false, reasonKey: "modeSentenceEmpty" },
+    Component: SentenceMode,
+  },
 ];
 
 export const DEFAULT_MODE_ID: StudyModeId = "classic";

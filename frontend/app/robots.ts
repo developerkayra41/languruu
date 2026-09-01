@@ -6,7 +6,7 @@ export default function robots(): MetadataRoute.Robots {
       userAgent: "*",
       allow: "/",
       disallow: [
-        "/study", "/words", "/add", "/groups", "/marketplace",
+        "/study", "/words", "/add", "/groups", "/marketplace", "/game",
         "/settings", "/profile", "/top-performers", "/admin",
         "/users/", "/suspended", "/verify-email", "/reset-password",
         "/forgot-password",

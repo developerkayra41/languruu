@@ -12,6 +12,7 @@ import { LanguagePair } from "@/app/components/ui/Flags";
 import { LANGUAGES } from "@/app/lib/languages";
 import ReportButton from "@/app/components/report/ReportButton";
 import { useConfirm } from "@/app/components/ui/useConfirm";
+import GameStartButton from "@/app/components/game/GameStartButton";
 
 interface MarketplaceClientProps {
   items: MarketplaceEntry[];
@@ -226,6 +227,11 @@ export default function MarketplaceClient({
                 <p className="text-sm text-blue-100">
                   {t("wordCount", { count: entry.word_count })}
                 </p>
+                <GameStartButton
+                  shareId={entry.share_id}
+                  languages={entry.languages}
+                  groupName={entry.name}
+                />
               </div>
               <div className="p-4">
                 {entry.languages && entry.languages.length > 0 && (
