@@ -1,2 +1,0 @@
-export const SENTENCE_MODE_ENABLED =
-  process.env.NEXT_PUBLIC_FEATURE_SENTENCE_MODE === "1";

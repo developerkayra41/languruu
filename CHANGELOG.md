@@ -6,6 +6,17 @@ sürümleme [SemVer](https://semver.org/lang/tr/) kurallarına uyar.
 
 ## [Yayınlanmamış]
 
+### Değiştirildi
+- `NEXT_PUBLIC_FEATURE_SENTENCE_MODE` bayrağı kaldırıldı; cümle özelliği ve
+  Cümleli mod artık kalıcı olarak açık. `app/lib/features.ts` silindi.
+
+## [1.2.0] - 2026-09-01
+
+### Eklendi
+- Çalışma ilerlemesi tarayıcıda saklanıyor; gruba geri dönünce kaldığın sorudan
+  devam ediliyor (Klasik ve Cümleli modlar). Grubun kelimeleri değişirse
+  eskiyen kayıt kendini toparlar, yeni kelimeler sıranın sonuna eklenir.
+
 ## [1.1.0] - 2026-08-27
 
 ### Eklendi
@@ -21,8 +32,8 @@ sürümleme [SemVer](https://semver.org/lang/tr/) kurallarına uyar.
 - Karanlık modda mor yüzeyler (`bg-purple-50`, `bg-purple-100`) açık renk
   kalıyordu; karanlık mod karşılıkları eklendi.
 
-Cümle özelliği `NEXT_PUBLIC_FEATURE_SENTENCE_MODE` bayrağı arkasındadır;
-bayrak tanımlı değilken kullanıcı arayüzünde hiçbir değişiklik görünmez.
+Cümle özelliği bu sürümde `NEXT_PUBLIC_FEATURE_SENTENCE_MODE` bayrağı
+arkasındaydı; bayrak 1.2.1'de kaldırıldı.
 
 ## [1.0.0] - 2026-08-26
 

@@ -104,7 +104,7 @@ yayınlanır (Senaryo 4).
 Kod yazılır ama bayrak arkasında saklanır:
 
 ```tsx
-{process.env.NEXT_PUBLIC_FEATURE_SENTENCE_MODE === "1" && <SentenceMode />}
+{process.env.NEXT_PUBLIC_FEATURE_DUELLO === "1" && <DuelloPanel />}
 ```
 
 Vercel'de bu değişken **sadece Preview** ortamına eklenir, Production'a eklenmez.
