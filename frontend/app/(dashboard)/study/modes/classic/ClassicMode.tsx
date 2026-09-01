@@ -6,6 +6,11 @@ import { useTranslations } from "next-intl";
 import { recordStudyCompleteAction } from "../../actions";
 import NoteTooltip from "@/app/components/ui/NoteTooltip";
 import { pickRandom, shuffle, speak } from "../shared/study-utils";
+import {
+  buildItemKeys,
+  loadProgress,
+  saveProgress,
+} from "../shared/study-progress";
 import { StudyModeProps } from "../types";
 
 interface QuizItem {
@@ -20,6 +25,7 @@ type StudyDirection = 1 | 2 | 3;
 
 const STUDY_MODE_KEY = "studyMode";
 const SPEAK_KEY = "studySpeak";
+const MODE_ID = "classic";
 
 function buildQuizItems(group: WordColumn): QuizItem[] {
   return group.wordPool.map((pool, index) => ({
@@ -38,6 +44,7 @@ export default function ClassicMode({ group }: StudyModeProps) {
   const t = useTranslations("study");
   const [currentGroup] = useState<WordColumn>(group);
   const quizItems = useMemo(() => buildQuizItems(currentGroup), [currentGroup]);
+  const itemKeys = useMemo(() => buildItemKeys(quizItems), [quizItems]);
 
   const [mode, setMode] = useState<StudyDirection>(3);
   const [speakEnabled, setSpeakEnabled] = useState(false);
@@ -90,6 +97,19 @@ export default function ClassicMode({ group }: StudyModeProps) {
   const currentItem = quizItems[queue[pointer]];
 
   const [roundCompleted, setRoundCompleted] = useState(false);
+
+  useEffect(() => {
+    const restored = loadProgress(currentGroup.id, MODE_ID, itemKeys);
+    if (!restored) return;
+    setQueue(restored.queue);
+    setPointer(restored.pointer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!hasHydrated) return;
+    saveProgress(currentGroup.id, MODE_ID, itemKeys, queue, pointer);
+  }, [hasHydrated, currentGroup.id, itemKeys, queue, pointer]);
 
   const goToNextQuestion = () => {
     if (pointer + 1 >= queue.length) {
