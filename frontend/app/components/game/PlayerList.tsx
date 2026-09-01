@@ -1,15 +1,59 @@
 "use client";
 
-import { ReactNode } from "react";
+import { ReactNode, useMemo } from "react";
 import { useTranslations } from "next-intl";
 import Avatar from "@/app/components/ui/Avatar";
-import { GamePlayerView, GameScoreboardRow } from "@/app/types/game";
+import {
+  GamePlayerView,
+  GameRevealResult,
+  GameScoreboardRow,
+  GameVerdict,
+} from "@/app/types/game";
 
 function rankBadgeStyle(rank: number): string {
   if (rank === 1) return "bg-gradient-to-r from-yellow-400 to-yellow-600";
   if (rank === 2) return "bg-gradient-to-r from-gray-300 to-gray-400";
   if (rank === 3) return "bg-gradient-to-r from-orange-400 to-orange-600";
   return "bg-gradient-to-r from-purple-600 to-blue-500";
+}
+
+export function AnswerBadge({
+  answer,
+  verdict,
+}: {
+  answer: string | null;
+  verdict: GameVerdict | null;
+}) {
+  const t = useTranslations("game");
+  const text = answer?.trim() ? answer : t("noAnswer");
+
+  const style =
+    verdict === 2
+      ? "bg-green-100 text-green-700"
+      : verdict === 1
+        ? "bg-amber-100 text-amber-700"
+        : verdict === 0
+          ? "bg-red-100 text-red-600"
+          : "bg-gray-100 text-gray-400";
+
+  const icon =
+    verdict === 2
+      ? "fa-check"
+      : verdict === 1
+        ? "fa-circle-half-stroke"
+        : verdict === 0
+          ? "fa-xmark"
+          : "fa-minus";
+
+  return (
+    <span
+      title={text}
+      className={`inline-flex items-center gap-1.5 max-w-full rounded-full px-2.5 py-1 text-xs font-medium ${style}`}
+    >
+      <i className={`fas ${icon} shrink-0`}></i>
+      <span className="truncate">{text}</span>
+    </span>
+  );
 }
 
 interface PlayerRowProps {
@@ -20,6 +64,7 @@ interface PlayerRowProps {
   isHost?: boolean;
   connected?: boolean;
   highlight?: boolean;
+  answer?: ReactNode;
   right?: ReactNode;
 }
 
@@ -31,6 +76,7 @@ export function PlayerRow({
   isHost,
   connected = true,
   highlight,
+  answer,
   right,
 }: PlayerRowProps) {
   const t = useTranslations("game");
@@ -64,6 +110,9 @@ export function PlayerRow({
         <span className="text-xs text-gray-500">@{userName}</span>
       </div>
 
+      {answer && (
+        <div className="min-w-0 max-w-[40%] mr-3 flex justify-end">{answer}</div>
+      )}
       {!connected && (
         <span className="text-xs text-gray-400 mr-3 shrink-0">{t("offline")}</span>
       )}
@@ -99,33 +148,54 @@ export function LobbyPlayerList({
 export function Scoreboard({
   rows,
   currentUserId,
+  results,
 }: {
   rows: GameScoreboardRow[];
   currentUserId: number | null;
+  results?: GameRevealResult[];
 }) {
   const t = useTranslations("game");
+  const resultByUser = useMemo(
+    () => new Map((results ?? []).map((result) => [result.userId, result])),
+    [results],
+  );
 
   return (
     <div className="space-y-2">
-      {rows.map((row) => (
-        <PlayerRow
-          key={row.userId}
-          fullName={row.fullName}
-          userName={row.userName}
-          avatarUrl={row.avatarUrl}
-          rank={row.rank}
-          connected={row.connected}
-          highlight={row.userId === currentUserId}
-          right={
-            <div className="text-right">
-              <div className="font-bold text-purple-600 text-lg leading-tight">{row.score}</div>
-              <div className="text-xs text-gray-500">
-                {t("correctCount", { count: row.correct })}
+      {rows.map((row) => {
+        const result = resultByUser.get(row.userId);
+        return (
+          <PlayerRow
+            key={row.userId}
+            fullName={row.fullName}
+            userName={row.userName}
+            avatarUrl={row.avatarUrl}
+            rank={row.rank}
+            connected={row.connected}
+            highlight={row.userId === currentUserId}
+            answer={
+              results ? (
+                <AnswerBadge answer={result?.answer ?? null} verdict={result?.verdict ?? null} />
+              ) : undefined
+            }
+            right={
+              <div className="text-right">
+                <div className="font-bold text-purple-600 text-lg leading-tight">
+                  {row.score}
+                  {result && result.points > 0 && (
+                    <span className="ml-1 text-xs font-semibold text-green-600">
+                      +{result.points}
+                    </span>
+                  )}
+                </div>
+                <div className="text-xs text-gray-500">
+                  {t("correctCount", { count: row.correct })}
+                </div>
               </div>
-            </div>
-          }
-        />
-      ))}
+            }
+          />
+        );
+      })}
     </div>
   );
 }

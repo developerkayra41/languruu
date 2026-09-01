@@ -20,4 +20,5 @@ export const users = pgTable("users", {
     study_streak: integer("study_streak").notNull().default(0),      // güncel günlük seri
     last_study_date: date("last_study_date"),                        // son "tamamlandı" günü (YYYY-MM-DD)
     completed_rounds: integer("completed_rounds").notNull().default(0), // toplam tamamlanan tur
+    game_score: integer("game_score").notNull().default(0),          // yarış modunda toplanan puan
 });

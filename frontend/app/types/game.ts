@@ -3,6 +3,11 @@ export type GameVerdict = 0 | 1 | 2;
 export type GameDirection = 1 | 2 | 3;
 export type GameSeconds = 10 | 20 | 30;
 
+export interface GameActionError {
+  code: string;
+  detail: string;
+}
+
 export interface GameTicket {
   ticket: string;
   expiresIn: number;

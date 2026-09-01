@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 import { addGroupForGame, fetchGameRooms } from "@/app/(dashboard)/game/actions";
-import { GameDirection, GameRoomSummary, GameSeconds } from "@/app/types/game";
+import { GameActionError, GameDirection, GameRoomSummary, GameSeconds } from "@/app/types/game";
 
 const SECONDS: GameSeconds[] = [10, 20, 30];
 
@@ -23,7 +23,7 @@ export default function GameStartButton({ shareId, languages, groupName }: GameS
   const [isMounted, setIsMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [rooms, setRooms] = useState<GameRoomSummary[]>([]);
-  const [loadError, setLoadError] = useState<string | null>(null);
+  const [loadError, setLoadError] = useState<GameActionError | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isPending, startTransition] = useTransition();
   const [seconds, setSeconds] = useState<GameSeconds>(20);
@@ -108,7 +108,7 @@ export default function GameStartButton({ shareId, languages, groupName }: GameS
                   </div>
                   <p className="text-gray-600 text-sm">{t("notShared")}</p>
                 </div>
-              ) : loadError === "GROUP_NOT_OWNED" ? (
+              ) : loadError?.code === "GROUP_NOT_OWNED" ? (
                 <div className="text-center py-6">
                   <p className="text-gray-600 text-sm mb-4">{t("notOwned")}</p>
                   <button
@@ -122,10 +122,17 @@ export default function GameStartButton({ shareId, languages, groupName }: GameS
                 </div>
               ) : loadError ? (
                 <div className="text-center py-6">
-                  <p className="text-gray-600 text-sm mb-4">{t(`errors.${loadError}`)}</p>
+                  <p className="text-gray-600 text-sm">
+                    {t.has(`errors.${loadError.code}`)
+                      ? t(`errors.${loadError.code}`)
+                      : t("errors.GAME_ERROR")}
+                  </p>
+                  {loadError.code === "GAME_ERROR" && loadError.detail !== "GAME_ERROR" && (
+                    <p className="text-xs text-gray-400 mt-2 break-words">{loadError.detail}</p>
+                  )}
                   <button
                     onClick={load}
-                    className="text-purple-600 hover:underline text-sm font-medium cursor-pointer"
+                    className="text-purple-600 hover:underline text-sm font-medium cursor-pointer mt-4"
                   >
                     {t("retry")}
                   </button>

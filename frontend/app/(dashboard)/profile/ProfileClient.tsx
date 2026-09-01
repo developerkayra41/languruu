@@ -21,6 +21,7 @@ interface ProfileClientProps {
     word_pool_count: number;
     daily_streak: number;
     completed_rounds: number;
+    game_score: number;
   };
 }
 
@@ -235,7 +236,7 @@ export default function ProfileClient({ initialProfile }: ProfileClientProps) {
           <h3 className="text-lg font-semibold text-gray-800 mb-4">
             {t("statsTitle")}
           </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
             <StatCard
               icon="fa-book-reader"
               label={t("totalWords")}
@@ -256,6 +257,11 @@ export default function ProfileClient({ initialProfile }: ProfileClientProps) {
               icon="fa-layer-group"
               label={t("wordPool")}
               value={initialProfile.word_pool_count}
+            />
+            <StatCard
+              icon="fa-gamepad"
+              label={t("gameScore")}
+              value={initialProfile.game_score}
             />
           </div>
         </div>

@@ -1,6 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Namespace } from 'socket.io';
 import { RoomRegistry } from './room.registry';
+import { GameService } from './game.service';
 import { JudgeService } from './judge/judge.service';
 import { buildScoreboard, scoreAnswer } from './scoring';
 import { GameRoom, RevealPlayerResult } from './game.types';
@@ -16,11 +17,13 @@ import {
 @Injectable()
 export class MatchEngine {
     private server: Namespace | null = null;
+    private readonly logger = new Logger(MatchEngine.name);
     private readonly timers = new Map<string, NodeJS.Timeout>();
 
     constructor(
         private readonly registry: RoomRegistry,
         private readonly judgeService: JudgeService,
+        private readonly gameService: GameService,
     ) { }
 
     bind(server: Namespace): void {
@@ -160,6 +163,12 @@ export class MatchEngine {
 
         this.emit(room, 'game:finished', { ranking: buildScoreboard(room) });
         this.emit(room, 'room:state', this.registry.toRoomView(room));
+
+        void this.gameService
+            .persistScores(room)
+            .catch((error) =>
+                this.logger.error(`Oyun skorları yazılamadı (${room.code})`, error?.stack),
+            );
     }
 
     private schedule(code: string, delayMs: number, action: (room: GameRoom) => void): void {

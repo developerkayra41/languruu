@@ -126,6 +126,7 @@ export async function getProfile(): Promise<{
     word_pool_count: number;
     daily_streak: number;
     completed_rounds: number;
+    game_score: number;
     email_verified: boolean;
     has_password: boolean;
     is_admin: boolean;
@@ -145,6 +146,7 @@ export async function getPublicProfile(userName: string): Promise<{
     daily_streak: number;
     completed_rounds: number;
     word_pool_count: number;
+    game_score: number;
 }> {
     return apiPost("/users/public-profile", { user_name: userName });
 }

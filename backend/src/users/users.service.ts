@@ -69,6 +69,7 @@ export class UsersService {
       word_pool_count: wordRow ? wordRow.words.length : 0,
       daily_streak: this.displayedStreak(stats),
       completed_rounds: stats?.completed_rounds ?? 0,
+      game_score: stats?.game_score ?? 0,
     };
   };
 
@@ -92,6 +93,7 @@ export class UsersService {
       word_pool_count: wordRow ? wordRow.words.length : 0,
       daily_streak: this.displayedStreak(stats),
       completed_rounds: stats?.completed_rounds ?? 0,
+      game_score: stats?.game_score ?? 0,
     };
   }
 
