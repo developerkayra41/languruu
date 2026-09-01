@@ -6,6 +6,11 @@ import { useTranslations } from "next-intl";
 import { recordStudyCompleteAction } from "../../actions";
 import NoteTooltip from "@/app/components/ui/NoteTooltip";
 import { pickRandom, shuffle, speak } from "../shared/study-utils";
+import {
+  buildItemKeys,
+  loadProgress,
+  saveProgress,
+} from "../shared/study-progress";
 import { StudyModeProps } from "../types";
 
 interface SentenceItem {
@@ -22,6 +27,7 @@ type Step = "word" | "sentence";
 
 const STUDY_MODE_KEY = "studyMode";
 const SPEAK_KEY = "studySpeak";
+const MODE_ID = "sentence";
 
 export function buildSentenceItems(group: WordColumn): SentenceItem[] {
   return group.wordPool.flatMap((pool, index) => {
@@ -49,6 +55,7 @@ export default function SentenceMode({ group }: StudyModeProps) {
   const t = useTranslations("study");
   const [currentGroup] = useState<WordColumn>(group);
   const items = useMemo(() => buildSentenceItems(currentGroup), [currentGroup]);
+  const itemKeys = useMemo(() => buildItemKeys(items), [items]);
 
   const [mode, setMode] = useState<StudyDirection>(3);
   const [speakEnabled, setSpeakEnabled] = useState(false);
@@ -99,6 +106,19 @@ export default function SentenceMode({ group }: StudyModeProps) {
   const [roundCompleted, setRoundCompleted] = useState(false);
 
   const currentItem = items[queue[pointer]];
+
+  useEffect(() => {
+    const restored = loadProgress(currentGroup.id, MODE_ID, itemKeys);
+    if (!restored) return;
+    setQueue(restored.queue);
+    setPointer(restored.pointer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    if (!hasHydrated) return;
+    saveProgress(currentGroup.id, MODE_ID, itemKeys, queue, pointer);
+  }, [hasHydrated, currentGroup.id, itemKeys, queue, pointer]);
 
   const direction = useMemo<Direction>(() => {
     if (mode === 1) return "term-to-translation";
