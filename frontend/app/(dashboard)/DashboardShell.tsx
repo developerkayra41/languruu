@@ -11,6 +11,7 @@ import { toast } from "sonner";
 import Logo from "../components/ui/Logo";
 import Reveal from "../components/ui/Reveal";
 import ThemeToggle from "../components/ui/ThemeToggle";
+import DiscoverySourceModal from "../components/onboarding/DiscoverySourceModal";
 
 const TABS = [
   { href: "/study", key: "study" },
@@ -38,6 +39,7 @@ interface DashboardShellProps {
     avatar_url?: string;
     email_verified?: boolean;
     is_admin: boolean;
+    needs_discovery_prompt?: boolean;
   } | null;
 }
 
@@ -256,6 +258,8 @@ export default function DashboardShell({
           })}
         </div>
       </nav>
+
+      {profile?.needs_discovery_prompt && <DiscoverySourceModal />}
     </div>
   );
 }

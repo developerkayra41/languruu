@@ -4,6 +4,7 @@ import {
   getAdminErrors,
   getAdminSecurityEvents,
   getAdminReports,
+  getAdminDiscoverySources,
 } from "@/app/lib/api-client";
 import AdminUsersPanel from "./AdminUsersPanel";
 import AdminReports from "./AdminReports";
@@ -17,14 +18,15 @@ export async function generateMetadata() {
 export default async function AdminPage() {
   const t = await getTranslations("admin");
   const locale = await getLocale();
-  let stats, users, errors, events, reports;
+  let stats, users, errors, events, reports, discovery;
   try {
-    [stats, users, errors, events, reports] = await Promise.all([
+    [stats, users, errors, events, reports, discovery] = await Promise.all([
       getAdminStats(),
       getAdminUsers({ page: 1 }),
       getAdminErrors(),
       getAdminSecurityEvents(),
       getAdminReports(),
+      getAdminDiscoverySources(),
     ]);
   } catch {
     return (
@@ -46,6 +48,8 @@ export default async function AdminPage() {
     { label: t("sharedGroups"), value: stats.shared_groups, icon: "fa-store" },
   ];
   const numLocale = locale === "tr" ? "tr-TR" : "en-US";
+  const answered = discovery.filter((d) => d.source !== "unanswered");
+  const answeredTotal = answered.reduce((sum, d) => sum + d.count, 0) || 1;
   const dt = (s: string) =>
     new Date(s).toLocaleString(numLocale, {
       dateStyle: "short",
@@ -76,6 +80,37 @@ export default async function AdminPage() {
             <div className="text-sm text-gray-500 mt-0.5">{c.label}</div>
           </div>
         ))}
+      </div>
+
+      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-5">
+        <h2 className="font-semibold text-gray-800 mb-3">
+          {t("discoveryTitle")}
+        </h2>
+        {answered.length === 0 ? (
+          <p className="text-sm text-gray-400">{t("discoveryEmpty")}</p>
+        ) : (
+          <div className="space-y-2">
+            {answered.map((d) => (
+              <div key={d.source} className="text-sm">
+                <div className="flex justify-between gap-2 mb-1">
+                  <span className="text-gray-700">
+                    {t(`discoverySources.${d.source}`)}
+                  </span>
+                  <span className="text-gray-400 tabular-nums">
+                    {d.count.toLocaleString(numLocale)} ·{" "}
+                    {Math.round((d.count / answeredTotal) * 100)}%
+                  </span>
+                </div>
+                <div className="h-1.5 rounded-full bg-gray-100 overflow-hidden">
+                  <div
+                    className="h-full rounded-full bg-gradient-to-r from-purple-600 via-purple-500 to-blue-500"
+                    style={{ width: `${(d.count / answeredTotal) * 100}%` }}
+                  />
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">

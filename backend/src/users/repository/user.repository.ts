@@ -74,12 +74,20 @@ export class UserRepository {
                 description: users.description,
                 avatar_url: users.avatar_url,
                 updated_at: users.updated_at,
-                email_verified: users.email_verified
+                email_verified: users.email_verified,
+                discovery_source: users.discovery_source
             })
             .from(users)
             .where(and(eq(users.id, userId), isNull(users.deleted_at)))
             .limit(1);
         return user ?? null;
+    };
+
+    setDiscoverySource = async (userId: number, source: string): Promise<void> => {
+        await this.db
+            .update(users)
+            .set({ discovery_source: source })
+            .where(and(eq(users.id, userId), isNull(users.deleted_at)));
     };
 
     findByUsername = async (userName: string): Promise<{ id: number } | null> => {

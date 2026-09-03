@@ -3,3 +3,4 @@ export interface AdminUser { id: number; user_name: string; full_name: string; e
 export interface AdminError { id: number; message: string; path: string; method: string; status: number; user_id: number | null; created_at: string; }
 export interface AdminUsersPage { items: AdminUser[]; total: number; }
 export interface AdminSecurityEvent { id: number; event_type: string; user_id: number | null; email: string | null; ip_address: string | null; created_at: string; }
+export interface AdminDiscoverySource { source: string; count: number }

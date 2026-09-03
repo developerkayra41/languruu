@@ -70,7 +70,17 @@ export class UsersService {
       daily_streak: this.displayedStreak(stats),
       completed_rounds: stats?.completed_rounds ?? 0,
       game_score: stats?.game_score ?? 0,
+      needs_discovery_prompt: this.needsDiscoveryPrompt(user),
     };
+  };
+
+  private needsDiscoveryPrompt = (user: { discovery_source?: string | null }): boolean => !user.discovery_source;
+
+  setDiscoverySource = async (userId: number, source: string): Promise<{ discovery_source: string }> => {
+    const user = await this.userRepo.findById(userId);
+    if (!user) throw new NotFoundException();
+    if (!user.discovery_source) await this.userRepo.setDiscoverySource(userId, source);
+    return { discovery_source: user.discovery_source ?? source };
   };
 
   countActiveUsers = async (): Promise<number> => this.userRepo.countActiveUsers();
