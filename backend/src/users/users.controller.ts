@@ -8,6 +8,7 @@ import { UpdateEmailRequestDTO } from './dto/request/UpdateEmail.request.dto';
 import { UpdatePasswordRequestDTO } from './dto/request/UpdatePassword.request.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { GetPublicProfileRequestDTO } from './dto/request/GetPublicProfile.request.dto';
+import { SetDiscoverySourceRequestDTO } from './dto/request/SetDiscoverySource.request.dto';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -31,6 +32,16 @@ export class UsersController extends BaseController {
   @ApiBody({ type: GetPublicProfileRequestDTO })
   async getPublicProfile(@Req() req, @Body() body: GetPublicProfileRequestDTO) {
     const result = await this.usersService.getPublicProfile(body.user_name);
+    return this.createSuccessResponse({ data: result, message: 'success', success: true }, req);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('discovery-source')
+  @ApiBody({ type: SetDiscoverySourceRequestDTO })
+  @ApiOperation({ summary: 'discovery-source API', description: 'Kayıt sonrası kullanıcının Languruu ile nasıl tanıştığı cevabını kaydeder' })
+  @UsePipes(new ValidationPipe({ whitelist: true }))
+  async setDiscoverySource(@Req() req, @Body() body: SetDiscoverySourceRequestDTO) {
+    const result = await this.usersService.setDiscoverySource(req.user.id, body.source);
     return this.createSuccessResponse({ data: result, message: 'success', success: true }, req);
   }
 

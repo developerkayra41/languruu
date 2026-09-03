@@ -437,7 +437,20 @@
     "resolved": "Resolved",
     "dismiss": "Dismiss",
     "reportDismissed": "Report dismissed.",
-    "reportResolved": "Report marked as resolved."
+    "reportResolved": "Report marked as resolved.",
+    "discoveryTitle": "How did users find us?",
+    "discoveryEmpty": "No answers yet.",
+    "discoverySources": {
+      "friend": "Friend recommendation",
+      "ai": "AI assistant",
+      "ads": "Ad",
+      "youtube_comment": "YouTube comments",
+      "social_media": "Social media",
+      "search_engine": "Search engine",
+      "other": "Other",
+      "skipped": "Skipped",
+      "unanswered": "Not answered yet"
+    }
   },
   "error": {
     "title": "Something went wrong",
@@ -512,5 +525,18 @@
     "title": "Page not found",
     "text": "The page you're looking for doesn't exist or may have been moved.",
     "home": "Back to Home"
+  },
+  "discovery": {
+    "title": "How did you discover Languruu?",
+    "subtitle": "One question, one click — it helps us a lot.",
+    "options": {
+      "friend": "A friend recommended it",
+      "ai": "AI assistant (ChatGPT, Claude, etc.)",
+      "ads": "An ad",
+      "youtube_comment": "YouTube comments",
+      "social_media": "Social media",
+      "search_engine": "Search engine (Google, etc.)",
+      "other": "Other"
+    }
   }
 }

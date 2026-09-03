@@ -16,6 +16,7 @@ export const users = pgTable("users", {
     is_banned: boolean("is_banned").notNull().default(false),
     banned_at: timestamp("banned_at"),
     token_valid_after: timestamp("token_valid_after"),
+    discovery_source: text("discovery_source"),
     // İstatistikler
     study_streak: integer("study_streak").notNull().default(0),      // güncel günlük seri
     last_study_date: date("last_study_date"),                        // son "tamamlandı" günü (YYYY-MM-DD)

@@ -437,7 +437,20 @@
     "resolved": "Çözüldü",
     "dismiss": "Yoksay",
     "reportDismissed": "Şikayet yoksayıldı.",
-    "reportResolved": "Şikayet çözüldü olarak işaretlendi."
+    "reportResolved": "Şikayet çözüldü olarak işaretlendi.",
+    "discoveryTitle": "Kullanıcılar bizi nereden buldu?",
+    "discoveryEmpty": "Henüz cevap yok.",
+    "discoverySources": {
+      "friend": "Arkadaş tavsiyesi",
+      "ai": "Yapay zekâ",
+      "ads": "Reklam",
+      "youtube_comment": "YouTube yorumları",
+      "social_media": "Sosyal medya",
+      "search_engine": "Arama motoru",
+      "other": "Diğer",
+      "skipped": "Cevaplamadı (geçti)",
+      "unanswered": "Cevap bekliyor"
+    }
   },
   "error": {
     "title": "Bir şeyler ters gitti",
@@ -512,5 +525,18 @@
     "title": "Sayfa bulunamadı",
     "text": "Aradığın sayfa mevcut değil ya da taşınmış olabilir.",
     "home": "Ana Sayfaya Dön"
+  },
+  "discovery": {
+    "title": "Languruu'yu nereden keşfettin?",
+    "subtitle": "Tek soru, tek tık — bize çok yardımcı olur.",
+    "options": {
+      "friend": "Arkadaş tavsiyesi",
+      "ai": "Yapay zekâ (ChatGPT, Claude vb.)",
+      "ads": "Reklam",
+      "youtube_comment": "YouTube yorumları",
+      "social_media": "Sosyal medya",
+      "search_engine": "Arama motoru (Google vb.)",
+      "other": "Diğer"
+    }
   }
 }

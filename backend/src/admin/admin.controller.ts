@@ -41,8 +41,14 @@ export class AdminController extends BaseController {
         @Req() req: any,
     ) {
         const data = await this.adminRepo.listUsers({
-            filter, search, page: Math.max(1, Number(page) || 1), pageSize: 15,
+            filter, search, page: Math.max(1, Number(page) || 1), pageSize: 10,
         });
+        return this.createSuccessResponse({ data, message: 'success', success: true }, req);
+    }
+
+    @Get('discovery-sources')
+    async discoverySources(@Req() req: any) {
+        const data = await this.adminRepo.getDiscoverySources();
         return this.createSuccessResponse({ data, message: 'success', success: true }, req);
     }
 

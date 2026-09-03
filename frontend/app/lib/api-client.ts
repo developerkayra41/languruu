@@ -15,7 +15,7 @@ async function getAuthHeaders(): Promise<HeadersInit> {
 
 // lib/api-client.ts
 import { redirect } from "next/navigation";
-import { AdminError, AdminSecurityEvent, AdminStats, AdminUsersPage } from "../types/admin";
+import { AdminDiscoverySource, AdminError, AdminSecurityEvent, AdminStats, AdminUsersPage } from "../types/admin";
 import { GameRoomSummary, GameTicket } from "../types/game";
 
 async function apiPost<T>(path: string, body?: unknown): Promise<T> {
@@ -130,8 +130,13 @@ export async function getProfile(): Promise<{
     email_verified: boolean;
     has_password: boolean;
     is_admin: boolean;
+    needs_discovery_prompt: boolean;
 }> {
     return apiPost("/users/profile");
+}
+
+export async function setDiscoverySource(source: string) {
+    return apiPost<{ discovery_source: string }>("/users/discovery-source", { source });
 }
 
 export async function recordStudyComplete() {
@@ -238,6 +243,7 @@ export async function getAdminUsers(params?: { filter?: string; search?: string;
     return apiGet(`/admin/users${q ? `?${q}` : ""}`);
 }
 
+export async function getAdminDiscoverySources(): Promise<AdminDiscoverySource[]> { return apiGet("/admin/discovery-sources"); }
 export async function getAdminErrors(): Promise<AdminError[]> { return apiGet("/admin/errors"); }
 export async function getAdminSecurityEvents(): Promise<AdminSecurityEvent[]> { return apiGet("/admin/security-events"); }
 export async function banUser(id: number) { return apiPost(`/admin/users/${id}/ban`); }

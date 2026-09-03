@@ -49,6 +49,17 @@ export class AdminRepository {
         return { items: items.rows, total: totalRes.rows[0].total };
     }
 
+    async getDiscoverySources() {
+        const result = await this.db.execute(sql`
+            SELECT COALESCE(discovery_source, 'unanswered') AS source, count(*)::int AS count
+            FROM users
+            WHERE deleted_at IS NULL
+            GROUP BY 1
+            ORDER BY count DESC
+        `);
+        return result.rows;
+    }
+
     async getRecentErrors(limit = 15) {
         const result = await this.db.execute(sql`
             SELECT id, message, path, method, status, user_id, created_at
