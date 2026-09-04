@@ -59,6 +59,8 @@ languruu/
 - **XP suistimal önlemleri:** "cevabı göster" kullanılan soru XP vermez (her iki study modunda `usedReveal` bayrağı); aynı kelime **günde bir kez** XP verir (client'ta `xpAwarded` localStorage seti, anahtar = `buildItemKeys` hash'i, gruptan bağımsız); istek başına en fazla 50 kelime (`AwardXp.request.dto.ts`) ve sunucu tarafı günlük tavan son savunma hattıdır.
 - **Top performers:** 10 dk'da bir cron; sıralama = **XP (baskın) → etkin günlük seri → tamamlanan tur → toplam kelime → havuz sayısı**. Snapshot `top_performers` tablosunda JSON; eski snapshot'larda `xp`/`level` alanı olmayabilir, frontend'de `?? ` ile karşılanır.
 
+- **Study cevap eşleştirme:** `frontend/app/lib/answer-match.ts` tek kaynak. `normalizeAnswer` cevabın dil koduyla küçük harfe indirir, kıvrık kesme işaretlerini `'` yapar, **çoklu boşlukları teke indirir** ve dil `en` ise İngilizce kısaltmaları açar (`i'm` / `i'am` / `im` → `i am`, `dont` → `do not`, `cannot` / `cant` → `can not`). Hem kabul edilen cevaplar hem kullanıcının yazdığı aynı fonksiyondan geçer, bu yüzden dönüşüm asla yanlış-negatif üretmez. Belirsiz kesmesiz biçimler (`its`, `were`, `well`, `ill`, `id`, `lets`) **bilerek** haritada yok — gerçek kelimelerle çakışıyor. Yarış modu ayrı bir yargıç kullanır: `backend/src/game/judge/`.
+
 ## i18n (KURAL)
 - Diller: **tr + en**. Tek kaynak: `app/i18n/locales.ts`.
 - **Dil çözümleme sırası** (`app/i18n/request.ts`):
@@ -131,7 +133,7 @@ Değişiklikten sonra ilgili projeyi build et. i18n değişince parity kontrol e
 
 ## Tuzaklar (hepsi bir kez yaşandı)
 - **DTO'ya alan eklemeden JSONB'ye yeni alan koyma.** Backend'de `ValidationPipe({ whitelist: true }) ` var; DTO'da tanımlı olmayan alan **sessizce silinir**. `note` gibi her yeni `WordPool` alanı `WordPool.request.dto.ts`'e de eklenmeli.
-- **`toLocaleLowerCase()` argümansız çağırma.** Makinenin diline göre davranır; sunucu ve tarayıcı farklı sonuç üretir. `app/lib/text-normalize.ts` yerine projede şu an doğrudan dil kodu geçiliyor — yeni karşılaştırmalarda da geç.
+- **`toLocaleLowerCase()` argümansız çağırma.** Makinenin diline göre davranır; sunucu ve tarayıcı farklı sonuç üretir. Cevap karşılaştırmaları `app/lib/answer-match.ts` üzerinden yapılır (dil kodu parametre olarak geçilir) — yeni karşılaştırmalarda da geç.
 - **Kelime listesinde düzenleme yaparken objeyi sıfırdan kurma.** `{ ...entry, term, translation }` kullan; `{ term, translation }` yazarsan `note`/`uid` gibi alanlar silinir.
 - **Kart içinde `position: fixed` modal açma.** Grup ve marketplace kartlarında `transform hover:scale-[1.02]` var; `transform` containing block yarattığı için `fixed inset-0` viewport'a değil **karta** göre konumlanır, üstüne `overflow-hidden` kırpar. Kart içinden açılan her modal `createPortal(..., document.body)` ile gönderilmeli (bkz. `app/components/game/GameStartButton.tsx`).
 - **`.next` bozulursa** route'lar 404 döner (özellikle route grupları). Çözüm: `rm -rf frontend/.next` + yeniden başlat.
