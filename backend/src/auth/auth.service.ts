@@ -146,16 +146,19 @@ export class AuthService {
 
     async login(data: LoginRequestDTO, req: Request): Promise<LoginResult> {
 
-        const user = await this.userService.findActiveByEmail(data.email);
+        const identifier = (data.identifier ?? data.email ?? '').trim();
+        if (!identifier) throw new UnauthorizedException("E-posta/kullanıcı adı veya şifre hatalı");
+
+        const user = await this.userService.findActiveByIdentifier(identifier);
         if (!user) {
-            await this.securityEventRepo.log({ event_type: 'login_failed', email: data.email, ...clientInfo(req) });
-            throw new UnauthorizedException("Email veya şifre hatalı");
+            await this.securityEventRepo.log({ event_type: 'login_failed', email: identifier, ...clientInfo(req) });
+            throw new UnauthorizedException("E-posta/kullanıcı adı veya şifre hatalı");
         }
         if (user.is_banned) throw new ForbiddenException("Hesabınız askıya alınmıştır");
         const match = await bcrypt.compare(data.password, user.password);
         if (!match) {
-            await this.securityEventRepo.log({ event_type: 'login_failed', user_id: user.id, email: data.email, ...clientInfo(req) });
-            throw new UnauthorizedException("Email veya şifre hatalı");
+            await this.securityEventRepo.log({ event_type: 'login_failed', user_id: user.id, email: user.email, ...clientInfo(req) });
+            throw new UnauthorizedException("E-posta/kullanıcı adı veya şifre hatalı");
         }
         const payload: JwtPayload = { sub: user.id };
         const accessToken: string = this.jwtService.sign(payload);

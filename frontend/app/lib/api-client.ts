@@ -191,11 +191,11 @@ export async function deleteAvatar(): Promise<{ user_name: string; avatar_url?: 
     return apiPost("/users/avatar/delete");
 }
 
-export async function loginRequest(email: string, password: string) {
+export async function loginRequest(identifier: string, password: string) {
     const res = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ identifier, password }),
     });
     return res;
 }

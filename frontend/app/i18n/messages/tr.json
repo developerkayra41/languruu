@@ -37,7 +37,7 @@
     "login": {
       "title": "Tekrar hoş geldin",
       "subtitle": "Hesabına giriş yap, çalışmaya devam et.",
-      "email": "E-posta",
+      "identifier": "Kullanıcı adı veya e-posta",
       "password": "Şifre",
       "forgot": "Şifremi unuttum?",
       "submit": "Giriş Yap",
@@ -45,10 +45,10 @@
       "or": "veya",
       "noAccount": "Hesabın yok mu?",
       "signUp": "Kayıt ol",
-      "errEmail": "Geçerli bir e-posta adresi girin.",
+      "errIdentifier": "Kullanıcı adını veya e-posta adresini gir.",
       "errPassword": "Şifre en az 6 karakter olmalı.",
       "failed": "Giriş başarısız",
-      "placeholderEmail": "ornek@mail.com"
+      "placeholderIdentifier": "Kullanıcı Adı ya da E-Posta"
     },
     "register": {
       "title": "Hesap oluştur",

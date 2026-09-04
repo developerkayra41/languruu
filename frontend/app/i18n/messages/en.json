@@ -37,7 +37,7 @@
     "login": {
       "title": "Welcome back",
       "subtitle": "Sign in to your account and keep learning.",
-      "email": "Email",
+      "identifier": "Username or email",
       "password": "Password",
       "forgot": "Forgot password?",
       "submit": "Log In",
@@ -45,10 +45,10 @@
       "or": "or",
       "noAccount": "Don't have an account?",
       "signUp": "Sign up",
-      "errEmail": "Please enter a valid email address.",
+      "errIdentifier": "Enter your username or email address.",
       "errPassword": "Password must be at least 6 characters.",
       "failed": "Login failed",
-      "placeholderEmail": "example@email.com"
+      "placeholderIdentifier": "Username or E-Mail"
     },
     "register": {
       "title": "Create account",

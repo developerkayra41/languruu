@@ -5,8 +5,8 @@ import { redirect } from "next/navigation";
 import { googleAuthRequest, loginRequest } from "@/app/lib/api-client";
 import { extractCookieValue } from "@/app/lib/auth-utils";
 
-export async function login(email: string, password: string) {
-  const res = await loginRequest(email, password);
+export async function login(identifier: string, password: string) {
+  const res = await loginRequest(identifier, password);
   let json: any = null;
   try { json = await res.json(); } catch { }
 

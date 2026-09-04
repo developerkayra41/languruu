@@ -31,6 +31,29 @@ export class UserRepository {
         return user ?? null;
     }
 
+    findActiveByUsername = async (userName: string): Promise<AuthUser | null> => {
+        const [user] = await this.db.
+            select({
+                id: users.id,
+                user_name: users.user_name,
+                email: users.email,
+                full_name: users.full_name,
+                password: users.password,
+                description: users.description,
+                avatar_url: users.avatar_url,
+                is_banned: users.is_banned
+            })
+            .from(users)
+            .where(
+                and(
+                    eq(users.user_name, userName),
+                    isNull(users.deleted_at)
+                )
+            )
+            .limit(1);
+        return user ?? null;
+    }
+
     create = async (data: RegisterRequestDTO): Promise<UserResponse> => {
         const [user] = await this.db
             .insert(users)
