@@ -36,6 +36,13 @@
       "when": 1788463804864,
       "tag": "0004_spicy_killmonger",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1788532131366,
+      "tag": "0005_youthful_alice",
+      "breakpoints": true
     }
   ]
 }

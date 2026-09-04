@@ -76,7 +76,7 @@ export default function RegisterForm() {
           <input
             type="text"
             value={userName}
-            onChange={(e) => setUserName(e.target.value.trim())}
+            onChange={(e) => setUserName(e.target.value.replace(/\s/g, ""))}
             placeholder={t("placeholderUsername")}
             className="w-full pl-8 pr-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
           />

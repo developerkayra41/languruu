@@ -9,6 +9,7 @@ import { UpdatePasswordRequestDTO } from './dto/request/UpdatePassword.request.d
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { GetPublicProfileRequestDTO } from './dto/request/GetPublicProfile.request.dto';
 import { SetDiscoverySourceRequestDTO } from './dto/request/SetDiscoverySource.request.dto';
+import { AwardXpRequestDTO } from './dto/request/AwardXp.request.dto';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -90,6 +91,16 @@ export class UsersController extends BaseController {
   async recordStudyComplete(@Req() req) {
     await this.usersService.recordStudyCompletion(req.user.id);
     return this.createSuccessResponse({ data: null, message: 'success', success: true }, req);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('xp/award')
+  @ApiBody({ type: AwardXpRequestDTO })
+  @ApiOperation({ summary: 'xp/award API', description: 'Doğru bilinen kelime sayısı kadar XP verir (günlük tavana tabidir)' })
+  @UsePipes(new ValidationPipe({ whitelist: true }))
+  async awardXp(@Req() req, @Body() body: AwardXpRequestDTO) {
+    const result = await this.usersService.awardWordXp(req.user.id, body.words);
+    return this.createSuccessResponse({ data: result, message: 'success', success: true }, req);
   }
 
   @UseGuards(JwtAuthGuard)

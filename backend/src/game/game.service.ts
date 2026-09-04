@@ -4,6 +4,8 @@ import { MarketPlaceRepository } from 'src/marketplace/repository/marketplace.re
 import { UserRepository } from 'src/users/repository/user.repository';
 import { WordColumn } from 'src/_common/types/words.type';
 import { RoomRegistry } from './room.registry';
+import { DAILY_XP_CAP, levelFromXp, levelInfo, xpFromGameScore } from 'src/_common/utils/xp-level';
+import { GameXpResult } from './game.types';
 import {
     GameDirection,
     GamePlayer,
@@ -214,11 +216,27 @@ export class GameService {
         if (next) room.hostUserId = next.userId;
     }
 
-    async persistScores(room: GameRoom): Promise<void> {
+    async persistScores(room: GameRoom): Promise<GameXpResult[]> {
         const scorers = [...room.players.values()].filter((player) => player.score > 0);
-        await Promise.all(
-            scorers.map((player) => this.userRepository.addGameScore(player.userId, player.score)),
+        const results = await Promise.all(
+            scorers.map(async (player) => {
+                await this.userRepository.addGameScore(player.userId, player.score);
+                const requested = xpFromGameScore(player.score);
+                if (requested <= 0) return null;
+
+                const { xp, gained } = await this.userRepository.awardXp(player.userId, requested, DAILY_XP_CAP);
+                const info = levelInfo(xp);
+                return {
+                    userId: player.userId,
+                    gained,
+                    level: info.level,
+                    xpIntoLevel: info.xp_into_level,
+                    xpForNext: info.xp_for_next,
+                    leveledUp: info.level > levelFromXp(xp - gained),
+                } satisfies GameXpResult;
+            }),
         );
+        return results.filter((result): result is GameXpResult => result !== null);
     }
 
     markDisconnected(userId: number, socketId: string): GameRoom | null {

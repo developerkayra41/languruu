@@ -1,4 +1,5 @@
 import Avatar from "@/app/components/ui/Avatar";
+import LevelBadge from "@/app/components/ui/LevelBadge";
 import Reveal from "@/app/components/ui/Reveal";
 import { getTopPerformers } from "@/app/lib/api-client";
 import { getTranslations } from "next-intl/server";
@@ -53,18 +54,37 @@ export default async function TopPerformersPage() {
                     </div>
                   </div>
 
-                  <div className="ml-5 flex-grow flex items-center justify-between">
+                  <div className="ml-5 flex-grow flex items-center justify-between gap-3">
                     <h3 className="text-lg font-semibold text-gray-800">
                       {performer.full_name}
                     </h3>
-                    <div className="flex items-center space-x-2">
-                      <i className="fas fa-fire text-orange-500"></i>
-                      <span className="font-bold text-purple-600">
-                        {performer.streak}
-                      </span>
-                      <span className="text-gray-500 text-sm">
-                        {t("dayUnit")}
-                      </span>
+                    <div className="flex items-center gap-4">
+                      <div className="hidden sm:flex items-center space-x-2">
+                        <i className="fas fa-fire text-orange-500"></i>
+                        <span className="font-bold text-purple-600">
+                          {performer.streak}
+                        </span>
+                        <span className="text-gray-500 text-sm">
+                          {t("dayUnit")}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <LevelBadge
+                          level={performer.level ?? 1}
+                          xpIntoLevel={0}
+                          xpForNext={0}
+                          size={38}
+                          uid={`tp-${performer.user_id}`}
+                        />
+                        <div className="leading-tight">
+                          <div className="font-bold text-purple-600 text-sm">
+                            {t("level", { level: performer.level ?? 1 })}
+                          </div>
+                          <div className="text-gray-500 text-xs">
+                            {t("xp", { xp: performer.xp ?? 0 })}
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </Link>

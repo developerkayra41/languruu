@@ -10,6 +10,7 @@ export interface RankingRow {
     avatar_url: string | null;
     effective_streak: number;
     completed_rounds: number;
+    xp: number;
     total_word: number;
     pool_count: number;
 }
@@ -27,6 +28,7 @@ export class TopPerformerRepository {
                 CASE WHEN u.last_study_date >= CURRENT_DATE - 1
                      THEN u.study_streak ELSE 0 END AS effective_streak,
                 u.completed_rounds,
+                u.xp,
                 COALESCE(w.total_word, 0) AS total_word,
                 COALESCE(w.pool_count, 0) AS pool_count
             FROM users u
@@ -42,7 +44,7 @@ export class TopPerformerRepository {
                 WHERE words.words IS NOT NULL AND jsonb_typeof(words.words) = 'array'
             ) w ON w.user_id = u.id
             WHERE u.deleted_at IS NULL AND u.is_banned = false
-            ORDER BY effective_streak DESC, u.completed_rounds DESC, total_word DESC, pool_count DESC, u.id ASC
+            ORDER BY u.xp DESC, effective_streak DESC, u.completed_rounds DESC, total_word DESC, pool_count DESC, u.id ASC
             LIMIT ${limit}
         `);
         return result.rows as RankingRow[];

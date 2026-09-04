@@ -5,6 +5,7 @@ import StatCard from "@/app/components/ui/StatCard";
 import ProfileNotFound from "@/app/components/ui/ProfileNotFound";
 import Image from "next/image";
 import ReportButton from "@/app/components/report/ReportButton";
+import LevelBadge from "@/app/components/ui/LevelBadge";
 
 interface PublicProfilePageProps {
   params: Promise<{ username: string }>;
@@ -42,8 +43,9 @@ export default async function PublicProfilePage({
       <div className="bg-white rounded-lg shadow-sm border border-gray-100 overflow-hidden">
         <div className="h-32 bg-gradient-to-r from-purple-600 via-purple-500 to-blue-500" />
         <div className="px-6 pb-6">
-          <div className="-mt-14">
-            {profile.avatar_url ? (
+          <div className="-mt-14 flex items-end justify-between gap-4">
+            <div>
+              {profile.avatar_url ? (
               <Image
                 src={profile.avatar_url}
                 alt={profile.user_name}
@@ -51,23 +53,46 @@ export default async function PublicProfilePage({
                 height={112}
                 className="rounded-full object-cover border-4 border-white shadow-md"
               />
-            ) : (
-              <div className="w-28 h-28 rounded-full border-4 border-white shadow-md bg-purple-100 flex items-center justify-center text-purple-600 text-2xl font-semibold">
-                {initials}
-              </div>
-            )}
+              ) : (
+                <div className="w-28 h-28 rounded-full border-4 border-white shadow-md bg-purple-100 flex items-center justify-center text-purple-600 text-2xl font-semibold">
+                  {initials}
+                </div>
+              )}
+            </div>
+
+            <div className="flex flex-col items-center shrink-0">
+              <LevelBadge
+                level={profile.level}
+                xpIntoLevel={profile.xp_into_level}
+                xpForNext={profile.xp_for_next}
+                size={96}
+                uid={`u-${profile.user_name}`}
+                caption={t("levelShort")}
+                title={t("levelTooltip", {
+                  level: profile.level,
+                  current: profile.xp_into_level,
+                  next: profile.xp_for_next,
+                })}
+              />
+              <span className="-mt-1 text-xs font-medium text-gray-500">
+                {t("levelProgress", {
+                  current: profile.xp_into_level,
+                  next: profile.xp_for_next,
+                })}
+              </span>
+            </div>
           </div>
           <h2 className="text-xl font-bold text-gray-800 mt-4">
-            @{profile.user_name}
+            {profile.full_name}
           </h2>
-          <div className="flex justify-between">
-            <p className="text-gray-500 text-sm mt-1">
-              {t.rich("learned", {
-                count: profile.total_words,
-                b: (chunks) => (
-                  <span className="font-semibold text-gray-700">{chunks}</span>
-                ),
-              })}
+          <span className="text-sm text-gray-500">@{profile.user_name}</span>
+          <div className="flex justify-between items-start gap-4">
+            <p
+              className={`text-sm mt-2 max-w-xl whitespace-pre-wrap ${
+                profile.description ? "text-gray-600" : "text-gray-400 italic"
+              }`}
+            >
+              {profile.description || t("bioEmptyPublic")}
             </p>
             <ReportButton targetType="profile" targetRef={profile.user_name} />
           </div>

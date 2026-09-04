@@ -12,6 +12,7 @@ import {
   saveProgress,
 } from "../shared/study-progress";
 import { StudyModeProps } from "../types";
+import { useXpAwarder } from "../shared/use-xp";
 
 interface QuizItem {
   id: number;
@@ -45,6 +46,8 @@ export default function ClassicMode({ group }: StudyModeProps) {
   const [currentGroup] = useState<WordColumn>(group);
   const quizItems = useMemo(() => buildQuizItems(currentGroup), [currentGroup]);
   const itemKeys = useMemo(() => buildItemKeys(quizItems), [quizItems]);
+
+  const { awardWord } = useXpAwarder();
 
   const [mode, setMode] = useState<StudyDirection>(3);
   const [speakEnabled, setSpeakEnabled] = useState(false);
@@ -153,8 +156,11 @@ export default function ClassicMode({ group }: StudyModeProps) {
     displayWord: string;
   } | null>(null);
 
+  const [usedReveal, setUsedReveal] = useState(false);
+
   useEffect(() => {
     setManualOverride(null);
+    setUsedReveal(false);
   }, [currentItem]);
 
   const activeQuestion = manualOverride ?? autoQuestion;
@@ -223,6 +229,7 @@ export default function ClassicMode({ group }: StudyModeProps) {
     showInfo(isCorrect, isCorrect ? t("correct") : t("wrong"));
 
     if (isCorrect) {
+      if (!usedReveal) awardWord(itemKeys[queue[pointer]]);
       setUserAnswer("");
       goToNextQuestion();
     }
@@ -235,6 +242,7 @@ export default function ClassicMode({ group }: StudyModeProps) {
       activeQuestion.direction === "term-to-translation"
         ? currentItem.translations
         : currentItem.terms;
+    setUsedReveal(true);
     setUserAnswer(pickRandom(source));
   };
 

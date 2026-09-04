@@ -13,6 +13,7 @@ import { AuthTokenRepository } from 'src/auth/repository/auth-token.repository';
 import { randomUUID } from 'crypto';
 import { sha256 } from 'js-sha256';
 import { ConfigService } from '@nestjs/config';
+import { DAILY_XP_CAP, levelInfo, XP_PER_WORD, xpFromGameScore } from 'src/_common/utils/xp-level';
 @Injectable()
 export class UsersService {
   constructor(@Inject(UserRepository) private readonly userRepo: UserRepository,
@@ -59,6 +60,7 @@ export class UsersService {
       user_name: user.user_name,
       full_name: user.full_name,
       avatar_url: user.avatar_url ? `${user.avatar_url}?v=${user.updated_at?.getTime() ?? Date.now()}` : undefined,
+      description: user.description ?? '',
       email: user.email,
       email_verified: user.email_verified,
       has_password: !!user.password,
@@ -70,6 +72,7 @@ export class UsersService {
       daily_streak: this.displayedStreak(stats),
       completed_rounds: stats?.completed_rounds ?? 0,
       game_score: stats?.game_score ?? 0,
+      ...levelInfo(stats?.xp),
       needs_discovery_prompt: this.needsDiscoveryPrompt(user),
     };
   };
@@ -99,22 +102,30 @@ export class UsersService {
       user_name: user.user_name,
       full_name: user.full_name,
       avatar_url: user.avatar_url,
+      description: user.description ?? '',
       total_words: totalWords,
       word_pool_count: wordRow ? wordRow.words.length : 0,
       daily_streak: this.displayedStreak(stats),
       completed_rounds: stats?.completed_rounds ?? 0,
       game_score: stats?.game_score ?? 0,
+      ...levelInfo(stats?.xp),
     };
   }
 
-  updateProfile = async (userId: number, data: { user_name?: string; avatar_url?: string | null }) => {
+  updateProfile = async (userId: number, data: { user_name?: string; full_name?: string; description?: string; avatar_url?: string | null }) => {
     if (data.user_name) {
       const existing = await this.userRepo.findByUsername(data.user_name);
       if (existing && existing.id !== userId) {
         throw new BadRequestException('Bu kullanıcı adı zaten kullanılıyor.');
       }
     }
-    const updated = await this.userRepo.updateProfile(userId, data);
+    const payload: { user_name?: string; full_name?: string; description?: string | null; avatar_url?: string | null } = { ...data };
+    if (data.full_name !== undefined) payload.full_name = data.full_name.trim();
+    if (data.description !== undefined) {
+      const trimmed = data.description.trim();
+      payload.description = trimmed.length > 0 ? trimmed : null;
+    }
+    const updated = await this.userRepo.updateProfile(userId, payload);
     if (!updated) throw new NotFoundException();
     return updated;
   };
@@ -212,4 +223,15 @@ export class UsersService {
   findUnverifiedBefore = async (date: Date): Promise<{ id: number }[]> => this.userRepo.findUnverifiedBefore(date);
 
   recordStudyCompletion = async (userId: number): Promise<void> => this.userRepo.recordStudyCompletion(userId);
+
+  awardWordXp = async (userId: number, words: number) => {
+    const { xp, gained } = await this.userRepo.awardXp(userId, words * XP_PER_WORD, DAILY_XP_CAP);
+    return { ...levelInfo(xp), gained };
+  };
+
+  awardGameXp = async (userId: number, score: number): Promise<void> => {
+    const amount = xpFromGameScore(score);
+    if (amount <= 0) return;
+    await this.userRepo.awardXp(userId, amount, DAILY_XP_CAP);
+  };
 }

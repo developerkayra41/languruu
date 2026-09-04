@@ -20,6 +20,8 @@ import {
   GameRevealPayload,
   GameRoomView,
   GameSeconds,
+  GameXpPayload,
+  GameXpResult,
 } from "@/app/types/game";
 
 const FATAL_CODES = new Set([
@@ -57,6 +59,7 @@ export default function GameRoomClient({
   const confettiRef = useRef<InstanceType<typeof import("js-confetti").default> | null>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
+  const userIdRef = useRef<number | null>(null);
   const [userId, setUserId] = useState<number | null>(null);
   const [connected, setConnected] = useState(false);
   const [room, setRoom] = useState<GameRoomView | null>(null);
@@ -64,6 +67,7 @@ export default function GameRoomClient({
   const [question, setQuestion] = useState<GameQuestionPayload | null>(null);
   const [reveal, setReveal] = useState<GameRevealPayload | null>(null);
   const [finished, setFinished] = useState<GameFinishedPayload | null>(null);
+  const [xpResult, setXpResult] = useState<GameXpResult | null>(null);
   const [answer, setAnswer] = useState("");
   const [submitted, setSubmitted] = useState(false);
   const [answeredCount, setAnsweredCount] = useState({ answered: 0, total: 0 });
@@ -106,6 +110,7 @@ export default function GameRoomClient({
 
     socket.on("game:ready", (payload: { userId: number; serverNow: number }) => {
       offsetRef.current = payload.serverNow - Date.now();
+      userIdRef.current = payload.userId;
       setUserId(payload.userId);
       setConnected(true);
       socket.emit("time:ping");
@@ -156,6 +161,11 @@ export default function GameRoomClient({
       setReveal(null);
       setFinished(payload);
       confettiRef.current?.addConfetti();
+    });
+
+    socket.on("game:xp", (payload: GameXpPayload) => {
+      const mine = payload.results.find((row) => row.userId === userIdRef.current);
+      if (mine) setXpResult(mine);
     });
 
     socket.on("room:left", () => {
@@ -215,6 +225,7 @@ export default function GameRoomClient({
       <ResultsStage
         ranking={finished.ranking}
         currentUserId={userId}
+        xpResult={xpResult}
         onBack={() => router.push("/groups")}
       />
     );
