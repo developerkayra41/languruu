@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { WordColumn, WordPool } from "@/app/types/word";
 import { updateWordPool } from "./actions";
@@ -10,6 +10,23 @@ import { toast } from "sonner";
 import NoteTooltip from "@/app/components/ui/NoteTooltip";
 
 const PAGE_SIZE = 10;
+
+type EditField =
+  | "term"
+  | "translation"
+  | "note"
+  | "example"
+  | "exampleTranslation";
+
+type EditFieldRefs = {
+  current: Partial<Record<EditField, HTMLInputElement | null>>;
+};
+
+const NEXT_EDIT_FIELD: Partial<Record<EditField, EditField>> = {
+  term: "translation",
+  note: "example",
+  example: "exampleTranslation",
+};
 
 interface WordsClientProps {
   group: WordColumn;
@@ -32,6 +49,9 @@ export default function WordsClient({ group }: WordsClientProps) {
   const [searchOpen, setSearchOpen] = useState(false);
 
   const [currentPage, setCurrentPage] = useState(0);
+
+  const desktopFieldRefs: EditFieldRefs = useRef({});
+  const mobileFieldRefs: EditFieldRefs = useRef({});
 
   const indexedPool = wordPool.map((entry, realIndex) => ({
     entry,
@@ -136,6 +156,36 @@ export default function WordsClient({ group }: WordsClientProps) {
         setWordPool(result.data.wordPool);
       }
     });
+  };
+
+  useEffect(() => {
+    if (editingIndex === null) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      e.preventDefault();
+      handleCancelEdit();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editingIndex]);
+
+  const handleEditKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    field: EditField,
+    realIndex: number,
+    refs: EditFieldRefs,
+  ) => {
+    if (e.key !== "Enter" || e.nativeEvent.isComposing) return;
+    e.preventDefault();
+
+    const nextField = NEXT_EDIT_FIELD[field];
+    if (nextField) {
+      refs.current[nextField]?.focus();
+      return;
+    }
+
+    if (!isPending) handleSaveEdit(realIndex);
   };
 
   const handleDelete = (realIndex: number) => {
@@ -243,6 +293,12 @@ export default function WordsClient({ group }: WordsClientProps) {
                           type="text"
                           value={editTermInput}
                           onChange={(e) => setEditTermInput(e.target.value)}
+                          ref={(el) => {
+                            desktopFieldRefs.current.term = el;
+                          }}
+                          onKeyDown={(e) =>
+                            handleEditKeyDown(e, "term", realIndex, desktopFieldRefs)
+                          }
                           className="w-full px-2 py-1 border border-gray-300 rounded text-center focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                       ) : (
@@ -267,6 +323,12 @@ export default function WordsClient({ group }: WordsClientProps) {
                           value={editTranslationInput}
                           onChange={(e) =>
                             setEditTranslationInput(e.target.value)
+                          }
+                          ref={(el) => {
+                            desktopFieldRefs.current.translation = el;
+                          }}
+                          onKeyDown={(e) =>
+                            handleEditKeyDown(e, "translation", realIndex, desktopFieldRefs)
                           }
                           className="w-full px-2 py-1 border border-gray-300 rounded text-center focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
@@ -319,6 +381,12 @@ export default function WordsClient({ group }: WordsClientProps) {
                           onChange={(e) => setEditNoteInput(e.target.value)}
                           maxLength={200}
                           placeholder={t("notePlaceholder")}
+                          ref={(el) => {
+                            desktopFieldRefs.current.note = el;
+                          }}
+                          onKeyDown={(e) =>
+                            handleEditKeyDown(e, "note", realIndex, desktopFieldRefs)
+                          }
                           className="w-full px-2 py-1 border border-gray-300 rounded text-center focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                         <div className="mt-2 space-y-2">
@@ -328,6 +396,12 @@ export default function WordsClient({ group }: WordsClientProps) {
                             onChange={(e) => setEditExampleInput(e.target.value)}
                             maxLength={MAX_EXAMPLE_LENGTH}
                             placeholder={t("examplePlaceholder")}
+                            ref={(el) => {
+                              desktopFieldRefs.current.example = el;
+                            }}
+                            onKeyDown={(e) =>
+                              handleEditKeyDown(e, "example", realIndex, desktopFieldRefs)
+                            }
                             className="w-full px-2 py-1 border border-gray-300 rounded text-center focus:outline-none focus:ring-2 focus:ring-purple-500"
                           />
                           <input
@@ -338,6 +412,12 @@ export default function WordsClient({ group }: WordsClientProps) {
                             }
                             maxLength={MAX_EXAMPLE_LENGTH}
                             placeholder={t("exampleTranslationPlaceholder")}
+                            ref={(el) => {
+                              desktopFieldRefs.current.exampleTranslation = el;
+                            }}
+                            onKeyDown={(e) =>
+                              handleEditKeyDown(e, "exampleTranslation", realIndex, desktopFieldRefs)
+                            }
                             className="w-full px-2 py-1 border border-gray-300 rounded text-center focus:outline-none focus:ring-2 focus:ring-purple-500"
                           />
                         </div>
@@ -361,6 +441,12 @@ export default function WordsClient({ group }: WordsClientProps) {
                           value={editTermInput}
                           onChange={(e) => setEditTermInput(e.target.value)}
                           placeholder={t("colWord")}
+                          ref={(el) => {
+                            mobileFieldRefs.current.term = el;
+                          }}
+                          onKeyDown={(e) =>
+                            handleEditKeyDown(e, "term", realIndex, mobileFieldRefs)
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                         <input
@@ -370,6 +456,12 @@ export default function WordsClient({ group }: WordsClientProps) {
                             setEditTranslationInput(e.target.value)
                           }
                           placeholder={t("colMeaning")}
+                          ref={(el) => {
+                            mobileFieldRefs.current.translation = el;
+                          }}
+                          onKeyDown={(e) =>
+                            handleEditKeyDown(e, "translation", realIndex, mobileFieldRefs)
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                         <input
@@ -378,6 +470,12 @@ export default function WordsClient({ group }: WordsClientProps) {
                           onChange={(e) => setEditNoteInput(e.target.value)}
                           maxLength={200}
                           placeholder={t("notePlaceholder")}
+                          ref={(el) => {
+                            mobileFieldRefs.current.note = el;
+                          }}
+                          onKeyDown={(e) =>
+                            handleEditKeyDown(e, "note", realIndex, mobileFieldRefs)
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                         <input
@@ -386,6 +484,12 @@ export default function WordsClient({ group }: WordsClientProps) {
                           onChange={(e) => setEditExampleInput(e.target.value)}
                           maxLength={MAX_EXAMPLE_LENGTH}
                           placeholder={t("examplePlaceholder")}
+                          ref={(el) => {
+                            mobileFieldRefs.current.example = el;
+                          }}
+                          onKeyDown={(e) =>
+                            handleEditKeyDown(e, "example", realIndex, mobileFieldRefs)
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                         <input
@@ -396,6 +500,12 @@ export default function WordsClient({ group }: WordsClientProps) {
                           }
                           maxLength={MAX_EXAMPLE_LENGTH}
                           placeholder={t("exampleTranslationPlaceholder")}
+                          ref={(el) => {
+                            mobileFieldRefs.current.exampleTranslation = el;
+                          }}
+                          onKeyDown={(e) =>
+                            handleEditKeyDown(e, "exampleTranslation", realIndex, mobileFieldRefs)
+                          }
                           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-purple-500"
                         />
                         <div className="flex justify-end gap-4 pt-1 text-lg">

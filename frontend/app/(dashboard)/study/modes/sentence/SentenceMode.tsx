@@ -12,6 +12,7 @@ import {
   saveProgress,
 } from "../shared/study-progress";
 import { StudyModeProps } from "../types";
+import { buildAcceptableAnswers, isAnswerCorrect } from "@/app/lib/answer-match";
 import { useXpAwarder } from "../shared/use-xp";
 
 interface SentenceItem {
@@ -160,8 +161,8 @@ export default function SentenceMode({ group }: StudyModeProps) {
       direction === "term-to-translation"
         ? currentItem.translations
         : currentItem.terms;
-    return source.map((w) => w.toLocaleLowerCase().trim());
-  }, [currentItem, direction]);
+    return buildAcceptableAnswers(source, answerLang);
+  }, [currentItem, direction, answerLang]);
 
   const [userAnswer, setUserAnswer] = useState("");
   const [sentenceInput, setSentenceInput] = useState("");
@@ -271,8 +272,7 @@ export default function SentenceMode({ group }: StudyModeProps) {
 
   const checkAnswer = () => {
     if (!currentItem) return;
-    const normalized = userAnswer.trim().toLocaleLowerCase();
-    const isCorrect = acceptableAnswers.includes(normalized);
+    const isCorrect = isAnswerCorrect(userAnswer, acceptableAnswers, answerLang);
 
     showInfo(isCorrect, isCorrect ? t("correct") : t("wrong"));
 

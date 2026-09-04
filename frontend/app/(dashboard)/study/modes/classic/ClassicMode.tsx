@@ -12,6 +12,7 @@ import {
   saveProgress,
 } from "../shared/study-progress";
 import { StudyModeProps } from "../types";
+import { buildAcceptableAnswers, isAnswerCorrect } from "@/app/lib/answer-match";
 import { useXpAwarder } from "../shared/use-xp";
 
 interface QuizItem {
@@ -170,6 +171,11 @@ export default function ClassicMode({ group }: StudyModeProps) {
       ? currentGroup.languages?.[0]
       : currentGroup.languages?.[1];
 
+  const answerLang =
+    activeQuestion?.direction === "term-to-translation"
+      ? currentGroup.languages?.[1]
+      : currentGroup.languages?.[0];
+
   useEffect(() => {
     if (speakEnabled && activeQuestion) {
       speak(activeQuestion.displayWord, displayLang);
@@ -187,8 +193,8 @@ export default function ClassicMode({ group }: StudyModeProps) {
       activeQuestion.direction === "term-to-translation"
         ? currentItem.translations
         : currentItem.terms;
-    return source.map((w) => w.toLocaleLowerCase().trim());
-  }, [currentItem, activeQuestion]);
+    return buildAcceptableAnswers(source, answerLang);
+  }, [currentItem, activeQuestion, answerLang]);
 
   const [userAnswer, setUserAnswer] = useState("");
   const answerInputRef = useRef<HTMLTextAreaElement>(null);
@@ -223,8 +229,7 @@ export default function ClassicMode({ group }: StudyModeProps) {
 
   const checkAnswer = () => {
     if (!currentItem) return;
-    const normalized = userAnswer.trim().toLocaleLowerCase();
-    const isCorrect = acceptableAnswers.includes(normalized);
+    const isCorrect = isAnswerCorrect(userAnswer, acceptableAnswers, answerLang);
 
     showInfo(isCorrect, isCorrect ? t("correct") : t("wrong"));
 
