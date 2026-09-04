@@ -4,6 +4,7 @@ import { UserRepository } from 'src/users/repository/user.repository';
 import { WordRepository } from 'src/words/repository/words.repository';
 import { TopPerformerRepository } from './repository/top-performers.repository';
 import { TopPerformers } from 'src/_common/drizzle/top-performers';
+import { levelFromXp } from 'src/_common/utils/xp-level';
 
 @Injectable()
 export class TopPerformersService implements OnModuleInit {
@@ -37,6 +38,8 @@ export class TopPerformersService implements OnModuleInit {
             avatar_url: r.avatar_url ?? undefined,
             total_word: r.total_word,
             streak: r.effective_streak,
+            xp: r.xp ?? 0,
+            level: levelFromXp(r.xp ?? 0),
         }));
 
         const savedRow = await this.topPerformerRepo.updateTopPerformers(1, data);

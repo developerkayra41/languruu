@@ -12,6 +12,7 @@ import {
   saveProgress,
 } from "../shared/study-progress";
 import { StudyModeProps } from "../types";
+import { useXpAwarder } from "../shared/use-xp";
 
 interface SentenceItem {
   id: number;
@@ -56,6 +57,8 @@ export default function SentenceMode({ group }: StudyModeProps) {
   const [currentGroup] = useState<WordColumn>(group);
   const items = useMemo(() => buildSentenceItems(currentGroup), [currentGroup]);
   const itemKeys = useMemo(() => buildItemKeys(items), [items]);
+
+  const { awardWord } = useXpAwarder();
 
   const [mode, setMode] = useState<StudyDirection>(3);
   const [speakEnabled, setSpeakEnabled] = useState(false);
@@ -103,6 +106,7 @@ export default function SentenceMode({ group }: StudyModeProps) {
   const [pointer, setPointer] = useState(0);
   const [step, setStep] = useState<Step>("word");
   const [revealed, setRevealed] = useState(false);
+  const [usedWordReveal, setUsedWordReveal] = useState(false);
   const [roundCompleted, setRoundCompleted] = useState(false);
 
   const currentItem = items[queue[pointer]];
@@ -234,6 +238,7 @@ export default function SentenceMode({ group }: StudyModeProps) {
   const finishItem = (knewIt: boolean) => {
     showInfo(knewIt, knewIt ? t("correct") : t("wrong"));
     setRevealed(false);
+    setUsedWordReveal(false);
     setStep("word");
     setUserAnswer("");
     setSentenceInput("");
@@ -272,6 +277,7 @@ export default function SentenceMode({ group }: StudyModeProps) {
     showInfo(isCorrect, isCorrect ? t("correct") : t("wrong"));
 
     if (isCorrect) {
+      if (!usedWordReveal) awardWord(itemKeys[queue[pointer]]);
       setUserAnswer("");
       setStep("sentence");
     }
@@ -284,6 +290,7 @@ export default function SentenceMode({ group }: StudyModeProps) {
       direction === "term-to-translation"
         ? currentItem.translations
         : currentItem.terms;
+    setUsedWordReveal(true);
     setUserAnswer(pickRandom(source));
   };
 

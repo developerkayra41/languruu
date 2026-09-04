@@ -166,6 +166,9 @@ export class MatchEngine {
 
         void this.gameService
             .persistScores(room)
+            .then((results) => {
+                if (results.length > 0) this.emit(room, 'game:xp', { results });
+            })
             .catch((error) =>
                 this.logger.error(`Oyun skorları yazılamadı (${room.code})`, error?.stack),
             );

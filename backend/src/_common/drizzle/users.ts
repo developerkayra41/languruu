@@ -22,4 +22,7 @@ export const users = pgTable("users", {
     last_study_date: date("last_study_date"),                        // son "tamamlandı" günü (YYYY-MM-DD)
     completed_rounds: integer("completed_rounds").notNull().default(0), // toplam tamamlanan tur
     game_score: integer("game_score").notNull().default(0),          // yarış modunda toplanan puan
+    xp: integer("xp").notNull().default(0),                          // toplam deneyim puanı (seviye bundan türetilir)
+    xp_day: date("xp_day"),                                          // günlük XP tavanının ait olduğu gün (YYYY-MM-DD)
+    xp_day_amount: integer("xp_day_amount").notNull().default(0),    // o gün kazanılan XP
 });

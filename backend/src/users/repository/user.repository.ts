@@ -101,7 +101,7 @@ export class UserRepository {
 
     updateProfile = async (
         userId: number,
-        data: { user_name?: string; avatar_url?: string | null }
+        data: { user_name?: string; full_name?: string; description?: string | null; avatar_url?: string | null }
     ): Promise<UserResponse | null> => {
         const [user] = await this.db
             .update(users)
@@ -148,6 +148,7 @@ export class UserRepository {
                 id: users.id,
                 user_name: users.user_name,
                 full_name: users.full_name,
+                description: users.description,
                 avatar_url: users.avatar_url,
             })
             .from(users)
@@ -278,13 +279,14 @@ export class UserRepository {
         }).where(eq(users.id, userId));
     };
 
-    getStudyStats = async (userId: number): Promise<{ study_streak: number; last_study_date: string | null; completed_rounds: number; game_score: number } | null> => {
+    getStudyStats = async (userId: number): Promise<{ study_streak: number; last_study_date: string | null; completed_rounds: number; game_score: number; xp: number } | null> => {
         const [row] = await this.db
             .select({
                 study_streak: users.study_streak,
                 last_study_date: users.last_study_date,
                 completed_rounds: users.completed_rounds,
                 game_score: users.game_score,
+                xp: users.xp,
             })
             .from(users).where(eq(users.id, userId)).limit(1);
         return row ?? null;
@@ -296,5 +298,35 @@ export class UserRepository {
             .update(users)
             .set({ game_score: sql`${users.game_score} + ${Math.round(points)}` })
             .where(eq(users.id, userId));
+    };
+
+    awardXp = async (userId: number, amount: number, dailyCap: number): Promise<{ xp: number; gained: number }> => {
+        const requested = Math.floor(amount);
+        if (!Number.isFinite(requested) || requested <= 0) {
+            const [current] = await this.db.select({ xp: users.xp }).from(users).where(eq(users.id, userId)).limit(1);
+            return { xp: current?.xp ?? 0, gained: 0 };
+        }
+
+        const today = new Date().toISOString().slice(0, 10);
+        const result = await this.db.execute(sql`
+            WITH used AS (
+                SELECT id,
+                       CASE WHEN xp_day = ${today}::date THEN xp_day_amount ELSE 0 END AS spent
+                FROM users
+                WHERE id = ${userId} AND deleted_at IS NULL
+            ),
+            calc AS (
+                SELECT id, spent, GREATEST(0, LEAST(${requested}, ${dailyCap} - spent)) AS granted FROM used
+            )
+            UPDATE users u
+            SET xp = u.xp + calc.granted,
+                xp_day = ${today}::date,
+                xp_day_amount = calc.spent + calc.granted
+            FROM calc
+            WHERE u.id = calc.id
+            RETURNING u.xp AS xp, calc.granted AS granted
+        `);
+        const row = result.rows?.[0];
+        return { xp: Number(row?.xp ?? 0), gained: Number(row?.granted ?? 0) };
     };
 }

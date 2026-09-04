@@ -105,3 +105,16 @@ export interface GameRevealPayload {
 export interface GameFinishedPayload {
   ranking: GameScoreboardRow[];
 }
+
+export interface GameXpResult {
+  userId: number;
+  gained: number;
+  level: number;
+  xpIntoLevel: number;
+  xpForNext: number;
+  leveledUp: boolean;
+}
+
+export interface GameXpPayload {
+  results: GameXpResult[];
+}

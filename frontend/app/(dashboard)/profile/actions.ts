@@ -11,7 +11,7 @@ export async function requestAvatarUploadUrl(extension: string) {
   }
 }
 
-export async function saveProfile(data: { user_name?: string; avatar_url?: string }) {
+export async function saveProfile(data: { user_name?: string; full_name?: string; description?: string; avatar_url?: string }) {
   try {
     const result = await updateProfileApi(data);
     return { success: true as const, data: result };

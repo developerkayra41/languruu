@@ -38,5 +38,7 @@ export interface TopPerformer {
   full_name: string;
   total_word: number;
   streak: number;
+  xp?: number;
+  level?: number;
   avatar_url?: string;
 }

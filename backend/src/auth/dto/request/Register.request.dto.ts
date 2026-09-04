@@ -1,6 +1,7 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsNotEmpty, MaxLength, MinLength } from "class-validator";
+import { IsEmail, IsNotEmpty, Matches, MaxLength, MinLength } from "class-validator";
 import { DtoPrefix, getValidationMessage, ValidationType } from "src/_common/enums/ValidationMessages.enum";
+import { USERNAME_PATTERN } from "src/_common/utils/username";
 
 export class RegisterRequestDTO {
 
@@ -8,6 +9,7 @@ export class RegisterRequestDTO {
     @IsNotEmpty({ message: getValidationMessage(DtoPrefix.USERNAME, ValidationType.NOT_EMPTY) })
     @MinLength(3, { message: getValidationMessage(DtoPrefix.USERNAME, ValidationType.MIN_LENGTH, 3) })
     @MaxLength(16, { message: getValidationMessage(DtoPrefix.USERNAME, ValidationType.MAX_LENGTH, 16) })
+    @Matches(USERNAME_PATTERN, { message: getValidationMessage(DtoPrefix.USERNAME, ValidationType.NOT_VALID) })
     user_name: string;
 
     @ApiProperty({ default: 'test@hotmail.com', maxLength: 50, minLength: 6, nullable: false })

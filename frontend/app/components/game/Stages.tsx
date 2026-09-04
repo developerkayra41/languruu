@@ -10,7 +10,9 @@ import {
   GameRoomView,
   GameScoreboardRow,
   GameVerdict,
+  GameXpResult,
 } from "@/app/types/game";
+import LevelBadge from "@/app/components/ui/LevelBadge";
 
 function verdictStyle(verdict: GameVerdict | null): string {
   if (verdict === 2) return "text-green-600";
@@ -252,10 +254,12 @@ export function RevealStage({
 export function ResultsStage({
   ranking,
   currentUserId,
+  xpResult,
   onBack,
 }: {
   ranking: GameScoreboardRow[];
   currentUserId: number | null;
+  xpResult?: GameXpResult | null;
   onBack: () => void;
 }) {
   const t = useTranslations("game");
@@ -274,6 +278,40 @@ export function ResultsStage({
       </div>
 
       <div className="p-6 space-y-5">
+        {xpResult && (
+          <div
+            className={`flex items-center gap-4 rounded-lg border p-4 ${
+              xpResult.leveledUp
+                ? "border-purple-200 bg-purple-50"
+                : "border-gray-100 bg-gray-50"
+            }`}
+          >
+            <LevelBadge
+              level={xpResult.level}
+              xpIntoLevel={xpResult.xpIntoLevel}
+              xpForNext={xpResult.xpForNext}
+              size={52}
+              uid="game-result"
+            />
+            <div className="leading-snug">
+              <div className="font-semibold text-gray-800">
+                {xpResult.leveledUp
+                  ? t("levelUp", { level: xpResult.level })
+                  : xpResult.gained > 0
+                    ? t("xpGained", { xp: xpResult.gained })
+                    : t("xpCapped")}
+              </div>
+              <div className="text-sm text-gray-500">
+                {t("levelProgress", {
+                  level: xpResult.level,
+                  current: xpResult.xpIntoLevel,
+                  next: xpResult.xpForNext,
+                })}
+              </div>
+            </div>
+          </div>
+        )}
+
         <Scoreboard rows={ranking} currentUserId={currentUserId} />
         <button
           onClick={onBack}

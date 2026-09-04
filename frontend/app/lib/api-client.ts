@@ -121,12 +121,17 @@ export async function getProfile(): Promise<{
     user_name: string;
     full_name: string;
     avatar_url?: string;
+    description: string;
     email: string;
     total_words: number;
     word_pool_count: number;
     daily_streak: number;
     completed_rounds: number;
     game_score: number;
+    xp: number;
+    level: number;
+    xp_into_level: number;
+    xp_for_next: number;
     email_verified: boolean;
     has_password: boolean;
     is_admin: boolean;
@@ -143,15 +148,30 @@ export async function recordStudyComplete() {
     return apiPost("/users/study/complete");
 }
 
+export async function awardXp(words: number): Promise<{
+    xp: number;
+    level: number;
+    xp_into_level: number;
+    xp_for_next: number;
+    gained: number;
+}> {
+    return apiPost("/users/xp/award", { words });
+}
+
 export async function getPublicProfile(userName: string): Promise<{
     user_name: string;
     full_name: string;
     avatar_url?: string;
+    description: string;
     total_words: number;
     daily_streak: number;
     completed_rounds: number;
     word_pool_count: number;
     game_score: number;
+    xp: number;
+    level: number;
+    xp_into_level: number;
+    xp_for_next: number;
 }> {
     return apiPost("/users/public-profile", { user_name: userName });
 }
@@ -163,8 +183,8 @@ export async function getAvatarUploadUrl(extension: string) {
     );
 }
 
-export async function updateProfile(data: { user_name?: string; avatar_url?: string }) {
-    return apiPost<{ user_name: string; avatar_url?: string }>("/users/profile/update", data);
+export async function updateProfile(data: { user_name?: string; full_name?: string; description?: string; avatar_url?: string }) {
+    return apiPost<{ user_name: string; full_name: string; description?: string; avatar_url?: string }>("/users/profile/update", data);
 }
 
 export async function deleteAvatar(): Promise<{ user_name: string; avatar_url?: string }> {
