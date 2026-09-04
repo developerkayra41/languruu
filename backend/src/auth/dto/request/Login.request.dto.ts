@@ -1,13 +1,19 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, MaxLength, MinLength } from "class-validator";
+import { IsNotEmpty, IsOptional, MaxLength, MinLength } from "class-validator";
 import { DtoPrefix, getValidationMessage, ValidationType } from "src/_common/enums/ValidationMessages.enum";
 
 export class LoginRequestDTO {
-    @ApiProperty({ default: 'test@hotmail.com', maxLength: 50, minLength: 6, nullable: false })
-    @IsNotEmpty({ message: getValidationMessage(DtoPrefix.EMAIL, ValidationType.NOT_EMPTY) })
-    @MinLength(6, { message: getValidationMessage(DtoPrefix.EMAIL, ValidationType.MIN_LENGTH, 6) })
+    @ApiProperty({ default: 'test@hotmail.com', description: 'E-posta veya kullanıcı adı', maxLength: 50, minLength: 3, required: false })
+    @IsOptional()
+    @MinLength(3, { message: getValidationMessage(DtoPrefix.EMAIL_OR_PHONE, ValidationType.MIN_LENGTH, 3) })
+    @MaxLength(50, { message: getValidationMessage(DtoPrefix.EMAIL_OR_PHONE, ValidationType.MAX_LENGTH, 50) })
+    identifier?: string;
+
+    @ApiProperty({ default: 'test@hotmail.com', description: 'Eski istemciler için: identifier ile aynı işi görür', maxLength: 50, minLength: 3, required: false })
+    @IsOptional()
+    @MinLength(3, { message: getValidationMessage(DtoPrefix.EMAIL, ValidationType.MIN_LENGTH, 3) })
     @MaxLength(50, { message: getValidationMessage(DtoPrefix.EMAIL, ValidationType.MAX_LENGTH, 50) })
-    email: string;
+    email?: string;
 
     @ApiProperty({ default: '123456', maxLength: 50, minLength: 6, nullable: false })
     @IsNotEmpty({ message: getValidationMessage(DtoPrefix.PASSWORD, ValidationType.NOT_EMPTY) })

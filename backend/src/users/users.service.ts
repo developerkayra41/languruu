@@ -35,6 +35,15 @@ export class UsersService {
 
   findActiveByEmail = async (email: string): Promise<AuthUser | null> => this.userRepo.findActiveByEmail(email);
 
+  findActiveByUsername = async (userName: string): Promise<AuthUser | null> => this.userRepo.findActiveByUsername(userName);
+
+  findActiveByIdentifier = async (identifier: string): Promise<AuthUser | null> => {
+    const value = identifier.trim();
+    return value.includes('@')
+      ? this.userRepo.findActiveByEmail(value)
+      : this.userRepo.findActiveByUsername(value);
+  };
+
   create = async (data: RegisterRequestDTO): Promise<UserResponse> => this.userRepo.create(data);
 
   existByEmail = async (email: string) => this.userRepo.existByEmail(email);

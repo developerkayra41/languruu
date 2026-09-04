@@ -9,13 +9,13 @@ import Link from "next/link";
 
 export default function LoginForm() {
   const t = useTranslations("auth.login");
-  const [email, setEmail] = useState("");
+  const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isPending, startTransition] = useTransition();
 
   const validate = (): string | null => {
-    if (!email.includes("@")) return t("errEmail");
+    if (identifier.trim().length < 3) return t("errIdentifier");
     if (password.length < 6) return t("errPassword");
     return null;
   };
@@ -28,7 +28,7 @@ export default function LoginForm() {
       return;
     }
     startTransition(async () => {
-      const result = await login(email, password);
+      const result = await login(identifier.trim(), password);
       if (result && !result.success) toast.error(result.error);
     });
   };
@@ -37,13 +37,14 @@ export default function LoginForm() {
     <form onSubmit={handleSubmit} className="space-y-4" noValidate>
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1.5">
-          {t("email")}
+          {t("identifier")}
         </label>
         <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder={t("placeholderEmail")}
+          type="text"
+          autoComplete="username"
+          value={identifier}
+          onChange={(e) => setIdentifier(e.target.value)}
+          placeholder={t("placeholderIdentifier")}
           className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent"
         />
       </div>
