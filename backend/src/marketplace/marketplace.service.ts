@@ -6,6 +6,7 @@ import { MarketPlaceRepository } from './repository/marketplace.repository';
 import { UserRepository } from 'src/users/repository/user.repository';
 import { OnEvent } from '@nestjs/event-emitter';
 import { WordsService } from 'src/words/words.service';
+import { NotificationsService } from 'src/notifications/notifications.service';
 
 @Injectable()
 export class MarketplaceService {
@@ -14,6 +15,7 @@ export class MarketplaceService {
         private readonly userRepo: UserRepository,
         private readonly wordsRepo: WordRepository,
         private readonly wordsService: WordsService,
+        private readonly notificationsService: NotificationsService,
     ) { }
 
     @OnEvent('word-column.upserted')
@@ -138,6 +140,12 @@ export class MarketplaceService {
 
         if (!existingCopy) {
             await this.marketplaceRepo.incrementDownloads(shareId);
+            await this.notificationsService.create({
+                user_id: entry.owner_user_id,
+                actor_user_id: userId,
+                type: 'group_copied',
+                payload: { group_name: entry.name, share_id: shareId },
+            });
         }
 
         return copied;

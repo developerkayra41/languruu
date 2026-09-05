@@ -2,6 +2,7 @@
   "common": {
     "confirm": "Onayla",
     "cancel": "İptal",
+    "back": "Geri",
     "note": "Not"
   },
   "nav": {
@@ -17,6 +18,8 @@
     "groupsShort": "Gruplar",
     "marketplaceShort": "Market",
     "profile": "Profil",
+    "messages": "Mesajlar",
+    "notifications": "Bildirimler",
     "settings": "Ayarlar",
     "admin": "Yönetim Paneli",
     "logout": "Çıkış Yap"
@@ -558,5 +561,63 @@
       "search_engine": "Arama motoru (Google vb.)",
       "other": "Diğer"
     }
+  },
+  "notifications": {
+    "title": "Bildirimler",
+    "pageTitle": "Bildirimler",
+    "seeAll": "Tümünü gör",
+    "loading": "Yükleniyor...",
+    "empty": "Henüz bildiriminiz yok.",
+    "accept": "Kabul Et",
+    "reject": "Reddet",
+    "accepted": "{name} ile artık arkadaşsınız.",
+    "deletedUser": "Silinmiş kullanıcı",
+    "friendRequestText": "{name} sana arkadaşlık isteği gönderdi.",
+    "friendAcceptedText": "{name} arkadaşlık isteğini kabul etti.",
+    "groupCopiedText": "{name} adlı kullanıcı \"{group}\" kelime grubunu kendine kaydetti.",
+    "messageReceivedText": "{name} sana mesaj gönderdi.",
+    "openThread": "Mesajı aç",
+    "viewInMarketplace": "Kütüphanede gör"
+  },
+  "friends": {
+    "add": "Arkadaş Ekle",
+    "pendingOutgoing": "İstek Gönderildi",
+    "accept": "Kabul Et",
+    "reject": "Reddet",
+    "friends": "Arkadaşsınız",
+    "remove": "Arkadaşlıktan Çıkar",
+    "requestSent": "Arkadaşlık isteği gönderildi.",
+    "nowFriends": "Artık arkadaşsınız.",
+    "cancelConfirm": "Arkadaşlık isteğini geri çekmek istiyor musunuz?",
+    "removeConfirm": "{name} arkadaşlıktan çıkarılsın mı?",
+    "requestsTab": "İstekler",
+    "friendsTab": "Arkadaşlar",
+    "noRequests": "Bekleyen arkadaşlık isteğiniz yok.",
+    "noFriends": "Henüz arkadaşınız yok.",
+    "friendCount": "{count} arkadaş"
+  },
+  "messages": {
+    "title": "Mesajlar",
+    "pageTitle": "Mesajlar",
+    "empty": "Henüz mesajın yok. Bir arkadaşının profilinden yazışmaya başlayabilirsin.",
+    "threadEmpty": "{name} ile ilk mesajı sen yaz.",
+    "placeholder": "Mesaj yaz...",
+    "send": "Gönder",
+    "back": "Mesajlara dön",
+    "delete": "Mesajı sil",
+    "actions": "Mesaj işlemleri",
+    "edit": "Mesajı düzenle",
+    "edited": "düzenlendi",
+    "saveEdit": "Kaydet",
+    "cancelEdit": "Vazgeç",
+    "deleteConfirm": "Bu mesaj iki taraftan da silinecek. Emin misin?",
+    "sendMessage": "Mesaj gönder",
+    "needFriend": "Bu kişiye mesaj göndermek için önce arkadaş olmanız gerekiyor.",
+    "threadUnavailable": "Bu yazışma açılamadı.",
+    "goToProfile": "Profile git",
+    "retentionNotice": "Mesajlar gönderildikten 7 gün sonra otomatik silinir.",
+    "youPrefix": "Sen:",
+    "today": "Bugün",
+    "yesterday": "Dün"
   }
 }

@@ -94,7 +94,7 @@ export default function ReportButton({
               <div className="flex justify-end gap-2">
                 <button
                   onClick={() => setOpen(false)}
-                  className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
+                  className="px-4 py-2 text-sm rounded-md border border-transparent text-gray-600 hover:text-gray-800 hover:border-gray-300 transition"
                 >
                   {t("cancel")}
                 </button>

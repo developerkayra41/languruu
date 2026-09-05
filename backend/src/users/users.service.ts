@@ -14,13 +14,19 @@ import { randomUUID } from 'crypto';
 import { sha256 } from 'js-sha256';
 import { ConfigService } from '@nestjs/config';
 import { DAILY_XP_CAP, levelInfo, XP_PER_WORD, xpFromGameScore } from 'src/_common/utils/xp-level';
+import { FriendRepository } from 'src/friends/repository/friend.repository';
+import { NotificationRepository } from 'src/notifications/repository/notification.repository';
+import { MessageRepository } from 'src/messages/repository/message.repository';
 @Injectable()
 export class UsersService {
   constructor(@Inject(UserRepository) private readonly userRepo: UserRepository,
     @Inject('SUPABASE') private readonly supabase, private readonly wordsRepo: WordRepository,
     private readonly securityEventRepo: SecurityEventRepository,
     private readonly mailService: MailService,
-    private readonly authTokenRepo: AuthTokenRepository, private readonly config: ConfigService) { }
+    private readonly authTokenRepo: AuthTokenRepository, private readonly config: ConfigService,
+    private readonly friendRepo: FriendRepository,
+    private readonly notificationRepo: NotificationRepository,
+    private readonly messageRepo: MessageRepository) { }
 
   private displayedStreak(
     stats: { study_streak: number; last_study_date: string | null } | null,
@@ -64,6 +70,12 @@ export class UsersService {
       ? wordRow.words.reduce((sum, c) => sum + (c.wordPool?.length ?? 0), 0)
       : 0;
     const stats = await this.userRepo.getStudyStats(userId);
+    const [friendCount, pendingRequestCount, unreadNotifications, unreadMessages] = await Promise.all([
+      this.friendRepo.countFriends(userId),
+      this.friendRepo.countIncomingRequests(userId),
+      this.notificationRepo.countUnread(userId),
+      this.messageRepo.countUnreadSenders(userId),
+    ]);
 
     return {
       user_name: user.user_name,
@@ -82,6 +94,10 @@ export class UsersService {
       completed_rounds: stats?.completed_rounds ?? 0,
       game_score: stats?.game_score ?? 0,
       ...levelInfo(stats?.xp),
+      friend_count: friendCount,
+      pending_request_count: pendingRequestCount,
+      unread_notifications: unreadNotifications,
+      unread_messages: unreadMessages,
       needs_discovery_prompt: this.needsDiscoveryPrompt(user),
     };
   };
@@ -106,6 +122,7 @@ export class UsersService {
       ? wordRow.words.reduce((sum, c) => sum + (c.wordPool?.length ?? 0), 0)
       : 0;
     const stats = await this.userRepo.getStudyStats(user.id);
+    const friendCount = await this.friendRepo.countFriends(user.id);
 
     return {
       user_name: user.user_name,
@@ -117,6 +134,7 @@ export class UsersService {
       daily_streak: this.displayedStreak(stats),
       completed_rounds: stats?.completed_rounds ?? 0,
       game_score: stats?.game_score ?? 0,
+      friend_count: friendCount,
       ...levelInfo(stats?.xp),
     };
   }

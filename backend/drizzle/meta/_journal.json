@@ -43,6 +43,27 @@
       "when": 1788532131366,
       "tag": "0005_youthful_alice",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1788559437687,
+      "tag": "0006_noisy_songbird",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1788601071403,
+      "tag": "0007_ambitious_sentry",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1788602866360,
+      "tag": "0008_real_mephistopheles",
+      "breakpoints": true
     }
   ]
 }

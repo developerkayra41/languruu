@@ -6,6 +6,50 @@ sürümleme [SemVer](https://semver.org/lang/tr/) kurallarına uyar.
 
 ## [Yayınlanmamış]
 
+### Eklendi
+- Arkadaşlık sistemi: başka bir kullanıcının profilinde "Arkadaş Ekle" butonu,
+  istek gönderme / geri çekme, kabul-ret ve arkadaşlıktan çıkarma. Karşılıklı
+  istek gönderilirse ikinci istek otomatik kabule dönüşür.
+- Bildirim sistemi: navbar'da okunmamış rozeti taşıyan çan butonu, kendi
+  profilinde Bildirimler / İstekler / Arkadaşlar kısayolları ve `/notifications`
+  sayfası (üç sekme).
+- Kütüphaneden bir kelime grubu ilk kez kopyalandığında grup sahibine
+  "X kelime grubunuzu kaydetti" bildirimi gidiyor.
+- Mesajlaşma: yalnızca arkadaşlar birbirine yazabiliyor. Profillerde zarf
+  butonu (arkadaş değilse uyarı), profil menüsünde okunmamış gönderen sayısını
+  gösteren Mesajlar satırı, `/messages` listesi ve yazışma ekranı. Mesaj
+  gelince bildirim düşüyor (aynı kişiden gelen okunmamış bildirim tazelenir,
+  çoğalmaz).
+- Mesajlarda "görüldü" bilgisi yok; gönderim tarihi ve saati tutulur. Kişi
+  yalnızca kendi mesajını silebilir veya düzenleyebilir; silinen mesaj iki
+  taraftan da kalkar, düzenlenen mesajın altında "(düzenlendi)" yazar. Her
+  mesaj gönderildikten 7 gün sonra otomatik silinir.
+- Arkadaş olunan profillerde buton açık yeşil "Arkadaşsınız" + tikli kişi
+  ikonu; hover'da kırmızı "Arkadaşlıktan Çıkar" + çarpılı kişi ikonu.
+- Mesajlar ve bildirimler ekranları açık temada yumuşatıldı: odak halkası ince
+  ve soluk mor, kart kenarları belirginleşti, boş durum ikonları soluklaştı,
+  gönderilen mesaj baloncuğu bir ton açıldı.
+- Yazışma ekranındaki kaydırma çubuğu Languruu temasına uyduruldu
+  (`.pretty-scroll`). Mesaj düzenle/sil işlemleri baloncuğun sağ üstündeki üç
+  nokta menüsüne taşındı.
+
+### Düzeltildi
+- Mesajlar bölümünde geri tuşu liste ile yazışma arasında döngüye giriyordu;
+  bölüm artık geçmişte tek kayıt tutuyor ve geri tuşu bölüme girmeden önceki
+  sayfaya dönüyor.
+- Bildirim satırında göreli zaman ile eylem linki bitişik yazılıyordu.
+- Profildeki "Arkadaşsınız" butonunda iki ikon aynı anda görünüyordu; Font
+  Awesome'ın CSS'i Tailwind'in `hidden` sınıfını eziyordu.
+- Boş durum ikonları (mesaj/bildirim listeleri) metnin üstünde değil yanında
+  duruyordu; Font Awesome'ın CSS'i Tailwind'in `block` sınıfını eziyordu.
+- Karanlık modda `hover:text-gray-*` kullanan butonların (ör. Şikayet Et
+  modalindeki İptal) yazısı hover'da kararıp okunmaz oluyordu.
+- Tarih ve saatler 3 saat geri gösteriliyordu (yeni mesaj "3 saat önce", admin
+  panelinde güvenlik olayları ve son hatalar geride). Ham SQL sorguları
+  timestamp'i timezone taşımayan metin olarak döndürüyor, tarayıcı da bunu
+  yerel saat sayıyordu; dışarı dönen tüm timestamp'ler artık UTC ofseti ile
+  gönderiliyor.
+
 ### Değiştirildi
 - `NEXT_PUBLIC_FEATURE_SENTENCE_MODE` bayrağı kaldırıldı; cümle özelliği ve
   Cümleli mod artık kalıcı olarak açık. `app/lib/features.ts` silindi.

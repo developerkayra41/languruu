@@ -13,15 +13,15 @@ languruu/
 
 ### backend/ (NestJS + Drizzle ORM + PostgreSQL)
 - **Katmanlı mimari:** controller → service → repository. DTO doğrulama `class-validator`.
-- Modüller (`src/`): `auth`, `users`, `words`, `marketplace`, `top-performers`, `reports`, `admin`, `mail`, `health`.
-- Drizzle şemaları: `src/_common/drizzle/*.ts` (users, words, market_place, user_sessions, auth_tokens, reports, security_events, error_logs, top_performers).
+- Modüller (`src/`): `auth`, `users`, `words`, `marketplace`, `friends`, `notifications`, `messages`, `top-performers`, `reports`, `admin`, `mail`, `health`.
+- Drizzle şemaları: `src/_common/drizzle/*.ts` (users, words, market_place, user_sessions, auth_tokens, reports, security_events, error_logs, top_performers, friendships, notifications, conversations, messages).
 - Guard: `src/_common/guards/JwtAuthGuard.ts` — her istekte JWT + `AuthStateService` ile DB'den ban/silme/token geçerliliği kontrolü.
 - Global `HttpExceptionFilter` → `BaseResponse { data, message, success }`; kritik hatada mail + admin panel "Son Hatalar".
 - Migrations: `backend/drizzle/` (drizzle-kit).
 
 ### frontend/ (Next.js App Router + TypeScript + Tailwind + next-intl)
 - `app/(auth)`: login, register, forgot/reset-password, verify-email.
-- `app/(dashboard)`: study, words, add, groups, marketplace, top-performers, profile, settings, admin, users/[username].
+- `app/(dashboard)`: study, words, add, groups, marketplace, top-performers, profile, settings, admin, notifications, messages, users/[username].
 - `app/(legal)`: privacy, terms. `app/suspended`, `app/not-found.tsx`.
 - **Pazarlama (SEO) rotaları:** `app/page.tsx` (TR ana sayfa), `app/en/page.tsx` (EN ana sayfa), `app/blog` + `app/en/blog` (rehber/blog).
 - `app/lib/seo.ts`: canonical/hreflang URL'leri, JSON-LD grafiği, `SOCIAL_PROFILES`.
@@ -58,6 +58,33 @@ languruu/
 - **Seviye atlama kutlaması:** `use-xp.ts` sunucudan dönen yeni seviyeyi `xpLevel` localStorage değeriyle kıyaslar; arttıysa toast + emoji konfeti. İlk yanıt yalnızca referansı kurar (yanlış pozitif olmasın). Yarış modunda XP sunucuda verilir: `finish()` önce `game:finished` yollar, `persistScores` bitince ayrı bir `game:xp` event'i yollar (sonuç ekranını DB gecikmesi bekletmesin diye) ve sonuç ekranında rozetli "seviye atladın / +N XP / günlük sınır" satırı çıkar.
 - **XP suistimal önlemleri:** "cevabı göster" kullanılan soru XP vermez (her iki study modunda `usedReveal` bayrağı); aynı kelime **günde bir kez** XP verir (client'ta `xpAwarded` localStorage seti, anahtar = `buildItemKeys` hash'i, gruptan bağımsız); istek başına en fazla 50 kelime (`AwardXp.request.dto.ts`) ve sunucu tarafı günlük tavan son savunma hattıdır.
 - **Top performers:** 10 dk'da bir cron; sıralama = **XP (baskın) → etkin günlük seri → tamamlanan tur → toplam kelime → havuz sayısı**. Snapshot `top_performers` tablosunda JSON; eski snapshot'larda `xp`/`level` alanı olmayabilir, frontend'de `?? ` ile karşılanır.
+
+
+## Arkadaşlık & bildirimler
+- **`friendships`:** tek satır bir ilişkiyi temsil eder — `requester_id`, `addressee_id`, `status` (`pending` | `accepted`). `(requester_id, addressee_id)` unique. **Ret = satırı sil** (böylece tekrar istek atılabilir), arkadaşlıktan çıkarmak da satırı siler. `findRelation` **iki yönü birden** sorgular; A→B beklerken B→A istek atarsa servis bunu otomatik kabule çevirir.
+- **`notifications`:** `user_id` (alıcı), `actor_user_id` (eylemi yapan), `type`, `payload` (JSONB), `read_at`. Tipler: `friend_request` (payload'da `request_id`), `friend_accepted`, `group_copied` (payload'da `group_name` + `share_id`).
+- **Bildirim üretimi doğrudan servis çağrısıdır**, event değil: `FriendsModule` ve `MarketplaceModule`, `NotificationsModule`'ü import eder. `NotificationsModule` yalnızca `DrizzleModule`'e bağlıdır — döngü yok. `NotificationsService.create` alıcı = aktör ise sessizce hiçbir şey yazmaz.
+- **Kütüphane kopyası bildirimi** `copyToUser` içinde, `if (!existingCopy)` bloğunda üretilir (indirme sayacıyla aynı yerde) — aynı grubu tekrar kopyalamak yeni bildirim doğurmaz.
+- İstek kabul/ret edilince ilgili `friend_request` bildirimi **silinir** (`payload->>'request_id'` ile bulunur), aksi halde panelde ölü Kabul/Reddet butonları kalır.
+- **Soft-delete edilmiş kullanıcılar** arkadaş listesi, istek listesi, sayaçlar ve bildirim aktörü sorgularında `deleted_at IS NULL` ile elenir; ilişkiler DB'de kalır (FK'ler `ON DELETE` davranışı tanımlamaz, proje zaten hard-delete yapmaz).
+- **Sayaçlar profil yanıtına gömülüdür:** `getProfile` → `friend_count`, `pending_request_count`, `unread_notifications`. Dashboard layout zaten `getProfile` çağırdığı için navbar çanı ekstra istek atmaz; çan yalnızca 60 sn'de bir okunmamış sayısını yoklar (panel kapalıyken, sekme görünürken).
+- **Panel açılınca hepsi okundu işaretlenir** ama satırlardaki okunmamış vurgusu o an için korunur (liste açılmadan önceki `read_at` ile render edilir).
+- Frontend: `app/components/social/` (FriendButton, NotificationBell, NotificationRow, actions) + `app/(dashboard)/notifications` (üç sekme: bildirimler, istekler, arkadaşlar; `?tab=` ile derin bağlantı).
+- Göreli zaman `app/lib/relative-time.ts`. Postgres `timestamp` (timezone'suz) sunucu saatine göre yorumlandığı için negatif fark **0'a kırpılır** — yerelde "3 saat sonra" gibi çıktı olmaz.
+
+
+## Mesajlaşma (DM)
+- **Sadece arkadaşlar yazışır.** `MessagesService.resolveFriend` her işlemde `FriendRepository.areFriends` kontrolü yapar; değilse **403 + mesaj `NOT_FRIENDS`** döner (`ACCOUNT_SUSPENDED` gibi koda göre ayrışan özel bir mesaj). Arkadaşlıktan çıkılırsa yazışma listeden ve okumadan da düşer — `listConversations`/`countUnreadSenders` sorguları `friendships` ile JOIN'lidir.
+- **İki tablo:** `conversations` (çift `user_a_id` < `user_b_id` olacak şekilde **normalize** edilir, `(user_a_id, user_b_id)` unique) + `messages` (`conversation_id`, `sender_id`, `body`, `created_at`).
+- **"Görüldü" yok.** Okunmuşluk yalnızca **alıcının kendi rozeti** için tutulur: `conversations.a_last_read_at` / `b_last_read_at`. Gönderen bu alanı hiçbir yanıtta görmez. Rozet sayısı = "kaç kişi yazdı" (okunmamış mesajı olan **konuşma** sayısı), mesaj sayısı değil.
+- **Silme ve düzenleme yalnızca göndericiye aittir** (`MessagesService.ownMessage` → `sender_id !== userId` ise 403). Silme **iki taraflıdır**: satır hard-delete edilir, karşı taraftan da kaybolur. Düzenleme `messages.edited_at` damgası basar; baloncuğun en altında `(düzenlendi)` yazar. Karşı tarafın mesajına hiçbir işlem butonu render edilmez. İşlemler kendi baloncuğunun sağ üstündeki **üç nokta** menüsünde (düzenle/sil ikonları); menü **son mesajda yukarı**, diğerlerinde aşağı açılır — yazışma alanı `overflow-y-auto` olduğu için aşağı açılan menü son mesajda kırpılırdı.
+- **7 gün sonra otomatik silme:** `MessageCleanupTasks` saatlik cron, `MESSAGE_TTL_DAYS` (7) sabitine göre `DELETE ... WHERE created_at < now() - interval`.
+- **Zaman damgaları hep Postgres `now()`'dan gelir** (`markRead`, `deleteOlderThan` raw SQL). Karşılaştırmalarda JS `new Date()` yazma; iki kaynağı karıştırınca yerelde okunmamışlar "okundu" görünür. Genel timezone kuralı için bkz. [Zaman / timezone](#zaman--timezone-tuzak).
+- Bildirim tipi `message_received`: aynı kişiden gelen **okunmamış** bildirim varsa yenisi eklenmez, mevcudun `created_at`'i tazelenir (`upsertMessageNotification`) — yoksa her mesaj bir bildirim üretirdi. Yazışma açılınca o kişinin bildirimi okundu işaretlenir.
+- Sayaç profil yanıtında: `getProfile` → `unread_messages`. **Ama layout client-side gezinmede yeniden çalışmaz**, o yüzden menüdeki satır `MessagesMenuItem` client bileşenidir: sunucu değerini başlangıç alır, 60 sn'de bir (sekme görünürken) ve **profil menüsü her açıldığında** `/messages/unread`'i yoklar. Sunucu değerine güvenip statik render edersen mesaj gelince rozet çıkmaz.
+- **Mesajlar bölümü geçmişte tek kayıt tutar:** listeden yazışmaya geçiş ve yazışmadan listeye dönüş `<Link replace>` ile yapılır. Böylece `/messages` üzerindeki geri tuşu (`router.back()`) bölüme girmeden önceki sayfaya (gruplarım, profil, nereden gelindiyse) döner. Push kullanılırsa liste↔yazışma arasında sonsuz geri döngüsü oluşur.
+- Frontend: `app/(dashboard)/messages` (liste) + `messages/[username]` (yazışma; 15 sn'de bir sekme görünürken yoklar), `app/components/social/MessageButton.tsx` (profildeki zarf — arkadaş değilse toast ile uyarır).
+- İç kaydırma alanlarında `.pretty-scroll` sınıfı var (`globals.css`): ince, mor→mavi degrade, yuvarlak uçlu; Firefox `scrollbar-width/color`, WebKit `::-webkit-scrollbar-*` ile karşılanır ve karanlık modda ayrıca tanımlıdır.
 
 - **Study cevap eşleştirme:** `frontend/app/lib/answer-match.ts` tek kaynak. `normalizeAnswer` cevabın dil koduyla küçük harfe indirir, kıvrık kesme işaretlerini `'` yapar, **çoklu boşlukları teke indirir** ve dil `en` ise İngilizce kısaltmaları açar (`i'm` / `i'am` / `im` → `i am`, `dont` → `do not`, `cannot` / `cant` → `can not`). Hem kabul edilen cevaplar hem kullanıcının yazdığı aynı fonksiyondan geçer, bu yüzden dönüşüm asla yanlış-negatif üretmez. Belirsiz kesmesiz biçimler (`its`, `were`, `well`, `ill`, `id`, `lets`) **bilerek** haritada yok — gerçek kelimelerle çakışıyor. Yarış modu ayrı bir yargıç kullanır: `backend/src/game/judge/`.
 
@@ -128,10 +155,34 @@ Değişiklikten sonra ilgili projeyi build et. i18n değişince parity kontrol e
 - **Kodda yorum yok** (bilinçli temizlendi) — dokümantasyon bu dosyadadır. `eslint-disable` / `@ts-*` direktifleri korunur.
 - Frontend hataları **toast** (sonner) ile gösterilir, inline `<p>` değil.
 - Native `confirm()` yerine `useConfirm` hook'u (tema-uyumlu modal, `app/components/ui/useConfirm.tsx`).
-- Karanlık mod: `<html class="dark">` + `globals.css`'te broad-stroke override'lar (cookie tabanlı toggle).
+- Karanlık mod: `<html class="dark">` + `globals.css`'te broad-stroke override'lar (cookie tabanlı toggle). **Hover varyantları da override edilmeli**: `hover:text-gray-600/700/800/900` karanlıkta metni koyulaştırıp okunmaz yapıyordu (modallardaki İptal butonu), `globals.css`'te temel `.dark .text-gray-*` eşlemesiyle aynı renklere bağlandı.
+- **Navbar mobilde yalnızca bildirim çanı + profil avatarı taşır.** Tema ve dil düğmeleri `sm` altında gizlenip profil menüsünün üstündeki yuvarlak buton şeridine taşınır (`sm:hidden`); şerit `stopPropagation` yapar, yoksa sarmalayıcı div'in onClick'i menüyü kapatır. Dil seçimi kayan toplu bir toggle: `SUPPORTED_LOCALES`'ten üretilen düğmelerin altında `translateX(index * 36)` ile sürünen mor bir top var — **36 sayısı düğmenin `w-9` genişliğine bağlıdır**, boyutu değiştirirsen offset'i de değiştir. Masaüstündeki açılır menüyle **aynı** `changeLocale` fonksiyonunu çağırır (`setLocale` + `router.refresh()`).
 - Sistem/ortam/git komutlarını kullanıcı kendisi çalıştırır; ona komutları ver.
 
+
+## Zaman / timezone (TUZAK)
+Tüm `created_at`/`updated_at` kolonları **`timestamp` (timezone'suz)**. Postgres (Supabase, TZ=UTC) doğru UTC yazar — sorun **okumada**.
+
+**Asıl sebep:** `db.execute()` (ham SQL) drizzle'da pg'nin tip parser'larını **atlar** ve timestamp'i ham metin olarak döndürür: `"2026-09-05 11:23:51.841"`. Bu metin JSON'a olduğu gibi girer, tarayıcıdaki `new Date(...)` de timezone taşımayan metni **yerel saat** sayar → UTC+3'te her tarih 3 saat geri görünür. `db.select()` builder'ı bu hataya düşmez; drizzle kolon eşleyicisiyle değeri UTC kabul edip `Date` üretir.
+
+Bu yüzden bozuk olan ekranlar hep ham SQL kullananlardı: mesajlar, bildirimler, arkadaş istekleri, admin "Son Hatalar" / "Güvenlik Olayları" / raporlar.
+
+**Kural: ham SQL'de dışarı dönen her timestamp `AT TIME ZONE 'UTC'` ile sarılır.** Tek kaynak `src/_common/utils/sql-time.ts`:
+```ts
+SELECT ${utc('n.created_at')} AS created_at   // -> "2026-09-05 11:23:51.841+00"
+```
+Ofset taşıyan metni her istemci doğru çözer. `utc()` `sql.raw` kullanır — içine **asla kullanıcı girdisi verme**, yalnızca sabit kolon adı.
+
+Destekleyici iki ayar (tek başlarına yetmez, ham SQL yolunu kurtarmaz):
+- `main.ts`'in **ilk satırı** `process.env.TZ = 'UTC'` — Node'un yazdığı `Date`'ler UTC duvar saati olsun diye.
+- `drizzle.provider.ts`'te `timestamp` OID'i (1114) UTC parse edilir (global + `new Pool({ types })`).
+
+**Açılış logu kendini doğrular:** `✅ Database connected | saat sapması: N dk`. Sorgu bilerek uygulamanın gerçek yolundan geçer (drizzle execute); N 0 değilse timestamp'ler UTC dönmüyordur. Ham `pool.query` ile ölçme — sapmayı gizler, bir kez buna kanıp yanlış yerde arandı.
+
+Frontend'de elle offset **eklenmez**; çeviriyi yalnızca `toLocaleString` / `Intl` yapar.
+
 ## Tuzaklar (hepsi bir kez yaşandı)
+- **Font Awesome ikonuna tek sınıflı `display` utility'si verme** (`block`, `hidden`). FA'nın CSS'i `layout.tsx`'te CDN `<link>`'i ile Tailwind'den **sonra** yükleniyor; `.fas { display: inline-block }` aynı specificity'de olduğu için `.block` / `.hidden` ezilir — ikon gizlenmez, boş durum ikonu metnin yanına düşer. (Varyantlı hâli, ör. `group-hover:hidden`, iki sınıflı olduğu için çalışır; bu yüzden hata yarı yarıya görünür.) İkonu `<span>`/`<div>` ile sar ve sarmalayıcıyı gizle/göster.
 - **DTO'ya alan eklemeden JSONB'ye yeni alan koyma.** Backend'de `ValidationPipe({ whitelist: true }) ` var; DTO'da tanımlı olmayan alan **sessizce silinir**. `note` gibi her yeni `WordPool` alanı `WordPool.request.dto.ts`'e de eklenmeli.
 - **`toLocaleLowerCase()` argümansız çağırma.** Makinenin diline göre davranır; sunucu ve tarayıcı farklı sonuç üretir. Cevap karşılaştırmaları `app/lib/answer-match.ts` üzerinden yapılır (dil kodu parametre olarak geçilir) — yeni karşılaştırmalarda da geç.
 - **Kelime listesinde düzenleme yaparken objeyi sıfırdan kurma.** `{ ...entry, term, translation }` kullan; `{ term, translation }` yazarsan `note`/`uid` gibi alanlar silinir.

@@ -9,7 +9,7 @@ export default function robots(): MetadataRoute.Robots {
         "/study", "/words", "/add", "/groups", "/marketplace", "/game",
         "/settings", "/profile", "/top-performers", "/admin",
         "/users/", "/suspended", "/verify-email", "/reset-password",
-        "/forgot-password",
+        "/forgot-password", "/notifications", "/messages",
       ],
     },
     sitemap: "https://www.languruu.com/sitemap.xml",

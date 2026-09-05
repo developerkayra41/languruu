@@ -3,7 +3,10 @@
 import { useEffect, useState } from "react";
 import { setTheme } from "@/app/theme/actions";
 
-export default function ThemeToggle() {
+const NAVBAR_CLASS =
+  "flex items-center justify-center w-9 h-9 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30 transition cursor-pointer";
+
+export default function ThemeToggle({ className = NAVBAR_CLASS }: { className?: string }) {
   const [dark, setDark] = useState<boolean | null>(null);
 
   useEffect(() => {
@@ -24,7 +27,7 @@ export default function ThemeToggle() {
     <button
       onClick={toggle}
       aria-label="Tema değiştir"
-      className="flex items-center justify-center w-9 h-9 rounded-full bg-white bg-opacity-20 hover:bg-opacity-30 transition cursor-pointer"
+      className={className}
     >
       <i className={`fas ${icon}`}></i>
     </button>

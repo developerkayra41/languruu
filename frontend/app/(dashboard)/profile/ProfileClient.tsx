@@ -8,6 +8,7 @@ import AvatarCropModal from "@/app/components/ui/AvatarCropModal";
 import Avatar from "@/app/components/ui/Avatar";
 import LevelBadge from "@/app/components/ui/LevelBadge";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import Reveal from "@/app/components/ui/Reveal";
 import { useConfirm } from "@/app/components/ui/useConfirm";
 import { toast } from "sonner";
@@ -30,11 +31,18 @@ interface ProfileClientProps {
     xp: number;
     xp_into_level: number;
     xp_for_next: number;
+    friend_count: number;
+    pending_request_count: number;
+    unread_notifications: number;
+    unread_messages: number;
   };
 }
 
 export default function ProfileClient({ initialProfile }: ProfileClientProps) {
   const t = useTranslations("profile");
+  const tn = useTranslations("notifications");
+  const tm = useTranslations("messages");
+  const tf = useTranslations("friends");
   const { confirm, confirmDialog } = useConfirm();
   const [userName, setUserName] = useState(initialProfile.user_name);
   const [avatarUrl, setAvatarUrl] = useState(initialProfile.avatar_url);
@@ -417,6 +425,61 @@ export default function ProfileClient({ initialProfile }: ProfileClientProps) {
                   </button>
                 </div>
               )}
+            </div>
+
+            <div className="mt-5 flex flex-wrap gap-2">
+              <Link
+                href="/notifications"
+                title={tn("title")}
+                aria-label={tn("title")}
+                className="relative inline-flex items-center justify-center w-11 h-11 rounded-lg bg-purple-600 text-white hover:bg-purple-700 transition"
+              >
+                <i className="fas fa-bell"></i>
+                {initialProfile.unread_notifications > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 rounded-full bg-white text-purple-600 text-[10px] font-bold flex items-center justify-center">
+                    {initialProfile.unread_notifications}
+                  </span>
+                )}
+              </Link>
+              <Link
+                href="/messages"
+                title={tm("title")}
+                aria-label={tm("title")}
+                className="relative inline-flex items-center justify-center w-11 h-11 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition"
+              >
+                <i className="fas fa-envelope"></i>
+                {initialProfile.unread_messages > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 rounded-full bg-purple-600 text-white text-[10px] font-bold flex items-center justify-center">
+                    {initialProfile.unread_messages}
+                  </span>
+                )}
+              </Link>
+              <Link
+                href="/notifications?tab=requests"
+                title={tf("requestsTab")}
+                aria-label={tf("requestsTab")}
+                className="relative inline-flex items-center justify-center w-11 h-11 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition"
+              >
+                <i className="fas fa-user-clock"></i>
+                {initialProfile.pending_request_count > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 rounded-full bg-purple-600 text-white text-[10px] font-bold flex items-center justify-center">
+                    {initialProfile.pending_request_count}
+                  </span>
+                )}
+              </Link>
+              <Link
+                href="/notifications?tab=friends"
+                title={tf("friendsTab")}
+                aria-label={tf("friendsTab")}
+                className="relative inline-flex items-center justify-center w-11 h-11 rounded-lg bg-gray-100 text-gray-700 hover:bg-gray-200 transition"
+              >
+                <i className="fas fa-user-group"></i>
+                {initialProfile.friend_count > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 min-w-[20px] h-5 px-1 rounded-full bg-purple-600 text-white text-[10px] font-bold flex items-center justify-center">
+                    {initialProfile.friend_count}
+                  </span>
+                )}
+              </Link>
             </div>
           </div>
         </div>

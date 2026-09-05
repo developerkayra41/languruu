@@ -5,6 +5,7 @@ import { Locale, LOCALE_HEADER } from "@/app/i18n/locales";
 const PROTECTED_PREFIXES = [
   "/study", "/words", "/add", "/groups", "/marketplace", "/game",
   "/settings", "/profile", "/top-performers", "/admin", "/users", "/suspended",
+  "/notifications", "/messages",
 ];
 const AUTH_ONLY_PATHS = ["/login", "/register"];
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001";

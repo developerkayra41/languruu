@@ -11,10 +11,13 @@ import { AuthModule } from 'src/auth/auth.module';
 import { MailModule } from 'src/mail/mail.module';
 import { MailService } from 'src/mail/mail.service';
 import { UserCleanupTasks } from './tasks/user-cleanup.tasks';
+import { FriendRepository } from 'src/friends/repository/friend.repository';
+import { NotificationRepository } from 'src/notifications/repository/notification.repository';
+import { MessageRepository } from 'src/messages/repository/message.repository';
 
 @Module({
   imports: [DrizzleModule, SupabaseModule, WordsModule, MailModule, forwardRef(() => AuthModule)],
-  providers: [UsersService, UserRepository, TopPerformerRepository, MailService, UserCleanupTasks],
+  providers: [UsersService, UserRepository, TopPerformerRepository, MailService, UserCleanupTasks, FriendRepository, NotificationRepository, MessageRepository],
   controllers: [UsersController],
   exports: [UsersService, UserRepository]
 })
