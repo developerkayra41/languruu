@@ -7,11 +7,14 @@ import { useLocale, useTranslations } from "next-intl";
 import Avatar from "../components/ui/Avatar";
 import { logout, resendVerificationAction } from "./actions";
 import { setLocale } from "../i18n/actions";
+import { SUPPORTED_LOCALES } from "../i18n/locales";
 import { toast } from "sonner";
 import Logo from "../components/ui/Logo";
 import Reveal from "../components/ui/Reveal";
 import ThemeToggle from "../components/ui/ThemeToggle";
 import DiscoverySourceModal from "../components/onboarding/DiscoverySourceModal";
+import NotificationBell from "../components/social/NotificationBell";
+import MessagesMenuItem from "../components/social/MessagesMenuItem";
 
 const TABS = [
   { href: "/study", key: "study" },
@@ -30,7 +33,7 @@ const MOBILE_NAV = [
   { href: "/marketplace", key: "marketplaceShort", icon: "fa-store" },
 ];
 
-const NO_TAB_BAR_ROUTES = ["/profile", "/settings", "/users/", "/admin"];
+const NO_TAB_BAR_ROUTES = ["/profile", "/settings", "/users/", "/admin", "/notifications", "/messages"];
 
 interface DashboardShellProps {
   children: React.ReactNode;
@@ -39,6 +42,8 @@ interface DashboardShellProps {
     avatar_url?: string;
     email_verified?: boolean;
     is_admin: boolean;
+    unread_notifications?: number;
+    unread_messages?: number;
     needs_discovery_prompt?: boolean;
   } | null;
 }
@@ -85,6 +90,10 @@ export default function DashboardShell({
       await setLocale(l);
       router.refresh();
     });
+  const localeIndex = Math.max(
+    0,
+    SUPPORTED_LOCALES.findIndex((l) => l === locale),
+  );
   return (
     <div className="min-h-screen bg-gray-50">
       <nav className="sticky top-0 z-30 bg-gradient-to-r from-purple-600 to-blue-500 text-white shadow-md">
@@ -99,11 +108,16 @@ export default function DashboardShell({
             </Link>
           </h1>
 
-          <div className="flex items-center space-x-3 sm:space-x-4">
-            <ThemeToggle />
+          <div className="flex items-center space-x-2 sm:space-x-4">
+            <div className="hidden sm:block">
+              <ThemeToggle />
+            </div>
+            {profile && (
+              <NotificationBell initialUnread={profile.unread_notifications ?? 0} />
+            )}
             <div
               ref={languageMenuRef}
-              className="relative"
+              className="relative hidden sm:block"
               onClick={() => setIsLanguageMenuOpen(!isLanguageMenuOpen)}
             >
               <button className="flex items-center bg-white bg-opacity-20 hover:bg-opacity-30 rounded-full px-3 sm:px-4 py-1 text-sm font-medium transition cursor-pointer whitespace-nowrap">
@@ -144,6 +158,32 @@ export default function DashboardShell({
                 className={`absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 z-50 dropdown-menu ${isProfileMenuOpen ? "active" : ""}`}
               >
                 <Reveal>
+                  <div
+                    onClick={(e) => e.stopPropagation()}
+                    className="sm:hidden flex items-center gap-2 px-4 pb-2 mb-1 border-b border-gray-100"
+                  >
+                    <ThemeToggle className="flex items-center justify-center w-9 h-9 rounded-full bg-gray-100 text-gray-700 hover:bg-gray-200 transition cursor-pointer" />
+                    <div className="relative flex items-center rounded-full bg-gray-100 p-0.5">
+                      <span
+                        aria-hidden
+                        style={{ transform: `translateX(${localeIndex * 36}px)` }}
+                        className="absolute left-0.5 top-0.5 w-9 h-9 rounded-full bg-purple-600 shadow-sm transition-transform duration-300 ease-out"
+                      />
+                      {SUPPORTED_LOCALES.map((l) => (
+                        <button
+                          key={l}
+                          onClick={() => locale !== l && changeLocale(l)}
+                          aria-label={l.toUpperCase()}
+                          aria-pressed={locale === l}
+                          className={`relative z-10 flex items-center justify-center w-9 h-9 rounded-full text-xs font-bold transition-colors duration-200 cursor-pointer ${
+                            locale === l ? "text-white" : "text-gray-600 hover:text-gray-800"
+                          }`}
+                        >
+                          {l.toUpperCase()}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
                   <Link
                     href="/profile"
                     className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
@@ -157,6 +197,16 @@ export default function DashboardShell({
                   >
                     <i className="fas fa-trophy mr-2 w-4"></i>
                     {t("topPerformers")}
+                  </Link>
+                  <MessagesMenuItem
+                    initialUnread={profile?.unread_messages ?? 0}
+                    menuOpen={isProfileMenuOpen}
+                  />
+                  <Link
+                    href="/notifications"
+                    className="block px-4 py-2 text-gray-700 hover:bg-gray-100"
+                  >
+                    <i className="fas fa-bell mr-2 w-4"></i>{t("notifications")}
                   </Link>
                   <Link
                     href="/settings"

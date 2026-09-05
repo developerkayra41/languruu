@@ -1,5 +1,6 @@
 import { Inject } from "@nestjs/common";
 import { sql } from "drizzle-orm";
+import { utc } from "src/_common/utils/sql-time";
 
 export class AdminRepository {
     constructor(@Inject('DRIZZLE') private readonly db) { }
@@ -36,7 +37,9 @@ export class AdminRepository {
             : sql``;
 
         const items = await this.db.execute(sql`
-            SELECT id, user_name, full_name, email, created_at, is_banned, last_seen_at
+            SELECT id, user_name, full_name, email, is_banned,
+                   ${utc('created_at')} AS created_at,
+                   ${utc('last_seen_at')} AS last_seen_at
             FROM users
             WHERE deleted_at IS NULL ${filterCond} ${searchCond}
             ORDER BY created_at DESC
@@ -62,7 +65,7 @@ export class AdminRepository {
 
     async getRecentErrors(limit = 15) {
         const result = await this.db.execute(sql`
-            SELECT id, message, path, method, status, user_id, created_at
+            SELECT id, message, path, method, status, user_id, ${utc('created_at')} AS created_at
             FROM error_logs ORDER BY created_at DESC LIMIT ${limit}
         `);
         return result.rows;
@@ -70,7 +73,7 @@ export class AdminRepository {
 
     async getRecentSecurityEvents(limit = 15) {
         const result = await this.db.execute(sql`
-            SELECT id, event_type, user_id, email, ip_address, created_at
+            SELECT id, event_type, user_id, email, ip_address, ${utc('created_at')} AS created_at
             FROM security_events ORDER BY created_at DESC LIMIT ${limit}
         `);
         return result.rows;

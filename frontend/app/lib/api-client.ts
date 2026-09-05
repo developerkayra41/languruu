@@ -17,6 +17,7 @@ async function getAuthHeaders(): Promise<HeadersInit> {
 import { redirect } from "next/navigation";
 import { AdminDiscoverySource, AdminError, AdminSecurityEvent, AdminStats, AdminUsersPage } from "../types/admin";
 import { GameRoomSummary, GameTicket } from "../types/game";
+import { ConversationSummary, FriendCounts, FriendRelation, FriendRequestSummary, FriendSummary, MessageItem, MessageThread, NotificationsPage } from "../types/social";
 
 async function apiPost<T>(path: string, body?: unknown): Promise<T> {
     const res = await fetch(`${API_BASE_URL}/api${path}`, {
@@ -135,6 +136,10 @@ export async function getProfile(): Promise<{
     email_verified: boolean;
     has_password: boolean;
     is_admin: boolean;
+    friend_count: number;
+    pending_request_count: number;
+    unread_notifications: number;
+    unread_messages: number;
     needs_discovery_prompt: boolean;
 }> {
     return apiPost("/users/profile");
@@ -168,6 +173,7 @@ export async function getPublicProfile(userName: string): Promise<{
     completed_rounds: number;
     word_pool_count: number;
     game_score: number;
+    friend_count: number;
     xp: number;
     level: number;
     xp_into_level: number;
@@ -290,4 +296,75 @@ export async function getAdminReports(status?: string): Promise<AdminReport[]> {
 }
 export async function resolveReport(id: number, status: string) {
     return apiPost(`/admin/reports/${id}/resolve`, { status });
+}
+export async function getNotifications(params?: { limit?: number; offset?: number }): Promise<NotificationsPage> {
+    return apiPost<NotificationsPage>("/notifications/list", params ?? {});
+}
+
+export async function getUnreadNotificationCount(): Promise<{ count: number }> {
+    return apiPost("/notifications/unread-count");
+}
+
+export async function markNotificationRead(id: number): Promise<{ count: number }> {
+    return apiPost("/notifications/read", { id });
+}
+
+export async function markAllNotificationsRead(): Promise<{ count: number }> {
+    return apiPost("/notifications/read-all");
+}
+
+export async function getFriendStatus(userName: string): Promise<FriendRelation> {
+    return apiPost<FriendRelation>("/friends/status", { user_name: userName });
+}
+
+export async function sendFriendRequest(userName: string): Promise<FriendRelation> {
+    return apiPost<FriendRelation>("/friends/request", { user_name: userName });
+}
+
+export async function respondFriendRequest(requestId: number, action: "accept" | "reject"): Promise<FriendRelation> {
+    return apiPost<FriendRelation>("/friends/respond", { request_id: requestId, action });
+}
+
+export async function cancelFriendRequest(userName: string): Promise<FriendRelation> {
+    return apiPost<FriendRelation>("/friends/cancel", { user_name: userName });
+}
+
+export async function removeFriend(userName: string): Promise<FriendRelation> {
+    return apiPost<FriendRelation>("/friends/remove", { user_name: userName });
+}
+
+export async function getFriends(): Promise<FriendSummary[]> {
+    return apiPost<FriendSummary[]>("/friends/list");
+}
+
+export async function getFriendRequests(): Promise<FriendRequestSummary[]> {
+    return apiPost<FriendRequestSummary[]>("/friends/requests");
+}
+
+export async function getFriendCounts(): Promise<FriendCounts> {
+    return apiPost<FriendCounts>("/friends/summary");
+}
+
+export async function getConversations(): Promise<ConversationSummary[]> {
+    return apiPost<ConversationSummary[]>("/messages/conversations");
+}
+
+export async function getUnreadMessageSenders(): Promise<{ unread_senders: number }> {
+    return apiPost("/messages/unread");
+}
+
+export async function getMessageThread(userName: string): Promise<MessageThread> {
+    return apiPost<MessageThread>("/messages/thread", { user_name: userName });
+}
+
+export async function sendMessage(userName: string, body: string): Promise<MessageItem> {
+    return apiPost<MessageItem>("/messages/send", { user_name: userName, body });
+}
+
+export async function editMessage(id: number, body: string): Promise<MessageItem> {
+    return apiPost<MessageItem>("/messages/edit", { id, body });
+}
+
+export async function deleteMessage(id: number): Promise<{ id: number }> {
+    return apiPost("/messages/delete", { id });
 }

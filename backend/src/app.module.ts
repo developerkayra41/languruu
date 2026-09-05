@@ -23,6 +23,9 @@ import { PresenceInterceptor } from './_common/interceptors/presence.interceptor
 import { ReportsModule } from './reports/reports.module';
 import { AuthStateModule } from './_common/auth-state/auth-state.module';
 import { GameModule } from './game/game.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { FriendsModule } from './friends/friends.module';
+import { MessagesModule } from './messages/messages.module';
 
 @Module({
   imports: [
@@ -46,7 +49,10 @@ import { GameModule } from './game/game.module';
     AdminModule,
     ReportsModule,
     AuthStateModule,
-    GameModule
+    GameModule,
+    NotificationsModule,
+    FriendsModule,
+    MessagesModule
   ],
   controllers: [HealthController],
   providers: [{ provide: APP_GUARD, useClass: CustomThrottlerGuard },

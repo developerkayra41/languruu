@@ -1,4 +1,4 @@
-import { getProfile, getPublicProfile } from "@/app/lib/api-client";
+import { getFriendStatus, getProfile, getPublicProfile } from "@/app/lib/api-client";
 import { getTranslations } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
 import StatCard from "@/app/components/ui/StatCard";
@@ -6,6 +6,9 @@ import ProfileNotFound from "@/app/components/ui/ProfileNotFound";
 import Image from "next/image";
 import ReportButton from "@/app/components/report/ReportButton";
 import LevelBadge from "@/app/components/ui/LevelBadge";
+import FriendButton from "@/app/components/social/FriendButton";
+import MessageButton from "@/app/components/social/MessageButton";
+import type { FriendRelation } from "@/app/types/social";
 
 interface PublicProfilePageProps {
   params: Promise<{ username: string }>;
@@ -35,8 +38,18 @@ export default async function PublicProfilePage({
     return <ProfileNotFound />;
   }
 
+  let relation: FriendRelation = { status: "none", request_id: null };
+  if (myUsername) {
+    try {
+      relation = await getFriendStatus(username);
+    } catch {
+      relation = { status: "none", request_id: null };
+    }
+  }
+
   const initials = profile.user_name.slice(0, 2).toUpperCase();
   const t = await getTranslations("profile");
+  const tf = await getTranslations("friends");
 
   return (
     <div className="w-full">
@@ -82,10 +95,30 @@ export default async function PublicProfilePage({
               </span>
             </div>
           </div>
-          <h2 className="text-xl font-bold text-gray-800 mt-4">
-            {profile.full_name}
-          </h2>
-          <span className="text-sm text-gray-500">@{profile.user_name}</span>
+          <div className="mt-4 flex flex-wrap items-start justify-between gap-3">
+            <div>
+              <h2 className="text-xl font-bold text-gray-800">
+                {profile.full_name}
+              </h2>
+              <span className="text-sm text-gray-500">@{profile.user_name}</span>
+              <span className="text-sm text-gray-400 ml-2">
+                · {tf("friendCount", { count: profile.friend_count })}
+              </span>
+            </div>
+            {myUsername && (
+              <div className="flex items-center gap-2">
+                <FriendButton
+                  userName={profile.user_name}
+                  initialStatus={relation.status}
+                  initialRequestId={relation.request_id}
+                />
+                <MessageButton
+                  userName={profile.user_name}
+                  isFriend={relation.status === "friends"}
+                />
+              </div>
+            )}
+          </div>
           <div className="flex justify-between items-start gap-4">
             <p
               className={`text-sm mt-2 max-w-xl whitespace-pre-wrap ${

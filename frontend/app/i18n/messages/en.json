@@ -2,6 +2,7 @@
   "common": {
     "confirm": "Confirm",
     "cancel": "Cancel",
+    "back": "Back",
     "note": "Note"
   },
   "nav": {
@@ -17,6 +18,8 @@
     "groupsShort": "Groups",
     "marketplaceShort": "Store",
     "profile": "Profile",
+    "messages": "Messages",
+    "notifications": "Notifications",
     "settings": "Settings",
     "admin": "Admin Panel",
     "logout": "Log Out"
@@ -558,5 +561,63 @@
       "search_engine": "Search engine (Google, etc.)",
       "other": "Other"
     }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "pageTitle": "Notifications",
+    "seeAll": "See all",
+    "loading": "Loading...",
+    "empty": "You have no notifications yet.",
+    "accept": "Accept",
+    "reject": "Decline",
+    "accepted": "You are now friends with {name}.",
+    "deletedUser": "Deleted user",
+    "friendRequestText": "{name} sent you a friend request.",
+    "friendAcceptedText": "{name} accepted your friend request.",
+    "groupCopiedText": "{name} saved your word group \"{group}\".",
+    "messageReceivedText": "{name} sent you a message.",
+    "openThread": "Open message",
+    "viewInMarketplace": "View in library"
+  },
+  "friends": {
+    "add": "Add Friend",
+    "pendingOutgoing": "Request Sent",
+    "accept": "Accept",
+    "reject": "Decline",
+    "friends": "Friends",
+    "remove": "Remove Friend",
+    "requestSent": "Friend request sent.",
+    "nowFriends": "You are now friends.",
+    "cancelConfirm": "Do you want to withdraw your friend request?",
+    "removeConfirm": "Remove {name} from your friends?",
+    "requestsTab": "Requests",
+    "friendsTab": "Friends",
+    "noRequests": "No pending friend requests.",
+    "noFriends": "You have no friends yet.",
+    "friendCount": "{count, plural, =0 {no friends} one {# friend} other {# friends}}"
+  },
+  "messages": {
+    "title": "Messages",
+    "pageTitle": "Messages",
+    "empty": "No messages yet. Start a conversation from a friend's profile.",
+    "threadEmpty": "Write the first message to {name}.",
+    "placeholder": "Write a message...",
+    "send": "Send",
+    "back": "Back to messages",
+    "delete": "Delete message",
+    "actions": "Message actions",
+    "edit": "Edit message",
+    "edited": "edited",
+    "saveEdit": "Save",
+    "cancelEdit": "Cancel",
+    "deleteConfirm": "This message will be deleted for both of you. Are you sure?",
+    "sendMessage": "Send message",
+    "needFriend": "You need to be friends with this person before you can message them.",
+    "threadUnavailable": "This conversation could not be opened.",
+    "goToProfile": "Go to profile",
+    "retentionNotice": "Messages are deleted automatically 7 days after they are sent.",
+    "youPrefix": "You:",
+    "today": "Today",
+    "yesterday": "Yesterday"
   }
 }

@@ -5,9 +5,10 @@ import { MarketPlaceRepository } from './repository/marketplace.repository';
 import { UsersModule } from 'src/users/users.module';
 import { WordsModule } from 'src/words/words.module';
 import { DrizzleModule } from 'src/_common/drizzle/drizzle.module';
+import { NotificationsModule } from 'src/notifications/notifications.module';
 
 @Module({
-  imports: [DrizzleModule, WordsModule, UsersModule],
+  imports: [DrizzleModule, WordsModule, UsersModule, NotificationsModule],
   controllers: [MarketplaceController],
   providers: [MarketplaceService, MarketPlaceRepository],
   exports: [MarketPlaceRepository]
