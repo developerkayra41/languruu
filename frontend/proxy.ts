@@ -106,6 +106,20 @@ export async function proxy(req: NextRequest) {
     return passThrough(req, pathname); // prefetch isteklerinde auth kontrolü atlanıyor, gerçek navigasyon zaten yapacak
   }
 
+  // Server Action POST'u middleware'den YONLENDIRILEMEZ: tarayici 307'yi
+  // takip ederken POST'u hedefe aynen tekrarlar, donen sayfa HTML'ini RSC
+  // istemcisi cozemez ve "An unexpected response was received from the server"
+  // hatasi atar (hata, aksiyonu tetikleyen bilesende degil, hedef sayfanin
+  // agacinda gorunur — bu yuzden izi surmek zor). Aksiyon calissin: oturum
+  // gercekten gecersizse api-client 401'de kendi redirect("/login")'ini yapar
+  // ve o yonlendirmeyi istemci dogru sekilde isler. Token tazeleme burada
+  // yine calisir, cunki o dal zaten yonlendirme degil NextResponse.next().
+  const isServerAction = req.method === "POST" && req.headers.has("next-action");
+  const redirectOr = (path: string) =>
+    isServerAction
+      ? NextResponse.next({ request: req })
+      : NextResponse.redirect(new URL(path, req.url));
+
   const accessToken = req.cookies.get("access_token")?.value;
   const refreshToken = req.cookies.get("refresh_token")?.value;
 
@@ -116,7 +130,7 @@ export async function proxy(req: NextRequest) {
 
   if (isAuthOnly || isLanding) {
     if (accessToken && !isTokenExpiringSoon(accessToken)) {
-      return NextResponse.redirect(new URL("/study", req.url));
+      return redirectOr("/study");
     }
 
     // Access token 15 dakikada ölüyor; refresh token 30 gün yaşıyor. Burada
@@ -125,8 +139,7 @@ export async function proxy(req: NextRequest) {
     if (refreshToken) {
       const refreshed = await requestRefresh(refreshToken);
       if (refreshed.status === "ok") {
-        const response = NextResponse.redirect(new URL("/study", req.url));
-        return applySessionCookies(response, refreshed.accessToken, refreshed.refreshToken);
+        return applySessionCookies(redirectOr("/study"), refreshed.accessToken, refreshed.refreshToken);
       }
       if (refreshed.status === "invalid") {
         return clearSessionCookies(passThrough(req, pathname));
@@ -145,23 +158,23 @@ export async function proxy(req: NextRequest) {
   if (!isProtected) return passThrough(req, pathname);
 
   if (!accessToken && !refreshToken) {
-    return NextResponse.redirect(new URL("/login", req.url));
+    return redirectOr("/login");
   }
 
   if (!accessToken || isTokenExpiringSoon(accessToken)) {
-    if (!refreshToken) return NextResponse.redirect(new URL("/login", req.url));
+    if (!refreshToken) return redirectOr("/login");
 
     const refreshed = await requestRefresh(refreshToken);
 
     if (refreshed.status === "invalid") {
-      return clearSessionCookies(NextResponse.redirect(new URL("/login", req.url)));
+      return clearSessionCookies(redirectOr("/login"));
     }
 
     // Backend'e ulaşılamadı (cold start, timeout, 5xx). Oturum hâlâ geçerli
     // olabilir — cookie'leri SİLMİYORUZ ki kullanıcı bir sonraki denemede
     // kaldığı yerden devam edebilsin.
     if (refreshed.status === "unavailable") {
-      return NextResponse.redirect(new URL("/login", req.url));
+      return redirectOr("/login");
     }
 
     // KRİTİK: isteğin KENDİ cookie jar'ını da güncelliyoruz — bu request'in
