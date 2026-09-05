@@ -18,12 +18,18 @@ import {
   sendMessage,
   editMessage,
   deleteMessage,
+  getGlobalChat,
+  sendGlobalMessage,
+  editGlobalMessage,
+  deleteGlobalMessage,
 } from "@/app/lib/api-client";
 import type {
   ConversationSummary,
   FriendRelation,
   FriendRequestSummary,
   FriendSummary,
+  GlobalChatFeed,
+  GlobalMessageItem,
   MessageItem,
   MessageThread,
   NotificationsPage,
@@ -108,4 +114,20 @@ export async function deleteMessageAction(id: number): Promise<Result<{ id: numb
 
 export async function loadUnreadMessagesAction(): Promise<Result<{ unread_senders: number }>> {
   return run(() => getUnreadMessageSenders(), "Mesaj sayısı alınamadı");
+}
+
+export async function loadGlobalChatAction(): Promise<Result<GlobalChatFeed>> {
+  return run(() => getGlobalChat(), "Genel sohbet yüklenemedi");
+}
+
+export async function sendGlobalMessageAction(body: string): Promise<Result<GlobalMessageItem>> {
+  return run(() => sendGlobalMessage(body), "Mesaj gönderilemedi");
+}
+
+export async function editGlobalMessageAction(id: number, body: string): Promise<Result<GlobalMessageItem>> {
+  return run(() => editGlobalMessage(id, body), "Mesaj düzenlenemedi");
+}
+
+export async function deleteGlobalMessageAction(id: number): Promise<Result<{ id: number }>> {
+  return run(() => deleteGlobalMessage(id), "Mesaj silinemedi");
 }

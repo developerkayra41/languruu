@@ -15,6 +15,7 @@ import ThemeToggle from "../components/ui/ThemeToggle";
 import DiscoverySourceModal from "../components/onboarding/DiscoverySourceModal";
 import NotificationBell from "../components/social/NotificationBell";
 import MessagesMenuItem from "../components/social/MessagesMenuItem";
+import GlobalChat from "../components/social/GlobalChat";
 
 const TABS = [
   { href: "/study", key: "study" },
@@ -308,6 +309,8 @@ export default function DashboardShell({
           })}
         </div>
       </nav>
+
+      {profile && <GlobalChat />}
 
       {profile?.needs_discovery_prompt && <DiscoverySourceModal />}
     </div>

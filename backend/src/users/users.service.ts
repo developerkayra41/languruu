@@ -17,6 +17,7 @@ import { DAILY_XP_CAP, levelInfo, XP_PER_WORD, xpFromGameScore } from 'src/_comm
 import { FriendRepository } from 'src/friends/repository/friend.repository';
 import { NotificationRepository } from 'src/notifications/repository/notification.repository';
 import { MessageRepository } from 'src/messages/repository/message.repository';
+import { isAdminEmail } from 'src/_common/utils/admin-emails';
 @Injectable()
 export class UsersService {
   constructor(@Inject(UserRepository) private readonly userRepo: UserRepository,
@@ -85,9 +86,7 @@ export class UsersService {
       email: user.email,
       email_verified: user.email_verified,
       has_password: !!user.password,
-      is_admin: (this.config.get<string>('app.ADMIN_EMAILS') ?? '')
-        .split(',').map((e) => e.trim().toLowerCase()).filter(Boolean)
-        .includes(user.email.toLowerCase()),
+      is_admin: isAdminEmail(this.config, user.email),
       total_words: totalWords,
       word_pool_count: wordRow ? wordRow.words.length : 0,
       daily_streak: this.displayedStreak(stats),

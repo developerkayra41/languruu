@@ -456,6 +456,10 @@
     "reasonSpam": "Spam / misleading",
     "reasonOther": "Other",
     "group": "Group:",
+    "globalMessage": "Global chat message",
+    "messageGone": "Message no longer exists (deleted or expired).",
+    "deleteMessage": "Delete message",
+    "messageDeleted": "Message deleted, report closed.",
     "reportedBy": "Reported by:",
     "resolved": "Resolved",
     "dismiss": "Dismiss",
@@ -619,5 +623,27 @@
     "youPrefix": "You:",
     "today": "Today",
     "yesterday": "Yesterday"
+  },
+  "globalChat": {
+    "title": "Global Chat",
+    "open": "Open global chat",
+    "close": "Close global chat",
+    "loading": "Loading chat...",
+    "empty": "Nobody has written yet. Be the first!",
+    "placeholder": "Say something to everyone...",
+    "send": "Send",
+    "actions": "Message actions",
+    "edit": "Edit message",
+    "delete": "Delete message",
+    "report": "Report message",
+    "edited": "edited",
+    "saveEdit": "Save",
+    "cancelEdit": "Cancel",
+    "deleteConfirm": "This message will be removed from the global chat. Are you sure?",
+    "deleteConfirmAsAdmin": "This message by {name} will be removed from the global chat. Are you sure?",
+    "retentionNotice": "Global chat messages are deleted automatically after 7 days.",
+    "today": "Today",
+    "yesterday": "Yesterday",
+    "profanity": "Your message contains inappropriate language."
   }
 }

@@ -1,6 +1,7 @@
 import { CanActivate, ExecutionContext, ForbiddenException, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { UserRepository } from "src/users/repository/user.repository";
+import { isAdminEmail } from "src/_common/utils/admin-emails";
 
 @Injectable()
 export class AdminGuard implements CanActivate {
@@ -16,10 +17,7 @@ export class AdminGuard implements CanActivate {
         const user = await this.userRepo.findById(req.user.id);
         if (!user) throw new ForbiddenException();
 
-        const admins = (this.config.get<string>('app.ADMIN_EMAILS') ?? '')
-            .split(',').map((e) => e.trim().toLowerCase()).filter(Boolean);
-
-        if (!admins.includes(user.email.toLowerCase())) {
+        if (!isAdminEmail(this.config, user.email)) {
             throw new ForbiddenException("Bu alana erişim yetkiniz yok.");
         }
         return true;
