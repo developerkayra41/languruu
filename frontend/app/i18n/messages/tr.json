@@ -456,6 +456,10 @@
     "reasonSpam": "Spam / yanıltıcı",
     "reasonOther": "Diğer",
     "group": "Grup:",
+    "globalMessage": "Genel sohbet mesajı",
+    "messageGone": "Mesaj artık yok (silinmiş veya süresi dolmuş).",
+    "deleteMessage": "Mesajı sil",
+    "messageDeleted": "Mesaj silindi, şikayet kapatıldı.",
     "reportedBy": "Bildiren:",
     "resolved": "Çözüldü",
     "dismiss": "Yoksay",
@@ -619,5 +623,27 @@
     "youPrefix": "Sen:",
     "today": "Bugün",
     "yesterday": "Dün"
+  },
+  "globalChat": {
+    "title": "Genel Sohbet",
+    "open": "Genel sohbeti aç",
+    "close": "Genel sohbeti kapat",
+    "loading": "Sohbet yükleniyor...",
+    "empty": "Henüz kimse yazmamış. İlk mesajı sen yaz!",
+    "placeholder": "Herkese bir şeyler yaz...",
+    "send": "Gönder",
+    "actions": "Mesaj işlemleri",
+    "edit": "Mesajı düzenle",
+    "delete": "Mesajı sil",
+    "report": "Mesajı bildir",
+    "edited": "düzenlendi",
+    "saveEdit": "Kaydet",
+    "cancelEdit": "Vazgeç",
+    "deleteConfirm": "Bu mesaj genel sohbetten silinecek. Emin misin?",
+    "deleteConfirmAsAdmin": "{name} adlı kullanıcının bu mesajı genel sohbetten silinecek. Emin misin?",
+    "retentionNotice": "Genel sohbet mesajları 7 gün sonra otomatik silinir.",
+    "today": "Bugün",
+    "yesterday": "Dün",
+    "profanity": "Mesajın uygunsuz ifade içeriyor."
   }
 }

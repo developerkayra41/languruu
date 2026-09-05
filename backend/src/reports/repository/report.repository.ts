@@ -15,8 +15,11 @@ export class ReportRepository {
         const result = await this.db.execute(sql`
             SELECT r.id, r.target_type, r.target_ref, r.reason, r.description,
             r.status, ${utc('r.created_at')} AS created_at, 
-            u.user_name AS reporter_username FROM reports r
+            u.user_name AS reporter_username,
+            gm.body AS message_body, gu.user_name AS message_author FROM reports r
             LEFT JOIN users u ON u.id = r.reporter_user_id
+            LEFT JOIN global_messages gm ON r.target_type = 'global_message' AND gm.id::text = r.target_ref
+            LEFT JOIN users gu ON gu.id = gm.user_id
             WHERE r.status = ${status ?? 'open'}
             ORDER BY r.created_at DESC LIMIT ${limit}
             `);

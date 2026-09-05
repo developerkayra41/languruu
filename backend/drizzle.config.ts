@@ -14,7 +14,8 @@ export default defineConfig({
         "./src/_common/drizzle/reports.ts",
         "./src/_common/drizzle/friendships.ts",
         "./src/_common/drizzle/notifications.ts",
-        "./src/_common/drizzle/messages.ts"
+        "./src/_common/drizzle/messages.ts",
+        "./src/_common/drizzle/global-chat.ts"
     ],
     dbCredentials: {
         url: process.env.DATABASE_URL!,

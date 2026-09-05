@@ -62,3 +62,14 @@ export interface MessageItem {
     edited_at: string | null;
     from_me: boolean;
 }
+
+export interface GlobalMessageItem {
+    id: number;
+    body: string;
+    created_at: string;
+    edited_at: string | null;
+    from_me: boolean;
+    user_name: string;
+    full_name: string;
+    avatar_url: string | null;
+}

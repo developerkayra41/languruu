@@ -17,7 +17,7 @@ async function getAuthHeaders(): Promise<HeadersInit> {
 import { redirect } from "next/navigation";
 import { AdminDiscoverySource, AdminError, AdminSecurityEvent, AdminStats, AdminUsersPage } from "../types/admin";
 import { GameRoomSummary, GameTicket } from "../types/game";
-import { ConversationSummary, FriendCounts, FriendRelation, FriendRequestSummary, FriendSummary, MessageItem, MessageThread, NotificationsPage } from "../types/social";
+import { ConversationSummary, FriendCounts, FriendRelation, FriendRequestSummary, FriendSummary, GlobalChatFeed, GlobalMessageItem, MessageItem, MessageThread, NotificationsPage } from "../types/social";
 
 async function apiPost<T>(path: string, body?: unknown): Promise<T> {
     const res = await fetch(`${API_BASE_URL}/api${path}`, {
@@ -290,12 +290,16 @@ export async function createReport(payload: { target_type: string; target_ref: s
 export interface AdminReport {
     id: number; target_type: string; target_ref: string; reason: string;
     description: string | null; status: string; created_at: string; reporter_username: string | null;
+    message_body: string | null; message_author: string | null;
 }
 export async function getAdminReports(status?: string): Promise<AdminReport[]> {
     return apiGet(`/admin/reports${status ? `?status=${status}` : ""}`);
 }
 export async function resolveReport(id: number, status: string) {
     return apiPost(`/admin/reports/${id}/resolve`, { status });
+}
+export async function adminDeleteGlobalMessage(id: number) {
+    return apiPost(`/admin/global-messages/${id}/delete`);
 }
 export async function getNotifications(params?: { limit?: number; offset?: number }): Promise<NotificationsPage> {
     return apiPost<NotificationsPage>("/notifications/list", params ?? {});
@@ -367,4 +371,20 @@ export async function editMessage(id: number, body: string): Promise<MessageItem
 
 export async function deleteMessage(id: number): Promise<{ id: number }> {
     return apiPost("/messages/delete", { id });
+}
+
+export async function getGlobalChat(): Promise<GlobalChatFeed> {
+    return apiPost<GlobalChatFeed>("/global-chat/list");
+}
+
+export async function sendGlobalMessage(body: string): Promise<GlobalMessageItem> {
+    return apiPost<GlobalMessageItem>("/global-chat/send", { body });
+}
+
+export async function editGlobalMessage(id: number, body: string): Promise<GlobalMessageItem> {
+    return apiPost<GlobalMessageItem>("/global-chat/edit", { id, body });
+}
+
+export async function deleteGlobalMessage(id: number): Promise<{ id: number }> {
+    return apiPost("/global-chat/delete", { id });
 }

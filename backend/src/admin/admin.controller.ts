@@ -5,6 +5,7 @@ import { AdminGuard } from "src/_common/guards/AdminGuard";
 import { AdminRepository } from "./admin.repository";
 import { AdminService } from "./admin.service";
 import { ReportRepository } from "src/reports/repository/report.repository";
+import { GlobalChatService } from "src/global-chat/global-chat.service";
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard, AdminGuard)
@@ -13,6 +14,7 @@ export class AdminController extends BaseController {
         private readonly adminRepo: AdminRepository,
         private readonly adminService: AdminService,
         private readonly reportRepo: ReportRepository,
+        private readonly globalChatService: GlobalChatService,
     ) { super('AdminController'); }
 
     @Get('stats')
@@ -68,6 +70,12 @@ export class AdminController extends BaseController {
     async reports(@Query('status') status: string, @Req() req: any) {
         const data = await this.reportRepo.listForAdmin(status);
         return this.createSuccessResponse({ data, message: 'success', success: true }, req);
+    }
+
+    @Post('global-messages/:id/delete')
+    async deleteGlobalMessage(@Param('id', ParseIntPipe) id: number, @Req() req: any) {
+        await this.globalChatService.deleteMessage(req.user.id, id);
+        return this.createSuccessResponse({ data: { success: true }, message: 'success', success: true }, req);
     }
 
     @Post('reports/:id/resolve')

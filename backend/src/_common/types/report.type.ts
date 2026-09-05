@@ -1,4 +1,4 @@
-export type ReportTargetType = 'profile' | 'word_group';
+export type ReportTargetType = 'profile' | 'word_group' | 'global_message';
 export type ReportReason = 'adult_content' | 'profanity' | 'spam' | 'other';
 export type CreateReport = {
     reporter_user_id: number;

@@ -26,6 +26,7 @@ import { GameModule } from './game/game.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { FriendsModule } from './friends/friends.module';
 import { MessagesModule } from './messages/messages.module';
+import { GlobalChatModule } from './global-chat/global-chat.module';
 
 @Module({
   imports: [
@@ -52,7 +53,8 @@ import { MessagesModule } from './messages/messages.module';
     GameModule,
     NotificationsModule,
     FriendsModule,
-    MessagesModule
+    MessagesModule,
+    GlobalChatModule
   ],
   controllers: [HealthController],
   providers: [{ provide: APP_GUARD, useClass: CustomThrottlerGuard },

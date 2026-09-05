@@ -64,6 +64,13 @@
       "when": 1788602866360,
       "tag": "0008_real_mephistopheles",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1788622121504,
+      "tag": "0009_burly_blue_shield",
+      "breakpoints": true
     }
   ]
 }

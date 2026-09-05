@@ -1,5 +1,5 @@
 "use server";
-import { getAdminUsers, banUser, unbanUser, resolveReport } from "@/app/lib/api-client";
+import { getAdminUsers, banUser, unbanUser, resolveReport, adminDeleteGlobalMessage } from "@/app/lib/api-client";
 
 export async function listUsersAction(params: { filter: string; search: string; page: number }) {
   try { const data = await getAdminUsers(params); return { success: true as const, ...data }; }
@@ -17,4 +17,13 @@ export async function unbanUserAction(id: number) {
 export async function resolveReportAction(id: number, status: string) {
   try { await resolveReport(id, status); return { success: true as const }; }
   catch (e: any) { return { success: false as const, error: e?.message ?? "İşlenemedi." }; }
+}
+
+export async function deleteReportedMessageAction(reportId: number, messageId: number) {
+  try {
+    await adminDeleteGlobalMessage(messageId);
+    await resolveReport(reportId, "reviewed");
+    return { success: true as const };
+  }
+  catch (e: any) { return { success: false as const, error: e?.message ?? "Mesaj silinemedi." }; }
 }

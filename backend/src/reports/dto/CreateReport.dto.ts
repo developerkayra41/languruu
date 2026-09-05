@@ -3,7 +3,7 @@ import { IsIn, IsNotEmpty, IsOptional, IsString, MaxLength } from "class-validat
 
 export class CreateReportRequestDTO {
     @ApiProperty()
-    @IsIn(['profile', 'word_group'])
+    @IsIn(['profile', 'word_group', 'global_message'])
     target_type: string;
 
     @ApiProperty()
