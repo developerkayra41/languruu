@@ -6,6 +6,35 @@ sürümleme [SemVer](https://semver.org/lang/tr/) kurallarına uyar.
 
 ## [Yayınlanmamış]
 
+## [1.4.0] - 2026-09-05
+
+### Eklendi
+- Genel sohbet: sağ alttaki butonla açılan, ekranın sağında tam yükseklikte
+  panel. Giriş yapmış herkes okuyup yazabiliyor, arkadaşlık şartı yok. Kişi
+  kendi mesajını düzenleyip silebiliyor; mesajlar gönderildikten 7 gün sonra
+  otomatik siliniyor.
+- Genel sohbette her mesajda üç nokta menüsü: kendi mesajında düzenle ve sil,
+  başkasının mesajında bildir.
+- Genel sohbet mesajları mevcut şikayet altyapısına bildiriliyor. Admin
+  panelindeki şikayet kartı, bildirilen mesajın metnini ve yazarını gösteriyor;
+  mesaj silinmiş veya süresi dolmuşsa bunu belirtiyor.
+- Admin genel sohbetteki her mesajı silebiliyor: hem sohbet panelindeki üç
+  nokta menüsünden, hem admin panelindeki şikayet kartından (oradan silince
+  şikayet de kapanıyor). Başkasının mesajını düzenleyemiyor.
+- Genel sohbete küfür filtresi: uygunsuz ifade içeren mesaj gönderilemiyor ve
+  kaydedilemiyor. Filtre serbest metne göre ayarlandı, Türkçede `ı`/`i` ayrımını
+  koruduğu için "sıkıntı", "götürmek", "şikayet" gibi kelimeler engellenmiyor.
+
+### Düzeltildi
+- Oturum yenilenemediğinde middleware, sayfa isteklerinin yanı sıra Server
+  Action isteklerini de `/login`'e yönlendiriyordu. Tarayıcı yönlendirmeyi
+  takip ederken POST'u tekrarladığı için ekrana "An unexpected response was
+  received from the server" hatası düşüyordu. Aksiyon istekleri artık
+  yönlendirilmiyor; oturum gerçekten geçersizse giriş sayfasına normal şekilde
+  dönülüyor.
+
+## [1.3.0] - 2026-09-05
+
 ### Eklendi
 - Arkadaşlık sistemi: başka bir kullanıcının profilinde "Arkadaş Ekle" butonu,
   istek gönderme / geri çekme, kabul-ret ve arkadaşlıktan çıkarma. Karşılıklı
