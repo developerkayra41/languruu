@@ -20,6 +20,11 @@ import { MessageRepository } from 'src/messages/repository/message.repository';
 import { isAdminEmail } from 'src/_common/utils/admin-emails';
 import { PresenceService } from 'src/_common/presence/presence.service';
 import { DEFAULT_PRESENCE_VISIBILITY } from 'src/_common/utils/presence';
+export const AVATAR_BUCKET = 'avatars';
+const AVATAR_LIST_PAGE_SIZE = 1000;
+const AVATAR_REMOVE_BATCH_SIZE = 100;
+const AVATAR_GRACE_MS = 60 * 60 * 1000;
+
 @Injectable()
 export class UsersService {
   constructor(@Inject(UserRepository) private readonly userRepo: UserRepository,
@@ -246,6 +251,78 @@ export class UsersService {
     const updated = await this.userRepo.updateProfile(userId, { avatar_url: null });
     if (!updated) throw new InternalServerErrorException();
     return updated;
+  };
+
+  private listAvatarEntries = async (path: string, offset: number) => {
+    const { data, error } = await this.supabase.storage
+      .from(AVATAR_BUCKET)
+      .list(path, { limit: AVATAR_LIST_PAGE_SIZE, offset });
+
+    if (error) throw new InternalServerErrorException(error.message);
+    return data ?? [];
+  };
+
+  private avatarStoragePath = (avatarUrl: string | null): string | null => {
+    if (!avatarUrl) return null;
+    const marker = `/${AVATAR_BUCKET}/`;
+    const clean = avatarUrl.split('?')[0];
+    const at = clean.lastIndexOf(marker);
+    return at === -1 ? null : clean.slice(at + marker.length);
+  };
+
+  purgeOrphanAvatars = async (): Promise<{ scanned: number; removed: number; cleared: number }> => {
+    const folders: string[] = [];
+    for (let offset = 0; ; offset += AVATAR_LIST_PAGE_SIZE) {
+      const page = await this.listAvatarEntries('', offset);
+      for (const entry of page) {
+        if (entry.id === null && /^\d+$/.test(entry.name)) folders.push(entry.name);
+      }
+      if (page.length < AVATAR_LIST_PAGE_SIZE) break;
+    }
+
+    const files: { userId: number; path: string }[] = [];
+    for (const folder of folders) {
+      for (let offset = 0; ; offset += AVATAR_LIST_PAGE_SIZE) {
+        const page = await this.listAvatarEntries(folder, offset);
+        for (const entry of page) {
+          if (entry.id === null) continue;
+          const writtenAt = Date.parse(entry.updated_at ?? entry.created_at ?? '');
+          if (!Number.isNaN(writtenAt) && Date.now() - writtenAt < AVATAR_GRACE_MS) continue;
+          files.push({ userId: Number(folder), path: `${folder}/${entry.name}` });
+        }
+        if (page.length < AVATAR_LIST_PAGE_SIZE) break;
+      }
+    }
+
+    if (files.length === 0) return { scanned: 0, removed: 0, cleared: 0 };
+
+    const owners = await this.userRepo.listAvatarOwners([...new Set(files.map((f) => f.userId))]);
+    const ownerById = new Map(owners.map((o) => [o.id, o]));
+
+    const orphans = files.filter(({ userId, path }) => {
+      const owner = ownerById.get(userId);
+      if (!owner || owner.deleted || owner.is_banned) return true;
+      return this.avatarStoragePath(owner.avatar_url) !== path;
+    });
+
+    if (orphans.length === 0) return { scanned: files.length, removed: 0, cleared: 0 };
+
+    for (let i = 0; i < orphans.length; i += AVATAR_REMOVE_BATCH_SIZE) {
+      const batch = orphans.slice(i, i + AVATAR_REMOVE_BATCH_SIZE).map((o) => o.path);
+      const { error } = await this.supabase.storage.from(AVATAR_BUCKET).remove(batch);
+      if (error) throw new InternalServerErrorException(error.message);
+    }
+
+    const orphanPaths = new Set(orphans.map((o) => o.path));
+    const staleIds = owners
+      .filter((o) => {
+        const path = this.avatarStoragePath(o.avatar_url);
+        return !o.deleted && path !== null && orphanPaths.has(path);
+      })
+      .map((o) => o.id);
+    await this.userRepo.clearAvatarUrls(staleIds);
+
+    return { scanned: files.length, removed: orphans.length, cleared: staleIds.length };
   };
 
   // users.service.ts

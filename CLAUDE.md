@@ -125,6 +125,13 @@ languruu/
 - **Küfür filtresi:** `src/_common/moderation/profanity.ts` → `containsProfanityInText`, `send` ve `edit`'te çalışır, yakalarsa **400 + mesaj `PROFANITY`** (frontend bunu yerelleştirilmiş toast'a çevirir). Aynı dosyadaki eski `containsProfanity` **kullanıcı adı / grup adı / kelime** içindir ve boşlukları silip `includes` yaptığı için serbest metinde kullanılamaz ("inşallah" → "allah" gibi yanlış pozitifler üretir).
 - Metin filtresi Türkçe için **ı/i ayrımını korur** — `sıkıntı`, `sıkışık`, `götürmek`, `şikayet` gibi meşru kelimeler eleniyordu, `ı`'yı `i`'ye katlamayınca sorun kendiliğinden çözülür. Gövde listesi ek almış hâlleri yakalar (`sik*` → `siktir`, `sikiyorum`), `göt`/`ass`/`cock` gibi çakışan kısa kelimeler yalnızca **tam eşleşme** ile, `amk`/`aq` ise ayrıca **tek harflik dizileri birleştirerek** (`a.q`, `s i k t i r`) yakalanır.
 
+## Avatar depolama & temizlik (cron)
+- Dosya yolu **sabit**: Supabase `avatars` bucket'ında `<userId>/avatar.<ext>` (`createAvatarUploadUrl`, `upsert: true`). `getProfile` yanıtında URL'e `?v=updated_at` cache-buster eklenir; **DB'de saklanan `avatar_url` sorgusuzdur**, bu yüzden karşılaştırmalarda `?`'ten önceki kısım alınır.
+- **Gece 3'te `AvatarCleanupTasks` sahipsiz dosyaları siler** (`UsersService.purgeOrphanAvatars`). Sahipsiz sayılan: users tablosunda **satırı olmayan** id (elle/hard-delete), `deleted_at` dolu (soft-delete), **`is_banned` true** (bilinçli karar — ban kalkarsa kullanıcı fotoğrafını yeniden yükler), ve satırı duran kullanıcının `avatar_url`'i o dosyayı göstermiyorsa (ör. `avatar.jpg` → `avatar.png` uzantı değişiminden kalan eski dosya).
+- Dosyası silinen **ama satırı duran** kullanıcıların (banlı olanlar) `avatar_url`'i `null`'a çekilir — yoksa profilde kırık resim kalırdı. Uzantı artığı silinirken geçerli dosyası duran kullanıcının alanına dokunulmaz: temizlik yalnızca `avatar_url`'in işaret ettiği dosya silindiyse yapılır.
+- **1 saatlik dokunulmazlık payı var** (`AVATAR_GRACE_MS`): imzalı yükleme ile `avatar_url`'in DB'ye yazılması arasındaki kısa pencerede yeni yüklenen dosya silinmesin diye, storage'daki `updated_at` bir saatten yeniyse dosya atlanır.
+- Kök dizinde **yalnızca sayısal klasörler** taranır; bilinmeyen adlar hiç ellenmez. Listeleme 1000'lik sayfalarla, silme 100'lük gruplarla yapılır. Önce tüm liste toplanır, sonra silinir — offset'ler kaymasın diye.
+
 ## i18n (KURAL)
 - Diller: **tr + en**. Tek kaynak: `app/i18n/locales.ts`.
 - **Dil çözümleme sırası** (`app/i18n/request.ts`):

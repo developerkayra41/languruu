@@ -11,6 +11,7 @@ import { AuthModule } from 'src/auth/auth.module';
 import { MailModule } from 'src/mail/mail.module';
 import { MailService } from 'src/mail/mail.service';
 import { UserCleanupTasks } from './tasks/user-cleanup.tasks';
+import { AvatarCleanupTasks } from './tasks/avatar-cleanup.tasks';
 import { FriendRepository } from 'src/friends/repository/friend.repository';
 import { NotificationRepository } from 'src/notifications/repository/notification.repository';
 import { MessageRepository } from 'src/messages/repository/message.repository';
@@ -18,7 +19,7 @@ import { PresenceModule } from 'src/_common/presence/presence.module';
 
 @Module({
   imports: [DrizzleModule, SupabaseModule, WordsModule, MailModule, PresenceModule, forwardRef(() => AuthModule)],
-  providers: [UsersService, UserRepository, TopPerformerRepository, MailService, UserCleanupTasks, FriendRepository, NotificationRepository, MessageRepository],
+  providers: [UsersService, UserRepository, TopPerformerRepository, MailService, UserCleanupTasks, AvatarCleanupTasks, FriendRepository, NotificationRepository, MessageRepository],
   controllers: [UsersController],
   exports: [UsersService, UserRepository]
 })

@@ -269,6 +269,24 @@ export class UserRepository {
             ));
     };
 
+    listAvatarOwners = async (ids: number[]): Promise<{ id: number; avatar_url: string | null; is_banned: boolean; deleted: boolean }[]> => {
+        if (ids.length === 0) return [];
+        return await this.db
+            .select({
+                id: users.id,
+                avatar_url: users.avatar_url,
+                is_banned: users.is_banned,
+                deleted: sql<boolean>`(${users.deleted_at} is not null)`,
+            })
+            .from(users)
+            .where(inArray(users.id, ids));
+    };
+
+    clearAvatarUrls = async (ids: number[]): Promise<void> => {
+        if (ids.length === 0) return;
+        await this.db.update(users).set({ avatar_url: null }).where(inArray(users.id, ids));
+    };
+
     listPresence = async (userIds: number[]): Promise<{ user_id: number; presence_visibility: string | null; online: boolean }[]> => {
         if (userIds.length === 0) return [];
         return await this.db
