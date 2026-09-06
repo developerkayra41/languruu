@@ -150,20 +150,24 @@ Değişiklikten sonra ilgili projeyi build et. i18n değişince parity kontrol e
 - **Frontend → Vercel:** Root Directory `frontend`, bölge `fra1` (Frankfurt). Production Branch, GitHub **default branch**'inden gelir → default = `production`.
 - **Backend → Render:** Root Directory `backend`, Branch `production`, bölge Frankfurt. Build: `npm install --include=dev && npm run build`, Start: `npm run start:prod`.
 - **DB → Supabase** (Frankfurt/eu-central-1). Prod ve dev **ayrı projeler**. Üçü de düşük gecikme için aynı bölgede.
-- **Branch akışı:** `development`'a push = **Preview**; `development → production` PR (**squash merge**) → **canlı**. Büyük/riskli işler için `next` branch'i (kendi Preview'ı) — ama tercih edilen yol feature flag ile `development`'a erken merge.
+- **Branch akışı:** `development`'a push = **Preview**; `development → production` PR (**merge commit**) → **canlı**. Büyük/riskli işler için `next` branch'i (kendi Preview'ı) — ama tercih edilen yol feature flag ile `development`'a erken merge.
 
-## Branch / sürüm (KURAL — detay: `docs/BRANCHING.md`)
-- Branch'ler: `production` (canlı) · `development` (bir sonraki küçük sürüm) · `next` (büyük değişimler) · `feature/*` · `hotfix/*`.
+## Branch (KURAL — detay: `docs/BRANCHING.md`)
+- Branch'ler: `production` (canlı) · `development` (günlük iş) · `next` (büyük değişimler) · `hotfix/*`.
 - `production`'a **asla direkt commit yok** — sadece PR.
+- **PR'lar YALNIZCA merge commit ile kapatılır. Squash ve rebase yasak.** Squash/rebase `production`'da yeni SHA üretir, `development` o commit'i tanımaz ve bir sonraki PR'da git **dokunulmamış dosyalarda** conflict çıkarır. Merge commit ortak geçmişi koruduğu için bu sorun hiç doğmaz — "geri akış" adımına da gerek kalmaz. GitHub'da squash/rebase seçenekleri repo ayarından kapalı tutulur.
+- **Sürüm numarası, CHANGELOG ve tag yok** (bilinçli olarak kaldırıldı). Canlıdaki kod = `production`'ın son commit'i; kayıt için git geçmişi yeterli. `package.json`'daki `version` alanı ölü, npm istediği için duruyor — yükseltilmez. Commit mesajlarında Conventional Commits alışkanlığı sürer ama artık bir sürüm numarası üretmediği için zorunlu değil.
 - `next` **haftada bir** `development`'ı kendine çeker, yoksa conflict birikir.
 - Hotfix `production`'a gittiği gün `development`'a da merge edilir (yoksa regresyon geri gelir).
-- **SemVer, monorepo tek numara** (frontend + backend aynı). Commit'ler **Conventional Commits** (`feat`/`fix`/`chore`…).
-- Her canlı çıkışta: `CHANGELOG.md` güncellenir, `package.json` sürümü yükseltilir, `production`'da `vX.Y.Z` tag'i atılır.
+- Şema değiştiyse migration **canlıya çıkmadan** prod DB'ye uygulanır (Supabase SQL Editor'den elle); `start:prod` migration çalıştırmaz.
 - Local `production` branch'i bayatlar; kıyaslamadan önce `git fetch` + `git branch -f production origin/production`.
 
 ## Drizzle / migration (DİKKAT — geçmişte sorun çıktı)
 - drizzle-kit **session pooler (port 5432)** ister. Transaction pooler (6543) → `type "serial" does not exist`. Direct host `db.<ref>.supabase.co` local'den **çözülmez** (ENOTFOUND) — hep **pooler** kullan.
 - Şema değişince: `npx drizzle-kit generate` → üretilen SQL'i oku → `npx drizzle-kit migrate`. **DB'yi elle kurcalama** (geçmişte kod↔DB "drift" yüzünden ON CONFLICT / eksik unique hataları yaşandı).
+- **Dev ve prod farklı yollardan gider.** Dev: yukarıdaki `drizzle-kit migrate` (local `.env` dev projesine bakar). Prod: local'den bağlanılmadığı için `drizzle/` altındaki üretilmiş SQL **Supabase SQL Editor'e yapıştırılıp** çalıştırılır.
+- **Prod'a ASLA `drizzle-kit migrate` çalıştırma.** Elle uygulanan migration'lar drizzle'ın `drizzle.__drizzle_migrations` defterine yazılmaz; prod'da o defter boştur. `migrate` komutu bunu görüp **tüm migration'ları baştan oynatmaya kalkar** ve `relation already exists` ile patlar.
+- Elle uygularken **`generate`'in ürettiği SQL'i olduğu gibi** çalıştır, elle yeniden yazma. Kod↔DB drift'i tam olarak buradan doğuyor: şema dosyası bir şey, DB başka bir şey söylüyor.
 
 ## Konvansiyonlar
 - **Kodda yorum yok** (bilinçli temizlendi) — dokümantasyon bu dosyadadır. `eslint-disable` / `@ts-*` direktifleri korunur.
