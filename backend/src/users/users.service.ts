@@ -262,9 +262,12 @@ export class UsersService {
     return data ?? [];
   };
 
-  private avatarUrlPointsTo = (avatarUrl: string | null, path: string): boolean => {
-    if (!avatarUrl) return false;
-    return avatarUrl.split('?')[0].endsWith(`/${AVATAR_BUCKET}/${path}`);
+  private avatarStoragePath = (avatarUrl: string | null): string | null => {
+    if (!avatarUrl) return null;
+    const marker = `/${AVATAR_BUCKET}/`;
+    const clean = avatarUrl.split('?')[0];
+    const at = clean.lastIndexOf(marker);
+    return at === -1 ? null : clean.slice(at + marker.length);
   };
 
   purgeOrphanAvatars = async (): Promise<{ scanned: number; removed: number; cleared: number }> => {
@@ -299,7 +302,7 @@ export class UsersService {
     const orphans = files.filter(({ userId, path }) => {
       const owner = ownerById.get(userId);
       if (!owner || owner.deleted || owner.is_banned) return true;
-      return !this.avatarUrlPointsTo(owner.avatar_url, path);
+      return this.avatarStoragePath(owner.avatar_url) !== path;
     });
 
     if (orphans.length === 0) return { scanned: files.length, removed: 0, cleared: 0 };
@@ -310,8 +313,12 @@ export class UsersService {
       if (error) throw new InternalServerErrorException(error.message);
     }
 
+    const orphanPaths = new Set(orphans.map((o) => o.path));
     const staleIds = owners
-      .filter((o) => !o.deleted && o.avatar_url && orphans.some((x) => this.avatarUrlPointsTo(o.avatar_url, x.path)))
+      .filter((o) => {
+        const path = this.avatarStoragePath(o.avatar_url);
+        return !o.deleted && path !== null && orphanPaths.has(path);
+      })
       .map((o) => o.id);
     await this.userRepo.clearAvatarUrls(staleIds);
 
