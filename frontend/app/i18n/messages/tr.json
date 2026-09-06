@@ -3,7 +3,9 @@
     "confirm": "Onayla",
     "cancel": "İptal",
     "back": "Geri",
-    "note": "Not"
+    "note": "Not",
+    "undo": "Geri al",
+    "close": "Kapat"
   },
   "nav": {
     "study": "Kelime Çalış",
@@ -237,9 +239,10 @@
     "errSameLang": "İki dil de aynı olamaz, farklı diller seçin.",
     "delete": "Sil",
     "deleteTitle": "Grubu Sil",
-    "deleteConfirm": "\"{name}\" grubunu silmek istediğinize emin misiniz? Bu işlem geri alınamaz.",
+    "deleteConfirm": "\"{name}\" grubunu silmek istediğinize emin misiniz?",
     "deleteSharedWarning": "Bu grup marketplace'te paylaşıldığı için oradan da kaldırılacak. Grubu daha önce kendine kopyalayan kişilerde kalmaya devam eder.",
-    "deleted": "\"{name}\" grubu silindi."
+    "deleted": "\"{name}\" grubu silindi.",
+    "deleteUndone": "\"{name}\" grubu geri alındı."
   },
   "marketplace": {
     "title": "Kelime Grupları Kütüphane",
@@ -304,7 +307,7 @@
     "levelUp": "Seviye atladın! Artık Seviye {level} 🎉",
     "xpGained": "+{xp} XP kazandın",
     "xpCapped": "Bugünkü XP sınırına ulaştın",
-    "levelProgress": "Seviye {level} — {current}/{next} XP",
+    "levelProgress": "Seviye {level} — toplam {xp} XP",
     "joining": "Odaya giriliyor...",
     "connecting": "Bağlanılıyor...",
     "linkCopied": "Oda bağlantısı kopyalandı.",
@@ -342,7 +345,20 @@
     "submitting": "Gönderiliyor...",
     "success": "Şikayetin alındı, teşekkürler."
   },
+  "presence": {
+    "online": "Çevrimiçi"
+  },
   "settings": {
+    "presenceTitle": "Aktiflik Durumu",
+    "presenceText": "Profil fotoğrafının üzerindeki yeşil nokta çevrimiçi olduğunu gösterir. Kimlerin görebileceğini sen seçersin.",
+    "presenceOption_off": "Herkese kapalı",
+    "presenceHint_off": "Kimse çevrimiçi olup olmadığını göremez.",
+    "presenceOption_friends": "Sadece arkadaşlarım",
+    "presenceHint_friends": "Yalnızca arkadaş listendekiler görebilir.",
+    "presenceOption_everyone": "Herkese açık",
+    "presenceHint_everyone": "Giriş yapmış tüm kullanıcılar görebilir.",
+    "presenceUpdated": "Aktiflik durumu ayarın güncellendi.",
+    "presenceAdminNote": "Yöneticiler moderasyon için bu durumu her zaman görebilir.",
     "title": "Ayarlar",
     "emailTitle": "E-posta Adresi",
     "current": "Mevcut:",
@@ -392,8 +408,8 @@
     "bioCancel": "Vazgeç",
     "bioCounter": "{count}/200",
     "levelShort": "SEVİYE",
-    "levelProgress": "{current} / {next} XP",
-    "levelTooltip": "Seviye {level} — {current}/{next} XP. Doğru bildiğin her kelime +1 XP, yarış modunda her 100 puan +1 XP kazandırır.",
+    "levelXp": "{xp} XP",
+    "levelTooltip": "Seviye {level} — toplam {xp} XP. Sonraki seviye {next} XP'de. Doğru bildiğin her kelime +1 XP, yarış modunda her 100 puan +1 XP kazandırır.",
     "statsTitle": "İstatistikler",
     "totalWords": "Toplam Kelime",
     "completedRounds": "Tamamlanan Tur",
@@ -485,6 +501,8 @@
     "retry": "Tekrar Dene"
   },
   "words": {
+    "deleted": "\"{term}\" silindi.",
+    "deleteUndone": "\"{term}\" geri alındı.",
     "wordCount": "{count} kelime",
     "empty": "Bu grupta henüz kelime yok.",
     "colWord": "Kelime",

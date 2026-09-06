@@ -46,6 +46,7 @@ export default async function TopPerformersPage() {
                       src={performer.avatar_url}
                       name={performer.full_name}
                       size={56}
+                      online={performer.is_online}
                     />
                     <div
                       className={`absolute -top-2 -right-2 w-7 h-7 rounded-full flex items-center justify-center text-white font-bold text-xs ${getRankBadgeStyle(rank)}`}

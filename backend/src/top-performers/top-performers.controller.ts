@@ -18,7 +18,7 @@ export class TopPerformersController extends BaseController {
     @ApiOkResponse({ type: [TopPerformersDTO] })
     @ApiOperation({ summary: 'TopPerformers API', description: 'Bu API top performers listesini getirir' })
     async getTopPerformers(@Req() req): Promise<BaseResponse<TopPerformersDTO[]>> {
-        const result = await this.topPerformersService.getTopPerformers()
+        const result = await this.topPerformersService.getTopPerformers(req.user.id)
         return this.createSuccessResponse({ data: result, message: 'success', success: true }, req)
     }
 }

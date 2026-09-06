@@ -2,15 +2,17 @@
 
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import PresenceDot from "@/app/components/ui/PresenceDot";
 
 interface AvatarProps {
   src?: string;
   name: string;
   size?: number;
   className?: string;
+  online?: boolean;
 }
 
-export default function Avatar({ src, name, size = 40, className = "" }: AvatarProps) {
+export default function Avatar({ src, name, size = 40, className = "", online = false }: AvatarProps) {
   const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
@@ -20,7 +22,7 @@ export default function Avatar({ src, name, size = 40, className = "" }: AvatarP
   const initials = name.slice(0, 2).toUpperCase();
   const showImage = src && !hasError;
 
-  return showImage ? (
+  const picture = showImage ? (
     <Image
       src={src}
       alt=""
@@ -37,5 +39,14 @@ export default function Avatar({ src, name, size = 40, className = "" }: AvatarP
     >
       {initials}
     </div>
+  );
+
+  if (!online) return picture;
+
+  return (
+    <span className="relative inline-flex shrink-0" style={{ width: size, height: size }}>
+      {picture}
+      <PresenceDot size={size} />
+    </span>
   );
 }

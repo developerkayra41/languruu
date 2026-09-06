@@ -14,9 +14,10 @@ import { UserCleanupTasks } from './tasks/user-cleanup.tasks';
 import { FriendRepository } from 'src/friends/repository/friend.repository';
 import { NotificationRepository } from 'src/notifications/repository/notification.repository';
 import { MessageRepository } from 'src/messages/repository/message.repository';
+import { PresenceModule } from 'src/_common/presence/presence.module';
 
 @Module({
-  imports: [DrizzleModule, SupabaseModule, WordsModule, MailModule, forwardRef(() => AuthModule)],
+  imports: [DrizzleModule, SupabaseModule, WordsModule, MailModule, PresenceModule, forwardRef(() => AuthModule)],
   providers: [UsersService, UserRepository, TopPerformerRepository, MailService, UserCleanupTasks, FriendRepository, NotificationRepository, MessageRepository],
   controllers: [UsersController],
   exports: [UsersService, UserRepository]

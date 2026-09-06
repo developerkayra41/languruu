@@ -1,5 +1,6 @@
 "use server";
-import { deleteAccount, logoutAllDevices, updateEmail, updatePassword } from "@/app/lib/api-client";
+import { deleteAccount, logoutAllDevices, updateEmail, updatePassword, updatePresenceVisibility } from "@/app/lib/api-client";
+import type { PresenceVisibility } from "@/app/types/social";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
@@ -18,6 +19,15 @@ export async function updatePasswordAction(currentPassword: string, newPassword:
     return { success: true as const };
   } catch (e: any) {
     return { success: false as const, error: e?.message ?? "Şifre güncellenemedi." };
+  }
+}
+
+export async function updatePresenceVisibilityAction(visibility: PresenceVisibility) {
+  try {
+    await updatePresenceVisibility(visibility);
+    return { success: true as const };
+  } catch (e: any) {
+    return { success: false as const, error: e?.message ?? "Ayar güncellenemedi." };
   }
 }
 

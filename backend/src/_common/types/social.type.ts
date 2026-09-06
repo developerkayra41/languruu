@@ -34,6 +34,7 @@ export interface FriendSummary {
     full_name: string;
     avatar_url: string | null;
     friends_since: string | null;
+    is_online?: boolean;
 }
 
 export interface FriendRequestSummary {
@@ -42,6 +43,7 @@ export interface FriendRequestSummary {
     full_name: string;
     avatar_url: string | null;
     created_at: string;
+    is_online?: boolean;
 }
 
 export interface ConversationSummary {
@@ -53,6 +55,7 @@ export interface ConversationSummary {
     last_message_at: string;
     last_from_me: boolean;
     unread: boolean;
+    is_online?: boolean;
 }
 
 export interface MessageItem {
@@ -72,4 +75,5 @@ export interface GlobalMessageItem {
     user_name: string;
     full_name: string;
     avatar_url: string | null;
+    is_online?: boolean;
 }

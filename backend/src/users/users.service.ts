@@ -18,6 +18,8 @@ import { FriendRepository } from 'src/friends/repository/friend.repository';
 import { NotificationRepository } from 'src/notifications/repository/notification.repository';
 import { MessageRepository } from 'src/messages/repository/message.repository';
 import { isAdminEmail } from 'src/_common/utils/admin-emails';
+import { PresenceService } from 'src/_common/presence/presence.service';
+import { DEFAULT_PRESENCE_VISIBILITY } from 'src/_common/utils/presence';
 @Injectable()
 export class UsersService {
   constructor(@Inject(UserRepository) private readonly userRepo: UserRepository,
@@ -27,7 +29,8 @@ export class UsersService {
     private readonly authTokenRepo: AuthTokenRepository, private readonly config: ConfigService,
     private readonly friendRepo: FriendRepository,
     private readonly notificationRepo: NotificationRepository,
-    private readonly messageRepo: MessageRepository) { }
+    private readonly messageRepo: MessageRepository,
+    private readonly presence: PresenceService) { }
 
   private displayedStreak(
     stats: { study_streak: number; last_study_date: string | null } | null,
@@ -97,6 +100,8 @@ export class UsersService {
       pending_request_count: pendingRequestCount,
       unread_notifications: unreadNotifications,
       unread_messages: unreadMessages,
+      presence_visibility: user.presence_visibility ?? DEFAULT_PRESENCE_VISIBILITY,
+      is_online: (user.presence_visibility ?? DEFAULT_PRESENCE_VISIBILITY) !== 'off',
       needs_discovery_prompt: this.needsDiscoveryPrompt(user),
     };
   };
@@ -112,7 +117,7 @@ export class UsersService {
 
   countActiveUsers = async (): Promise<number> => this.userRepo.countActiveUsers();
 
-  getPublicProfile = async (userName: string) => {
+  getPublicProfile = async (userName: string, viewerId: number) => {
     const user = await this.userRepo.findByUsernamePublic(userName);
     if (!user) throw new NotFoundException();
 
@@ -122,6 +127,11 @@ export class UsersService {
       : 0;
     const stats = await this.userRepo.getStudyStats(user.id);
     const friendCount = await this.friendRepo.countFriends(user.id);
+    const isOnline = await this.presence.canSee(viewerId, {
+      user_id: user.id,
+      presence_visibility: user.presence_visibility,
+      online: !!user.online,
+    });
 
     return {
       user_name: user.user_name,
@@ -134,9 +144,15 @@ export class UsersService {
       completed_rounds: stats?.completed_rounds ?? 0,
       game_score: stats?.game_score ?? 0,
       friend_count: friendCount,
+      is_online: isOnline,
       ...levelInfo(stats?.xp),
     };
   }
+
+  updatePresenceVisibility = async (userId: number, visibility: string) => {
+    await this.userRepo.updatePresenceVisibility(userId, visibility);
+    return { presence_visibility: visibility };
+  };
 
   updateProfile = async (userId: number, data: { user_name?: string; full_name?: string; description?: string; avatar_url?: string | null }) => {
     if (data.user_name) {

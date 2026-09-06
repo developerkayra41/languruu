@@ -10,6 +10,7 @@ import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { GetPublicProfileRequestDTO } from './dto/request/GetPublicProfile.request.dto';
 import { SetDiscoverySourceRequestDTO } from './dto/request/SetDiscoverySource.request.dto';
 import { AwardXpRequestDTO } from './dto/request/AwardXp.request.dto';
+import { UpdatePresenceVisibilityRequestDTO } from './dto/request/UpdatePresenceVisibility.request.dto';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -27,12 +28,13 @@ export class UsersController extends BaseController {
     return this.createSuccessResponse({ data: result, message: 'success', success: true }, req);
   }
 
+  @UseGuards(JwtAuthGuard)
   @Post('public-profile')
   @UsePipes(new ValidationPipe({ whitelist: true }))
   @ApiOperation({ summary: 'public-profile API', description: 'Bir kullanıcının herkese açık profil bilgilerini getirir' })
   @ApiBody({ type: GetPublicProfileRequestDTO })
   async getPublicProfile(@Req() req, @Body() body: GetPublicProfileRequestDTO) {
-    const result = await this.usersService.getPublicProfile(body.user_name);
+    const result = await this.usersService.getPublicProfile(body.user_name, req.user.id);
     return this.createSuccessResponse({ data: result, message: 'success', success: true }, req);
   }
 
@@ -82,6 +84,16 @@ export class UsersController extends BaseController {
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async updateEmail(@Req() req, @Body() body: UpdateEmailRequestDTO) {
     const result = await this.usersService.updateEmail(req.user.id, body.new_email, body.current_password);
+    return this.createSuccessResponse({ data: result, message: 'success', success: true }, req);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('settings/presence')
+  @ApiBody({ type: UpdatePresenceVisibilityRequestDTO })
+  @ApiOperation({ summary: 'settings/presence API', description: 'Aktiflik durumunun kimlere görüneceğini günceller' })
+  @UsePipes(new ValidationPipe({ whitelist: true }))
+  async updatePresenceVisibility(@Req() req, @Body() body: UpdatePresenceVisibilityRequestDTO) {
+    const result = await this.usersService.updatePresenceVisibility(req.user.id, body.presence_visibility);
     return this.createSuccessResponse({ data: result, message: 'success', success: true }, req);
   }
 

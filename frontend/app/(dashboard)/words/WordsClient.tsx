@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, useTransition } from "react";
 import { useTranslations } from "next-intl";
 import { WordColumn, WordPool } from "@/app/types/word";
 import { updateWordPool } from "./actions";
+import { showUndoToast } from "@/app/components/ui/UndoToast";
 import { parseCommaList, formatCommaList, MAX_EXAMPLE_LENGTH } from "@/app/lib/word-pool-utils";
 import { useSwipe } from "@/app/lib/use-swipe";
 import { toast } from "sonner";
@@ -50,6 +51,8 @@ export default function WordsClient({ group }: WordsClientProps) {
 
   const [currentPage, setCurrentPage] = useState(0);
 
+  const poolRef = useRef<WordPool[]>(group.wordPool);
+  const wroteWhilePendingRef = useRef(false);
   const desktopFieldRefs: EditFieldRefs = useRef({});
   const mobileFieldRefs: EditFieldRefs = useRef({});
 
@@ -100,6 +103,23 @@ export default function WordsClient({ group }: WordsClientProps) {
     setEditExampleTranslationInput("");
   };
 
+  useEffect(() => {
+    poolRef.current = wordPool;
+  }, [wordPool]);
+
+  const persistPool = (nextPool: WordPool[], rollbackPool: WordPool[]) => {
+    wroteWhilePendingRef.current = true;
+    startTransition(async () => {
+      const result = await updateWordPool(group, nextPool);
+      if (!result.success) {
+        setWordPool(rollbackPool);
+        toast.error(result.error);
+      } else {
+        setWordPool(result.data.wordPool);
+      }
+    });
+  };
+
   const handleSaveEdit = (realIndex: number) => {
     const terms = parseCommaList(editTermInput);
     const translations = parseCommaList(editTranslationInput);
@@ -147,15 +167,7 @@ export default function WordsClient({ group }: WordsClientProps) {
     setEditExampleInput("");
     setEditExampleTranslationInput("");
 
-    startTransition(async () => {
-      const result = await updateWordPool(group, nextPool);
-      if (!result.success) {
-        setWordPool(previousPool);
-        toast.error(result.error);
-      } else {
-        setWordPool(result.data.wordPool);
-      }
-    });
+    persistPool(nextPool, previousPool);
   };
 
   useEffect(() => {
@@ -189,9 +201,10 @@ export default function WordsClient({ group }: WordsClientProps) {
   };
 
   const handleDelete = (realIndex: number) => {
-    const previousPool = wordPool;
-    const nextPool = wordPool.filter((_, i) => i !== realIndex);
+    const removed = wordPool[realIndex];
+    if (!removed) return;
 
+    const nextPool = wordPool.filter((_, i) => i !== realIndex);
     setWordPool(nextPool);
 
     const newTotalPages = Math.max(1, Math.ceil(nextPool.length / PAGE_SIZE));
@@ -199,14 +212,27 @@ export default function WordsClient({ group }: WordsClientProps) {
       setCurrentPage(newTotalPages - 1);
     }
 
-    startTransition(async () => {
-      const result = await updateWordPool(group, nextPool);
-      if (!result.success) {
-        setWordPool(previousPool);
-        toast.error(result.error);
-      } else {
-        setWordPool(result.data.wordPool);
-      }
+    const label = removed.term[0] ?? "";
+    const restoreInto = (pool: WordPool[]) => {
+      const restored = [...pool];
+      restored.splice(Math.min(realIndex, restored.length), 0, removed);
+      return restored;
+    };
+
+    wroteWhilePendingRef.current = false;
+    showUndoToast({
+      message: t("deleted", { term: label }),
+      onCommit: () => {
+        const committed = poolRef.current;
+        persistPool(committed, restoreInto(committed));
+      },
+      onUndo: () => {
+        const withoutWord = poolRef.current;
+        const restored = restoreInto(withoutWord);
+        setWordPool(restored);
+        if (wroteWhilePendingRef.current) persistPool(restored, withoutWord);
+        toast.success(t("deleteUndone", { term: label }));
+      },
     });
   };
 

@@ -6,4 +6,5 @@ export class TopPerformersDTO {
     @ApiProperty() full_name: string;
     @ApiProperty() total_word: number;
     @ApiProperty({ required: false }) avatar_url?: string;
+    @ApiProperty({ required: false }) is_online?: boolean;
 }

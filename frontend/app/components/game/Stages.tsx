@@ -304,8 +304,7 @@ export function ResultsStage({
               <div className="text-sm text-gray-500">
                 {t("levelProgress", {
                   level: xpResult.level,
-                  current: xpResult.xpIntoLevel,
-                  next: xpResult.xpForNext,
+                  xp: xpResult.xp,
                 })}
               </div>
             </div>

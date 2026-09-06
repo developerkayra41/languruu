@@ -10,14 +10,24 @@ import {
   logoutAllAction,
   updateEmailAction,
   updatePasswordAction,
+  updatePresenceVisibilityAction,
 } from "./actions";
+import { PRESENCE_VISIBILITY_VALUES, type PresenceVisibility } from "@/app/types/social";
+
+const presenceIcons: Record<PresenceVisibility, string> = {
+  off: "fa-eye-slash",
+  friends: "fa-user-group",
+  everyone: "fa-globe",
+};
 
 export default function SettingsClient({
   currentEmail,
   hasPassword,
+  presenceVisibility,
 }: {
   currentEmail: string;
   hasPassword: boolean;
+  presenceVisibility: PresenceVisibility;
 }) {
   const t = useTranslations("settings");
   const router = useRouter();
@@ -25,6 +35,7 @@ export default function SettingsClient({
   const [passwordPending, startPassword] = useTransition();
   const [logoutPending, startLogout] = useTransition();
   const [deletePending, startDelete] = useTransition();
+  const [presencePending, startPresence] = useTransition();
   const { confirm, confirmDialog } = useConfirm();
 
   const [newEmail, setNewEmail] = useState("");
@@ -35,6 +46,7 @@ export default function SettingsClient({
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const [deletePassword, setDeletePassword] = useState("");
+  const [presence, setPresence] = useState<PresenceVisibility>(presenceVisibility);
 
   const handleEmailUpdate = (e: React.FormEvent) => {
     e.preventDefault();
@@ -77,6 +89,22 @@ export default function SettingsClient({
         setNewPassword("");
         setConfirmPassword("");
       } else {
+        toast.error(r.error);
+      }
+    });
+  };
+
+  const handlePresenceChange = (value: PresenceVisibility) => {
+    if (value === presence || presencePending) return;
+    const previous = presence;
+    setPresence(value);
+    startPresence(async () => {
+      const r = await updatePresenceVisibilityAction(value);
+      if (r.success) {
+        toast.success(t("presenceUpdated"));
+        router.refresh();
+      } else {
+        setPresence(previous);
         toast.error(r.error);
       }
     });
@@ -195,6 +223,56 @@ export default function SettingsClient({
           </p>
         </div>
       )}
+
+      {}
+      <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+        <h2 className="text-lg font-semibold text-gray-800 mb-1">
+          {t("presenceTitle")}
+        </h2>
+        <p className="text-sm text-gray-500 mb-4">{t("presenceText")}</p>
+        <div className="space-y-2">
+          {PRESENCE_VISIBILITY_VALUES.map((value) => {
+            const active = presence === value;
+            return (
+              <button
+                key={value}
+                type="button"
+                onClick={() => handlePresenceChange(value)}
+                disabled={presencePending}
+                aria-pressed={active}
+                className={`w-full flex items-start gap-3 text-left px-4 py-3 rounded-lg border transition disabled:opacity-60 cursor-pointer ${
+                  active
+                    ? "border-purple-400 bg-purple-50 ring-1 ring-purple-200"
+                    : "border-gray-200 hover:border-gray-300 hover:bg-gray-50"
+                }`}
+              >
+                <span
+                  className={`w-9 h-9 shrink-0 rounded-lg flex items-center justify-center ${
+                    active ? "bg-purple-100 text-purple-600" : "bg-gray-100 text-gray-500"
+                  }`}
+                >
+                  <i className={`fas ${presenceIcons[value]} text-sm`}></i>
+                </span>
+                <span className="min-w-0">
+                  <span className="block text-sm font-medium text-gray-800">
+                    {t(`presenceOption_${value}`)}
+                  </span>
+                  <span className="block text-xs text-gray-500">
+                    {t(`presenceHint_${value}`)}
+                  </span>
+                </span>
+                {active && (
+                  <i className="fas fa-check text-purple-600 text-sm ml-auto mt-1"></i>
+                )}
+              </button>
+            );
+          })}
+        </div>
+        <p className="mt-3 text-xs text-gray-400">
+          <i className="fas fa-circle-info mr-1"></i>
+          {t("presenceAdminNote")}
+        </p>
+      </div>
 
       {}
       <div className="bg-white rounded-lg shadow-sm border border-gray-100 p-6">

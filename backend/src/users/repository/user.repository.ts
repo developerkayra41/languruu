@@ -4,6 +4,7 @@ import { and, eq, inArray, isNull, lt, sql } from "drizzle-orm";
 import { UserResponse } from 'src/_base/base.user.resonse';
 import { users } from "src/_common/drizzle/users";
 import { AuthUser } from 'src/_common/types/auth-user.type';
+import { onlineSince } from 'src/_common/utils/presence';
 
 export class UserRepository {
     constructor(@Inject('DRIZZLE') private readonly db) { }
@@ -98,7 +99,8 @@ export class UserRepository {
                 avatar_url: users.avatar_url,
                 updated_at: users.updated_at,
                 email_verified: users.email_verified,
-                discovery_source: users.discovery_source
+                discovery_source: users.discovery_source,
+                presence_visibility: users.presence_visibility
             })
             .from(users)
             .where(and(eq(users.id, userId), isNull(users.deleted_at)))
@@ -173,6 +175,8 @@ export class UserRepository {
                 full_name: users.full_name,
                 description: users.description,
                 avatar_url: users.avatar_url,
+                presence_visibility: users.presence_visibility,
+                online: sql<boolean>`(${users.last_seen_at} >= ${onlineSince()})`,
             })
             .from(users)
             .where(and(eq(users.user_name, userName), isNull(users.deleted_at)))
@@ -263,6 +267,22 @@ export class UserRepository {
                 isNull(users.deleted_at),
                 lt(users.created_at, date),
             ));
+    };
+
+    listPresence = async (userIds: number[]): Promise<{ user_id: number; presence_visibility: string | null; online: boolean }[]> => {
+        if (userIds.length === 0) return [];
+        return await this.db
+            .select({
+                user_id: users.id,
+                presence_visibility: users.presence_visibility,
+                online: sql<boolean>`(${users.last_seen_at} >= ${onlineSince()})`,
+            })
+            .from(users)
+            .where(and(inArray(users.id, userIds), isNull(users.deleted_at)));
+    };
+
+    updatePresenceVisibility = async (userId: number, visibility: string): Promise<void> => {
+        await this.db.update(users).set({ presence_visibility: visibility }).where(eq(users.id, userId));
     };
 
     updateLastSeen = async (userId: number): Promise<void> => {

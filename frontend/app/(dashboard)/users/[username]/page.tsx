@@ -6,6 +6,8 @@ import ProfileNotFound from "@/app/components/ui/ProfileNotFound";
 import Image from "next/image";
 import ReportButton from "@/app/components/report/ReportButton";
 import LevelBadge from "@/app/components/ui/LevelBadge";
+import PresenceDot from "@/app/components/ui/PresenceDot";
+import { nextLevelTotalXp } from "@/app/lib/xp";
 import FriendButton from "@/app/components/social/FriendButton";
 import MessageButton from "@/app/components/social/MessageButton";
 import type { FriendRelation } from "@/app/types/social";
@@ -57,20 +59,21 @@ export default async function PublicProfilePage({
         <div className="h-32 bg-gradient-to-r from-purple-600 via-purple-500 to-blue-500" />
         <div className="px-6 pb-6">
           <div className="-mt-14 flex items-end justify-between gap-4">
-            <div>
+            <div className="relative w-28 h-28">
               {profile.avatar_url ? (
               <Image
                 src={profile.avatar_url}
                 alt={profile.user_name}
                 width={112}
                 height={112}
-                className="rounded-full object-cover border-4 border-white shadow-md"
+                className="w-28 h-28 rounded-full object-cover border-4 border-white shadow-md"
               />
               ) : (
                 <div className="w-28 h-28 rounded-full border-4 border-white shadow-md bg-purple-100 flex items-center justify-center text-purple-600 text-2xl font-semibold">
                   {initials}
                 </div>
               )}
+              {profile.is_online && <PresenceDot size={112} />}
             </div>
 
             <div className="flex flex-col items-center shrink-0">
@@ -83,15 +86,12 @@ export default async function PublicProfilePage({
                 caption={t("levelShort")}
                 title={t("levelTooltip", {
                   level: profile.level,
-                  current: profile.xp_into_level,
-                  next: profile.xp_for_next,
+                  xp: profile.xp,
+                  next: nextLevelTotalXp(profile),
                 })}
               />
               <span className="-mt-1 text-xs font-medium text-gray-500">
-                {t("levelProgress", {
-                  current: profile.xp_into_level,
-                  next: profile.xp_for_next,
-                })}
+                {t("levelXp", { xp: profile.xp })}
               </span>
             </div>
           </div>

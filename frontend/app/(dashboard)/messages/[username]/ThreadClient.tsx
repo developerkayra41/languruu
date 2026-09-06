@@ -176,6 +176,7 @@ export default function ThreadClient({ thread }: { thread: MessageThread }) {
               name={peer.user_name}
               size={40}
               className="shrink-0"
+              online={peer.is_online}
             />
             <span className="min-w-0">
               <span className="block text-sm font-semibold text-gray-800 truncate">

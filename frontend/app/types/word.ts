@@ -41,4 +41,5 @@ export interface TopPerformer {
   xp?: number;
   level?: number;
   avatar_url?: string;
+  is_online?: boolean;
 }

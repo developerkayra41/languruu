@@ -66,10 +66,10 @@ export class FriendRepository {
         return result.rows as FriendSummary[];
     }
 
-    async listIncomingRequests(userId: number): Promise<FriendRequestSummary[]> {
+    async listIncomingRequests(userId: number): Promise<(FriendRequestSummary & { user_id: number })[]> {
         const result = await this.db.execute(sql`
             SELECT f.id AS request_id, ${utc('f.created_at')} AS created_at,
-                   u.user_name, u.full_name, u.avatar_url
+                   u.id AS user_id, u.user_name, u.full_name, u.avatar_url
             FROM friendships f
             JOIN users u ON u.id = f.requester_id
             WHERE f.addressee_id = ${userId}
@@ -77,7 +77,7 @@ export class FriendRepository {
               AND u.deleted_at IS NULL
             ORDER BY f.created_at DESC
         `);
-        return result.rows as FriendRequestSummary[];
+        return result.rows as (FriendRequestSummary & { user_id: number })[];
     }
 
     async countIncomingRequests(userId: number): Promise<number> {
@@ -102,6 +102,16 @@ export class FriendRepository {
               AND u.deleted_at IS NULL
         `);
         return result.rows[0]?.count ?? 0;
+    }
+
+    async listFriendIds(userId: number): Promise<number[]> {
+        const result = await this.db.execute(sql`
+            SELECT CASE WHEN f.requester_id = ${userId} THEN f.addressee_id ELSE f.requester_id END AS friend_id
+            FROM friendships f
+            WHERE f.status = 'accepted'
+              AND (f.requester_id = ${userId} OR f.addressee_id = ${userId})
+        `);
+        return result.rows.map((row: { friend_id: number }) => row.friend_id);
     }
 
     async areFriends(userIdA: number, userIdB: number): Promise<boolean> {

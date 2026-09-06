@@ -129,10 +129,10 @@ export class MessageRepository {
             : sql`UPDATE conversations SET b_last_read_at = now() WHERE id = ${conversationId}`);
     }
 
-    async listConversations(userId: number): Promise<ConversationSummary[]> {
+    async listConversations(userId: number): Promise<(ConversationSummary & { user_id: number })[]> {
         const result = await this.db.execute(sql`
             SELECT c.id AS conversation_id,
-                   u.user_name, u.full_name, u.avatar_url,
+                   u.id AS user_id, u.user_name, u.full_name, u.avatar_url,
                    last.body AS last_body,
                    ${utc('last.created_at')} AS last_message_at,
                    (last.sender_id = ${userId}) AS last_from_me,
@@ -158,7 +158,7 @@ export class MessageRepository {
               AND u.deleted_at IS NULL
             ORDER BY last.created_at DESC
         `);
-        return result.rows as ConversationSummary[];
+        return result.rows as (ConversationSummary & { user_id: number })[];
     }
 
     async countUnreadSenders(userId: number): Promise<number> {
