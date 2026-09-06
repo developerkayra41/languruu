@@ -229,6 +229,7 @@ export class GameService {
                 return {
                     userId: player.userId,
                     gained,
+                    xp: info.xp,
                     level: info.level,
                     xpIntoLevel: info.xp_into_level,
                     xpForNext: info.xp_for_next,

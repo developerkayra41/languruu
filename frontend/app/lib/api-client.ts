@@ -17,7 +17,7 @@ async function getAuthHeaders(): Promise<HeadersInit> {
 import { redirect } from "next/navigation";
 import { AdminDiscoverySource, AdminError, AdminSecurityEvent, AdminStats, AdminUsersPage } from "../types/admin";
 import { GameRoomSummary, GameTicket } from "../types/game";
-import { ConversationSummary, FriendCounts, FriendRelation, FriendRequestSummary, FriendSummary, GlobalChatFeed, GlobalMessageItem, MessageItem, MessageThread, NotificationsPage } from "../types/social";
+import { ConversationSummary, FriendCounts, FriendRelation, FriendRequestSummary, FriendSummary, GlobalChatFeed, GlobalMessageItem, MessageItem, MessageThread, NotificationsPage, PresenceVisibility } from "../types/social";
 
 async function apiPost<T>(path: string, body?: unknown): Promise<T> {
     const res = await fetch(`${API_BASE_URL}/api${path}`, {
@@ -140,9 +140,17 @@ export async function getProfile(): Promise<{
     pending_request_count: number;
     unread_notifications: number;
     unread_messages: number;
+    presence_visibility: PresenceVisibility;
+    is_online: boolean;
     needs_discovery_prompt: boolean;
 }> {
     return apiPost("/users/profile");
+}
+
+export async function updatePresenceVisibility(visibility: PresenceVisibility) {
+    return apiPost<{ presence_visibility: PresenceVisibility }>("/users/settings/presence", {
+        presence_visibility: visibility,
+    });
 }
 
 export async function setDiscoverySource(source: string) {
@@ -178,6 +186,7 @@ export async function getPublicProfile(userName: string): Promise<{
     level: number;
     xp_into_level: number;
     xp_for_next: number;
+    is_online: boolean;
 }> {
     return apiPost("/users/public-profile", { user_name: userName });
 }

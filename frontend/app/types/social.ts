@@ -1,3 +1,6 @@
+export const PRESENCE_VISIBILITY_VALUES = ["off", "friends", "everyone"] as const;
+export type PresenceVisibility = (typeof PRESENCE_VISIBILITY_VALUES)[number];
+
 export type RelationStatus = "none" | "self" | "friends" | "pending_outgoing" | "pending_incoming";
 
 export type NotificationType =
@@ -35,6 +38,7 @@ export interface FriendSummary {
   full_name: string;
   avatar_url: string | null;
   friends_since: string | null;
+  is_online?: boolean;
 }
 
 export interface FriendRequestSummary {
@@ -43,6 +47,7 @@ export interface FriendRequestSummary {
   full_name: string;
   avatar_url: string | null;
   created_at: string;
+  is_online?: boolean;
 }
 
 export interface FriendRelation {
@@ -64,6 +69,7 @@ export interface ConversationSummary {
   last_message_at: string;
   last_from_me: boolean;
   unread: boolean;
+  is_online?: boolean;
 }
 
 export interface MessageItem {
@@ -79,6 +85,7 @@ export interface MessageThread {
     user_name: string;
     full_name: string;
     avatar_url: string | null;
+    is_online?: boolean;
   };
   messages: MessageItem[];
   expires_in_days: number;
@@ -93,6 +100,7 @@ export interface GlobalMessageItem {
   user_name: string;
   full_name: string;
   avatar_url: string | null;
+  is_online?: boolean;
 }
 
 export interface GlobalChatFeed {

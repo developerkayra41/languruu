@@ -43,7 +43,7 @@ export class TopPerformerRepository {
                 FROM words
                 WHERE words.words IS NOT NULL AND jsonb_typeof(words.words) = 'array'
             ) w ON w.user_id = u.id
-            WHERE u.deleted_at IS NULL AND u.is_banned = false
+            WHERE u.deleted_at IS NULL AND u.is_banned = false AND u.xp > 0
             ORDER BY u.xp DESC, effective_streak DESC, u.completed_rounds DESC, total_word DESC, pool_count DESC, u.id ASC
             LIMIT ${limit}
         `);

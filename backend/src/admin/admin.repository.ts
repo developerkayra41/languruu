@@ -1,6 +1,7 @@
 import { Inject } from "@nestjs/common";
 import { sql } from "drizzle-orm";
 import { utc } from "src/_common/utils/sql-time";
+import { onlineSince } from "src/_common/utils/presence";
 
 export class AdminRepository {
     constructor(@Inject('DRIZZLE') private readonly db) { }
@@ -11,7 +12,7 @@ export class AdminRepository {
               (SELECT count(*) FROM users WHERE deleted_at IS NULL)::int AS total_users,
               (SELECT count(*) FROM users WHERE deleted_at IS NULL AND created_at >= now() - interval '1 day')::int AS users_today,
               (SELECT count(*) FROM users WHERE deleted_at IS NULL AND created_at >= now() - interval '7 days')::int AS users_week,
-              (SELECT count(*) FROM users WHERE deleted_at IS NULL AND last_seen_at >= now() - interval '15 minutes')::int AS online_now,
+              (SELECT count(*) FROM users WHERE deleted_at IS NULL AND last_seen_at >= ${onlineSince()})::int AS online_now,
               (SELECT count(*) FROM market_place)::int AS shared_groups,
               (SELECT COALESCE(SUM(jsonb_array_length(w.words)),0)::int
                  FROM words w WHERE jsonb_typeof(w.words)='array') AS total_groups,
@@ -28,7 +29,7 @@ export class AdminRepository {
         const offset = (page - 1) * pageSize;
 
         const filterCond =
-            filter === 'online' ? sql`AND last_seen_at >= now() - interval '15 minutes'` :
+            filter === 'online' ? sql`AND last_seen_at >= ${onlineSince()}` :
                 filter === 'today' ? sql`AND created_at >= now() - interval '1 day'` :
                     filter === 'week' ? sql`AND created_at >= now() - interval '7 days'` :
                         sql``;

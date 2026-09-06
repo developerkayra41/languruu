@@ -196,6 +196,7 @@ export default function NotificationsClient({
                       src={request.avatar_url ?? undefined}
                       name={request.user_name}
                       size={44}
+                      online={request.is_online}
                     />
                   </Link>
                   <div className="min-w-0 flex-1">
@@ -249,6 +250,7 @@ export default function NotificationsClient({
                       src={friend.avatar_url ?? undefined}
                       name={friend.user_name}
                       size={44}
+                      online={friend.is_online}
                     />
                   </Link>
                   <div className="min-w-0 flex-1">

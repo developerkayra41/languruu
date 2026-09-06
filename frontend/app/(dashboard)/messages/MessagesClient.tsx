@@ -49,6 +49,7 @@ export default function MessagesClient({
                   name={conversation.user_name}
                   size={44}
                   className="shrink-0"
+                  online={conversation.is_online}
                 />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">

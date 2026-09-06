@@ -11,6 +11,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Reveal from "@/app/components/ui/Reveal";
 import { useConfirm } from "@/app/components/ui/useConfirm";
+import { nextLevelTotalXp } from "@/app/lib/xp";
 import { toast } from "sonner";
 
 const USERNAME_PATTERN = /^[a-zA-Z0-9_]+$/;
@@ -35,6 +36,7 @@ interface ProfileClientProps {
     pending_request_count: number;
     unread_notifications: number;
     unread_messages: number;
+    is_online?: boolean;
   };
 }
 
@@ -217,6 +219,7 @@ export default function ProfileClient({ initialProfile }: ProfileClientProps) {
                   name={userName}
                   size={128}
                   className="border-4 border-white shadow-md"
+                  online={initialProfile.is_online}
                 />
 
                 <input
@@ -263,15 +266,12 @@ export default function ProfileClient({ initialProfile }: ProfileClientProps) {
                   caption={t("levelShort")}
                   title={t("levelTooltip", {
                     level: initialProfile.level,
-                    current: initialProfile.xp_into_level,
-                    next: initialProfile.xp_for_next,
+                    xp: initialProfile.xp,
+                    next: nextLevelTotalXp(initialProfile),
                   })}
                 />
                 <span className="-mt-1 text-xs font-medium text-gray-500">
-                  {t("levelProgress", {
-                    current: initialProfile.xp_into_level,
-                    next: initialProfile.xp_for_next,
-                  })}
+                  {t("levelXp", { xp: initialProfile.xp })}
                 </span>
               </div>
             </div>

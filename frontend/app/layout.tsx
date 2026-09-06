@@ -72,8 +72,8 @@ export default async function RootLayout({
       <body className={spaceGrotesk.className}>
         <NextIntlClientProvider locale={locale} messages={messages}>
           {children}
+          <Toaster richColors closeButton position="top-right" />
         </NextIntlClientProvider>
-        <Toaster richColors position="top-right" />
         <Analytics />
         <SpeedInsights />
       </body>

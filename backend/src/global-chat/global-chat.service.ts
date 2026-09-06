@@ -4,6 +4,7 @@ import { containsProfanityInText } from 'src/_common/moderation/profanity';
 import { isAdminEmail } from 'src/_common/utils/admin-emails';
 import { UserRepository } from 'src/users/repository/user.repository';
 import { GlobalChatRepository } from './repository/global-chat.repository';
+import { PresenceService } from 'src/_common/presence/presence.service';
 
 export const GLOBAL_MESSAGE_TTL_DAYS = 7;
 const FEED_PAGE_SIZE = 100;
@@ -14,6 +15,7 @@ export class GlobalChatService {
         private readonly globalChatRepo: GlobalChatRepository,
         private readonly userRepo: UserRepository,
         private readonly config: ConfigService,
+        private readonly presence: PresenceService,
     ) { }
 
     private assertClean = (body: string) => {
@@ -25,11 +27,20 @@ export class GlobalChatService {
         return isAdminEmail(this.config, user?.email);
     };
 
-    list = async (userId: number) => ({
-        messages: await this.globalChatRepo.listRecent(userId, FEED_PAGE_SIZE),
-        expires_in_days: GLOBAL_MESSAGE_TTL_DAYS,
-        is_moderator: await this.isAdmin(userId),
-    });
+    list = async (userId: number) => {
+        const rows = await this.globalChatRepo.listRecent(userId, FEED_PAGE_SIZE);
+        const viewer = await this.presence.viewer(userId);
+        const onlineIds = await this.presence.visibleIds(userId, rows.map((row) => row.user_id), viewer);
+
+        return {
+            messages: rows.map(({ user_id, ...message }) => ({
+                ...message,
+                is_online: onlineIds.has(user_id),
+            })),
+            expires_in_days: GLOBAL_MESSAGE_TTL_DAYS,
+            is_moderator: viewer.is_admin,
+        };
+    };
 
     send = async (userId: number, body: string) => {
         this.assertClean(body);

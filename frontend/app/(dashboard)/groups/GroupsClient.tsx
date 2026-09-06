@@ -16,6 +16,7 @@ import { LanguagePair } from "@/app/components/ui/Flags";
 import Link from "next/link";
 import { useConfirm } from "@/app/components/ui/useConfirm";
 import GameStartButton from "@/app/components/game/GameStartButton";
+import { showUndoToast } from "@/app/components/ui/UndoToast";
 
 interface GroupsClientProps {
   groups: WordColumnWithoutPool[];
@@ -33,6 +34,9 @@ export default function GroupsClient({ groups }: GroupsClientProps) {
   const [shareModalGroup, setShareModalGroup] =
     useState<WordColumnWithoutPool | null>(null);
   const [pendingShareValue, setPendingShareValue] = useState(false);
+
+  const [pendingDeleteIds, setPendingDeleteIds] = useState<number[]>([]);
+  const visibleGroups = groups.filter((group) => !pendingDeleteIds.includes(group.id));
 
   const [newGroupLang1, setNewGroupLang1] = useState<string | null>(null);
   const [newGroupLang2, setNewGroupLang2] = useState<string | null>(null);
@@ -108,21 +112,33 @@ export default function GroupsClient({ groups }: GroupsClientProps) {
     });
     if (!ok) return;
 
-    startTransition(async () => {
-      const result = await deleteGroup(group.id);
-      if (!result.success) {
-        toast.error(result.error);
-        return;
-      }
-      toast.success(t("deleted", { name: group.name }));
-      router.refresh();
+    setPendingDeleteIds((ids) => [...ids, group.id]);
+    const restore = () => setPendingDeleteIds((ids) => ids.filter((id) => id !== group.id));
+
+    showUndoToast({
+      message: t("deleted", { name: group.name }),
+      onCommit: () => {
+        startTransition(async () => {
+          const result = await deleteGroup(group.id);
+          if (!result.success) {
+            restore();
+            toast.error(result.error);
+            return;
+          }
+          router.refresh();
+        });
+      },
+      onUndo: () => {
+        restore();
+        toast.success(t("deleteUndone", { name: group.name }));
+      },
     });
   };
 
   return (
     <div>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {groups.map((group) => (
+        {visibleGroups.map((group) => (
           <div
             key={group.id}
             className="bg-white rounded-lg shadow-sm overflow-hidden border border-gray-100 hover:shadow-md transition-all duration-300 transform hover:scale-[1.02]"

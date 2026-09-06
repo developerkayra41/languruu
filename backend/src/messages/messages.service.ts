@@ -3,6 +3,7 @@ import { MessageRepository } from './repository/message.repository';
 import { FriendRepository } from 'src/friends/repository/friend.repository';
 import { UserRepository } from 'src/users/repository/user.repository';
 import { NotificationsService } from 'src/notifications/notifications.service';
+import { PresenceService } from 'src/_common/presence/presence.service';
 
 export const MESSAGE_TTL_DAYS = 7;
 const THREAD_PAGE_SIZE = 100;
@@ -14,6 +15,7 @@ export class MessagesService {
         private readonly friendRepo: FriendRepository,
         private readonly userRepo: UserRepository,
         private readonly notificationsService: NotificationsService,
+        private readonly presence: PresenceService,
     ) { }
 
     private resolveFriend = async (userId: number, userName: string) => {
@@ -26,7 +28,11 @@ export class MessagesService {
         return target;
     };
 
-    listConversations = async (userId: number) => this.messageRepo.listConversations(userId);
+    listConversations = async (userId: number) => {
+        const rows = await this.messageRepo.listConversations(userId);
+        const onlineIds = await this.presence.visibleIds(userId, rows.map((row) => row.user_id));
+        return rows.map(({ user_id, ...row }) => ({ ...row, is_online: onlineIds.has(user_id) }));
+    };
 
     unreadSummary = async (userId: number) => ({
         unread_senders: await this.messageRepo.countUnreadSenders(userId),
@@ -35,6 +41,11 @@ export class MessagesService {
     getThread = async (userId: number, userName: string) => {
         const target = await this.resolveFriend(userId, userName);
         const conversation = await this.messageRepo.findConversation(userId, target.id);
+        const isOnline = await this.presence.canSee(userId, {
+            user_id: target.id,
+            presence_visibility: target.presence_visibility,
+            online: !!target.online,
+        });
 
         if (!conversation) {
             return {
@@ -42,6 +53,7 @@ export class MessagesService {
                     user_name: target.user_name,
                     full_name: target.full_name,
                     avatar_url: target.avatar_url ?? null,
+                    is_online: isOnline,
                 },
                 messages: [],
                 expires_in_days: MESSAGE_TTL_DAYS,
@@ -57,6 +69,7 @@ export class MessagesService {
                 user_name: target.user_name,
                 full_name: target.full_name,
                 avatar_url: target.avatar_url ?? null,
+                is_online: isOnline,
             },
             messages: items,
             expires_in_days: MESSAGE_TTL_DAYS,

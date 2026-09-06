@@ -5,13 +5,15 @@ import { WordRepository } from 'src/words/repository/words.repository';
 import { TopPerformerRepository } from './repository/top-performers.repository';
 import { TopPerformers } from 'src/_common/drizzle/top-performers';
 import { levelFromXp } from 'src/_common/utils/xp-level';
+import { PresenceService } from 'src/_common/presence/presence.service';
 
 @Injectable()
 export class TopPerformersService implements OnModuleInit {
     private readonly logger = new Logger(TopPerformersService.name);
     constructor(@Inject(UserRepository) private readonly userRepo: UserRepository,
         private readonly wordsRepo: WordRepository,
-        private readonly topPerformerRepo: TopPerformerRepository) { }
+        private readonly topPerformerRepo: TopPerformerRepository,
+        private readonly presence: PresenceService) { }
 
     onModuleInit = async () => {
         try {
@@ -22,10 +24,13 @@ export class TopPerformersService implements OnModuleInit {
         }
     }
 
-    getTopPerformers = async (): Promise<TopPerformerData[]> => {
+    getTopPerformers = async (viewerId: number): Promise<TopPerformerData[]> => {
         const list = await this.topPerformerRepo.getTopPerformers(1);
         if (!list) return [];
-        return list;
+
+        const scored = list.filter((row) => (row.xp ?? 0) > 0);
+        const onlineIds = await this.presence.visibleIds(viewerId, scored.map((row) => row.user_id));
+        return scored.map((row) => ({ ...row, is_online: onlineIds.has(row.user_id) }));
     }
 
     updateTopPerformer = async (): Promise<TopPerformerRow> => {

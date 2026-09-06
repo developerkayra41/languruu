@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
@@ -17,6 +18,15 @@ import type { GlobalMessageItem } from "@/app/types/social";
 
 const POLL_MS = 10_000;
 const MAX_LENGTH = 1000;
+
+const swallowNextClick = () => {
+  const swallow = (event: MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+  };
+  document.addEventListener("click", swallow, { capture: true, once: true });
+  window.setTimeout(() => document.removeEventListener("click", swallow, true), 500);
+};
 
 export default function GlobalChat() {
   const t = useTranslations("globalChat");
@@ -35,6 +45,9 @@ export default function GlobalChat() {
   const [isSending, startSending] = useTransition();
   const [isSavingEdit, startSavingEdit] = useTransition();
   const bottomRef = useRef<HTMLDivElement>(null);
+  const skipHistoryRef = useRef(false);
+  const confirmOpenRef = useRef(false);
+  const router = useRouter();
 
   const timeFormat = useMemo(
     () => new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit" }),
@@ -78,9 +91,35 @@ export default function GlobalChat() {
 
   useEffect(() => {
     if (!isOpen) return;
+    if (!window.history.state?.globalChat) {
+      window.history.pushState({ ...window.history.state, globalChat: true }, "");
+    }
+    const handlePop = () => {
+      setReportId(null);
+      setMenuId(null);
+      cancelEdit();
+      setIsOpen(false);
+    };
+    window.addEventListener("popstate", handlePop);
+    return () => {
+      window.removeEventListener("popstate", handlePop);
+      if (skipHistoryRef.current) {
+        skipHistoryRef.current = false;
+        return;
+      }
+      if (window.history.state?.globalChat) window.history.back();
+    };
+  }, [isOpen, cancelEdit]);
+
+  useEffect(() => {
+    if (!isOpen) return;
     const handleOutside = (e: Event) => {
       const target = e.target as HTMLElement;
       if (!target.closest("[data-global-message-menu]")) setMenuId(null);
+      if (target.closest("[data-global-chat-panel]")) return;
+      if (reportId !== null || confirmOpenRef.current) return;
+      swallowNextClick();
+      setIsOpen(false);
     };
     const handleEscape = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
@@ -151,7 +190,10 @@ export default function GlobalChat() {
     const question = message.from_me
       ? t("deleteConfirm")
       : t("deleteConfirmAsAdmin", { name: message.full_name });
-    if (!(await confirm({ message: question, danger: true }))) return;
+    confirmOpenRef.current = true;
+    const confirmed = await confirm({ message: question, danger: true });
+    confirmOpenRef.current = false;
+    if (!confirmed) return;
     const result = await deleteGlobalMessageAction(message.id);
     if (!result.success) {
       showError(result.error);
@@ -159,6 +201,16 @@ export default function GlobalChat() {
     }
     if (editingId === message.id) cancelEdit();
     setMessages((prev) => prev.filter((m) => m.id !== message.id));
+  };
+
+  const goToProfile = (e: React.MouseEvent, href: string) => {
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) return;
+    e.preventDefault();
+    const onDummyEntry = !!window.history.state?.globalChat;
+    skipHistoryRef.current = true;
+    setIsOpen(false);
+    if (onDummyEntry) router.replace(href);
+    else router.push(href);
   };
 
   const todayKey = new Date().toDateString();
@@ -194,8 +246,9 @@ export default function GlobalChat() {
       />
 
       <aside
+        data-global-chat-panel
         aria-hidden={!isOpen}
-        className={`fixed top-0 right-0 h-screen z-50 w-full sm:w-1/4 sm:min-w-[340px] bg-white border-l border-gray-200 shadow-2xl flex flex-col transition-transform duration-300 ease-out ${
+        className={`fixed top-0 right-0 h-dvh z-50 w-full sm:w-1/4 sm:min-w-[340px] bg-white border-l border-gray-200 shadow-2xl flex flex-col transition-transform duration-300 ease-out ${
           isOpen ? "translate-x-0" : "translate-x-full pointer-events-none"
         }`}
       >
@@ -264,11 +317,16 @@ export default function GlobalChat() {
                   {!message.from_me && (
                     <span className="w-7 shrink-0">
                       {!sameAuthorAsPrevious && (
-                        <Link href={`/users/${message.user_name}`} title={message.full_name}>
+                        <Link
+                          href={`/users/${message.user_name}`}
+                          title={message.full_name}
+                          onClick={(e) => goToProfile(e, `/users/${message.user_name}`)}
+                        >
                           <Avatar
                             src={message.avatar_url ?? undefined}
                             name={message.user_name}
                             size={28}
+                            online={message.is_online}
                           />
                         </Link>
                       )}
@@ -279,6 +337,7 @@ export default function GlobalChat() {
                     {!message.from_me && !sameAuthorAsPrevious && (
                       <Link
                         href={`/users/${message.user_name}`}
+                        onClick={(e) => goToProfile(e, `/users/${message.user_name}`)}
                         className="block mb-0.5 text-[11px] font-semibold text-purple-600 hover:underline truncate"
                       >
                         {message.full_name}

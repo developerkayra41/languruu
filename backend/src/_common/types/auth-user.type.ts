@@ -8,6 +8,7 @@ export type AuthUser = {
     avatar_url: string | null;
     updated_at: Date;
     discovery_source?: string | null;
+    presence_visibility?: string | null;
     email_verified: boolean;
     is_banned: boolean;
 };

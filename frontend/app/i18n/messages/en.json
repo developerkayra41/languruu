@@ -3,7 +3,9 @@
     "confirm": "Confirm",
     "cancel": "Cancel",
     "back": "Back",
-    "note": "Note"
+    "note": "Note",
+    "undo": "Undo",
+    "close": "Close"
   },
   "nav": {
     "study": "Study",
@@ -237,9 +239,10 @@
     "errSameLang": "The two languages can't be the same, pick different ones.",
     "delete": "Delete",
     "deleteTitle": "Delete Group",
-    "deleteConfirm": "Are you sure you want to delete the group \"{name}\"? This action cannot be undone.",
+    "deleteConfirm": "Are you sure you want to delete the group \"{name}\"?",
     "deleteSharedWarning": "Since this group is shared on the marketplace, it will also be removed from there. It stays with anyone who already copied it.",
-    "deleted": "Group \"{name}\" deleted."
+    "deleted": "Group \"{name}\" deleted.",
+    "deleteUndone": "Group \"{name}\" restored."
   },
   "marketplace": {
     "title": "Word Groups Library",
@@ -304,7 +307,7 @@
     "levelUp": "Level up! You're now level {level} 🎉",
     "xpGained": "You earned +{xp} XP",
     "xpCapped": "You've hit today's XP limit",
-    "levelProgress": "Level {level} — {current}/{next} XP",
+    "levelProgress": "Level {level} — {xp} XP total",
     "joining": "Joining the room...",
     "connecting": "Connecting...",
     "linkCopied": "Room link copied.",
@@ -342,7 +345,20 @@
     "submitting": "Sending...",
     "success": "Your report has been received, thank you."
   },
+  "presence": {
+    "online": "Online"
+  },
   "settings": {
+    "presenceTitle": "Activity Status",
+    "presenceText": "The green dot on your profile picture shows that you are online. You choose who can see it.",
+    "presenceOption_off": "Hidden from everyone",
+    "presenceHint_off": "Nobody can see whether you are online.",
+    "presenceOption_friends": "Friends only",
+    "presenceHint_friends": "Only people on your friend list can see it.",
+    "presenceOption_everyone": "Visible to everyone",
+    "presenceHint_everyone": "Every signed-in user can see it.",
+    "presenceUpdated": "Your activity status setting has been updated.",
+    "presenceAdminNote": "Admins can always see this status for moderation.",
     "title": "Settings",
     "emailTitle": "Email Address",
     "current": "Current:",
@@ -392,8 +408,8 @@
     "bioCancel": "Cancel",
     "bioCounter": "{count}/200",
     "levelShort": "LEVEL",
-    "levelProgress": "{current} / {next} XP",
-    "levelTooltip": "Level {level} — {current}/{next} XP. Every word you answer correctly earns +1 XP, and every 100 points in race mode earns +1 XP.",
+    "levelXp": "{xp} XP",
+    "levelTooltip": "Level {level} — {xp} XP total. Next level at {next} XP. Every word you answer correctly earns +1 XP, and every 100 points in race mode earns +1 XP.",
     "statsTitle": "Statistics",
     "totalWords": "Total Words",
     "completedRounds": "Completed Rounds",
@@ -485,6 +501,8 @@
     "retry": "Try Again"
   },
   "words": {
+    "deleted": "\"{term}\" deleted.",
+    "deleteUndone": "\"{term}\" restored.",
     "wordCount": "{count} words",
     "empty": "This group has no words yet.",
     "colWord": "Word",

@@ -7,13 +7,13 @@ import { utc } from "src/_common/utils/sql-time";
 export class GlobalChatRepository {
     constructor(@Inject('DRIZZLE') private readonly db) { }
 
-    async listRecent(userId: number, limit: number): Promise<GlobalMessageItem[]> {
+    async listRecent(userId: number, limit: number): Promise<(GlobalMessageItem & { user_id: number })[]> {
         const result = await this.db.execute(sql`
             SELECT recent.id, recent.body,
                    ${utc('recent.created_at')} AS created_at,
                    ${utc('recent.edited_at')} AS edited_at,
                    (recent.user_id = ${userId}) AS from_me,
-                   u.user_name, u.full_name, u.avatar_url
+                   recent.user_id, u.user_name, u.full_name, u.avatar_url
             FROM (
                 SELECT g.id, g.body, g.created_at, g.edited_at, g.user_id
                 FROM global_messages g
@@ -24,7 +24,7 @@ export class GlobalChatRepository {
             JOIN users u ON u.id = recent.user_id
             ORDER BY recent.created_at ASC, recent.id ASC
         `);
-        return result.rows as GlobalMessageItem[];
+        return result.rows as (GlobalMessageItem & { user_id: number })[];
     }
 
     async findById(messageId: number): Promise<{ id: number; user_id: number } | null> {

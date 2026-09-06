@@ -3,6 +3,7 @@ import { FriendRepository } from './repository/friend.repository';
 import { UserRepository } from 'src/users/repository/user.repository';
 import { NotificationsService } from 'src/notifications/notifications.service';
 import { RelationStatus } from 'src/_common/types/social.type';
+import { PresenceService } from 'src/_common/presence/presence.service';
 
 @Injectable()
 export class FriendsService {
@@ -10,6 +11,7 @@ export class FriendsService {
         private readonly friendRepo: FriendRepository,
         private readonly userRepo: UserRepository,
         private readonly notificationsService: NotificationsService,
+        private readonly presence: PresenceService,
     ) { }
 
     private resolveTarget = async (userName: string) => {
@@ -97,9 +99,17 @@ export class FriendsService {
         return { status: 'none', request_id: null };
     };
 
-    listFriends = async (userId: number) => this.friendRepo.listFriends(userId);
+    listFriends = async (userId: number) => {
+        const rows = await this.friendRepo.listFriends(userId);
+        const onlineIds = await this.presence.visibleIds(userId, rows.map((row) => row.id));
+        return rows.map((row) => ({ ...row, is_online: onlineIds.has(row.id) }));
+    };
 
-    listRequests = async (userId: number) => this.friendRepo.listIncomingRequests(userId);
+    listRequests = async (userId: number) => {
+        const rows = await this.friendRepo.listIncomingRequests(userId);
+        const onlineIds = await this.presence.visibleIds(userId, rows.map((row) => row.user_id));
+        return rows.map(({ user_id, ...row }) => ({ ...row, is_online: onlineIds.has(user_id) }));
+    };
 
     summary = async (userId: number) => {
         const [friendCount, requestCount] = await Promise.all([

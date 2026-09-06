@@ -116,6 +116,7 @@ export interface RevealPlayerResult {
 export interface GameXpResult {
     userId: number;
     gained: number;
+    xp: number;
     level: number;
     xpIntoLevel: number;
     xpForNext: number;
