@@ -6,6 +6,7 @@ import { deleteAvatar, requestAvatarUploadUrl, saveProfile } from "./actions";
 import StatCard from "@/app/components/ui/StatCard";
 import AvatarCropModal from "@/app/components/ui/AvatarCropModal";
 import Avatar from "@/app/components/ui/Avatar";
+import AvatarLightbox from "@/app/components/ui/AvatarLightbox";
 import LevelBadge from "@/app/components/ui/LevelBadge";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -214,13 +215,15 @@ export default function ProfileClient({ initialProfile }: ProfileClientProps) {
           <div className="px-6 pb-6">
             <div className="flex items-end justify-between -mt-16">
               <div className="relative">
-                <Avatar
-                  src={avatarUrl}
-                  name={userName}
-                  size={128}
-                  className="border-4 border-white shadow-md"
-                  online={initialProfile.is_online}
-                />
+                <AvatarLightbox src={avatarUrl} alt={userName}>
+                  <Avatar
+                    src={avatarUrl}
+                    name={userName}
+                    size={128}
+                    className="border-4 border-white shadow-md"
+                    online={initialProfile.is_online}
+                  />
+                </AvatarLightbox>
 
                 <input
                   ref={fileInputRef}

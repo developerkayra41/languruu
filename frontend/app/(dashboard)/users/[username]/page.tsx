@@ -7,6 +7,7 @@ import Image from "next/image";
 import ReportButton from "@/app/components/report/ReportButton";
 import LevelBadge from "@/app/components/ui/LevelBadge";
 import PresenceDot from "@/app/components/ui/PresenceDot";
+import AvatarLightbox from "@/app/components/ui/AvatarLightbox";
 import { nextLevelTotalXp } from "@/app/lib/xp";
 import FriendButton from "@/app/components/social/FriendButton";
 import MessageButton from "@/app/components/social/MessageButton";
@@ -61,13 +62,15 @@ export default async function PublicProfilePage({
           <div className="-mt-14 flex items-end justify-between gap-4">
             <div className="relative w-28 h-28">
               {profile.avatar_url ? (
-              <Image
-                src={profile.avatar_url}
-                alt={profile.user_name}
-                width={112}
-                height={112}
-                className="w-28 h-28 rounded-full object-cover border-4 border-white shadow-md"
-              />
+              <AvatarLightbox src={profile.avatar_url} alt={profile.user_name}>
+                <Image
+                  src={profile.avatar_url}
+                  alt={profile.user_name}
+                  width={112}
+                  height={112}
+                  className="w-28 h-28 rounded-full object-cover border-4 border-white shadow-md"
+                />
+              </AvatarLightbox>
               ) : (
                 <div className="w-28 h-28 rounded-full border-4 border-white shadow-md bg-purple-100 flex items-center justify-center text-purple-600 text-2xl font-semibold">
                   {initials}
