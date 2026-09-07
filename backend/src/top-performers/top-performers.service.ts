@@ -29,8 +29,20 @@ export class TopPerformersService implements OnModuleInit {
         if (!list) return [];
 
         const scored = list.filter((row) => (row.xp ?? 0) > 0);
-        const onlineIds = await this.presence.visibleIds(viewerId, scored.map((row) => row.user_id));
-        return scored.map((row) => ({ ...row, is_online: onlineIds.has(row.user_id) }));
+        if (scored.length === 0) return [];
+
+        const ids = scored.map((row) => row.user_id);
+        const [onlineIds, current] = await Promise.all([
+            this.presence.visibleIds(viewerId, ids),
+            this.userRepo.getUsersByIds(ids),
+        ]);
+        const avatars = new Map(current.map((user) => [user.id, user.avatar_url ?? undefined]));
+
+        return scored.map((row) => ({
+            ...row,
+            avatar_url: avatars.has(row.user_id) ? avatars.get(row.user_id) : row.avatar_url,
+            is_online: onlineIds.has(row.user_id),
+        }));
     }
 
     updateTopPerformer = async (): Promise<TopPerformerRow> => {
