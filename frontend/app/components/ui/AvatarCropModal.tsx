@@ -10,7 +10,7 @@ interface AvatarCropModalProps {
   onCropComplete: (blob: Blob) => void;
 }
 
-const OUTPUT_SIZE = 512;
+const OUTPUT_SIZE = 1024;
 
 export default function AvatarCropModal({
   imageSrc,
@@ -127,7 +127,7 @@ async function getCroppedImageBlob(
         else reject(new Error("Resim işlenemedi"));
       },
       "image/jpeg",
-      0.85
+      0.9
     );
   });
 }
