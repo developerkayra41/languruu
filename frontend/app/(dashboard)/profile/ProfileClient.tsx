@@ -192,7 +192,7 @@ export default function ProfileClient({ initialProfile }: ProfileClientProps) {
       });
       if (!saveResult.success) throw new Error(saveResult.error);
 
-      setAvatarUrl(urlResult.data.publicUrl);
+      setAvatarUrl(saveResult.data.avatar_url ?? urlResult.data.publicUrl);
       router.refresh();
     } catch (err) {
       toast.error(err instanceof Error ? err.message : t("uploadFailed"));

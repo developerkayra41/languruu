@@ -20,7 +20,8 @@ import { MessageRepository } from 'src/messages/repository/message.repository';
 import { isAdminEmail } from 'src/_common/utils/admin-emails';
 import { PresenceService } from 'src/_common/presence/presence.service';
 import { DEFAULT_PRESENCE_VISIBILITY } from 'src/_common/utils/presence';
-export const AVATAR_BUCKET = 'avatars';
+import { AVATAR_BUCKET, stampAvatarVersion, stripAvatarVersion, withAvatarVersion } from 'src/_common/utils/avatar-url';
+export { AVATAR_BUCKET };
 const AVATAR_LIST_PAGE_SIZE = 1000;
 const AVATAR_REMOVE_BATCH_SIZE = 100;
 const AVATAR_GRACE_MS = 60 * 60 * 1000;
@@ -89,7 +90,7 @@ export class UsersService {
     return {
       user_name: user.user_name,
       full_name: user.full_name,
-      avatar_url: user.avatar_url ? `${user.avatar_url}?v=${user.updated_at?.getTime() ?? Date.now()}` : undefined,
+      avatar_url: withAvatarVersion(user.avatar_url, user.updated_at),
       description: user.description ?? '',
       email: user.email,
       email_verified: user.email_verified,
@@ -172,6 +173,9 @@ export class UsersService {
       const trimmed = data.description.trim();
       payload.description = trimmed.length > 0 ? trimmed : null;
     }
+    if (typeof payload.avatar_url === 'string' && payload.avatar_url.length > 0) {
+      payload.avatar_url = stampAvatarVersion(payload.avatar_url);
+    }
     const updated = await this.userRepo.updateProfile(userId, payload);
     if (!updated) throw new NotFoundException();
     return updated;
@@ -237,7 +241,7 @@ export class UsersService {
     if (user.avatar_url) {
       // Path'i URL'den değil, bilinen sabit formülden türetiyoruz —
       // URL'in kendisi (özellikle cache-buster'lı hali) parse etmeye güvenilmez.
-      const extension = user.avatar_url.split(".").pop()?.split("?")[0] ?? "jpg";
+      const extension = stripAvatarVersion(user.avatar_url).split(".").pop() ?? "jpg";
       const filePath = `${userId}/avatar.${extension}`;
 
       const { error } = await this.supabase.storage.from('avatars').remove([filePath]);
@@ -265,7 +269,7 @@ export class UsersService {
   private avatarStoragePath = (avatarUrl: string | null): string | null => {
     if (!avatarUrl) return null;
     const marker = `/${AVATAR_BUCKET}/`;
-    const clean = avatarUrl.split('?')[0];
+    const clean = stripAvatarVersion(avatarUrl);
     const at = clean.lastIndexOf(marker);
     return at === -1 ? null : clean.slice(at + marker.length);
   };
