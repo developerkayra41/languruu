@@ -8,9 +8,10 @@ import { AdminService } from './admin.service';
 import { AuthModule } from "src/auth/auth.module";
 import { ReportsModule } from "src/reports/reports.module";
 import { GlobalChatModule } from "src/global-chat/global-chat.module";
+import { ReengagementModule } from "src/reengagement/reengagement.module";
 
 @Module({
-    imports: [DrizzleModule, UsersModule, AuthModule, ReportsModule, GlobalChatModule],
+    imports: [DrizzleModule, UsersModule, AuthModule, ReportsModule, GlobalChatModule, ReengagementModule],
     controllers: [AdminController],
     providers: [AdminRepository, AdminGuard, AdminService],
 })

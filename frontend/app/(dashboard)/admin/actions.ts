@@ -1,5 +1,5 @@
 "use server";
-import { getAdminUsers, banUser, unbanUser, resolveReport, adminDeleteGlobalMessage } from "@/app/lib/api-client";
+import { getAdminUsers, banUser, unbanUser, resolveReport, adminDeleteGlobalMessage, runAdminReengagement, sendAdminReengagement } from "@/app/lib/api-client";
 
 export async function listUsersAction(params: { filter: string; search: string; page: number }) {
   try { const data = await getAdminUsers(params); return { success: true as const, ...data }; }
@@ -26,4 +26,14 @@ export async function deleteReportedMessageAction(reportId: number, messageId: n
     return { success: true as const };
   }
   catch (e: any) { return { success: false as const, error: e?.message ?? "Mesaj silinemedi." }; }
+}
+
+export async function runReengagementAction() {
+  try { const data = await runAdminReengagement(); return { success: true as const, ...data }; }
+  catch (e: any) { return { success: false as const, error: e?.message ?? "Gönderilemedi." }; }
+}
+
+export async function sendReengagementAction(email: string) {
+  try { const data = await sendAdminReengagement(email); return { success: true as const, ...data }; }
+  catch (e: any) { return { success: false as const, error: e?.message ?? "Gönderilemedi." }; }
 }

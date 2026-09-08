@@ -85,6 +85,13 @@
       "when": 1788863649888,
       "tag": "0011_icy_union_jack",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1788905656557,
+      "tag": "0012_sturdy_revanche",
+      "breakpoints": true
     }
   ]
 }

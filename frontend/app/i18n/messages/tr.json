@@ -526,7 +526,20 @@
       "other": "Diğer",
       "skipped": "Cevaplamadı (geçti)",
       "unanswered": "Cevap bekliyor"
-    }
+    },
+    "reengagementTitle": "Hatırlatma E-postası",
+    "reengagementSubtitle": "{days} gündür uğramayan kullanıcılara \"bir şans daha\" e-postası. Her gün 13:00'te otomatik gönderilir; aynı kişiye {cooldown} günde bir defadan sık gitmez.",
+    "reengagementEligible": "{days} gündür giriş yapmadı",
+    "reengagementSendAll": "Hepsine gönder",
+    "reengagementConfirm": "{count} kullanıcıya hatırlatma e-postası gönderilecek. Bu işlem geri alınamaz.",
+    "reengagementBatchSent": "{count} kişiye hatırlatma e-postası gönderildi.",
+    "reengagementPartial": "{sent} gönderildi, {failed} başarısız oldu.",
+    "reengagementEmailPlaceholder": "kullanici@ornek.com",
+    "reengagementSendOne": "Tek kişiye gönder",
+    "reengagementSentTo": "{email} adresine gönderildi.",
+    "reengagementSentToGuest": "{email} adresine gönderildi (kayıtlı bir kullanıcı değil).",
+    "reengagementOptedOut": "Bu kullanıcı hatırlatma e-postalarını kapatmış.",
+    "reengagementManualHint": "Kayıtlı olsun olmasın, yazdığın adrese hatırlatma e-postasını hemen yollar."
   },
   "error": {
     "title": "Bir şeyler ters gitti",
@@ -711,5 +724,18 @@
     "saving": "Kaydediliyor...",
     "errUserNameLen": "Kullanıcı adı 3-16 karakter olmalı.",
     "errUserNameChars": "Kullanıcı adı yalnızca harf, rakam ve alt çizgi içerebilir."
+  },
+  "unsubscribe": {
+    "title": "Hatırlatma e-postalarını kapat",
+    "text": "Onaylarsan Languruu'dan bir daha \"seni özledik\" tarzı hatırlatma e-postası almazsın. Hesabınla ilgili e-postalar (şifre sıfırlama, e-posta doğrulama) gelmeye devam eder.",
+    "confirm": "Evet, kapat",
+    "pending": "Kapatılıyor...",
+    "cancel": "Vazgeç",
+    "doneTitle": "Kapatıldı",
+    "doneText": "{email} adresine artık hatırlatma e-postası göndermeyeceğiz.",
+    "errorTitle": "Bağlantı geçersiz",
+    "errorText": "Bu bağlantı geçersiz veya süresi dolmuş görünüyor. E-postadaki bağlantıyı tarayıcına tam olarak kopyaladığından emin ol.",
+    "goSettings": "Ayarlara git",
+    "backHome": "Ana sayfaya dön"
   }
 }

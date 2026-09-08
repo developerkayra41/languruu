@@ -526,7 +526,20 @@
       "other": "Other",
       "skipped": "Skipped",
       "unanswered": "Not answered yet"
-    }
+    },
+    "reengagementTitle": "Re-engagement Email",
+    "reengagementSubtitle": "A \"give it another try\" email for users who haven't shown up in {days} days. Sent automatically every day at 13:00; the same person hears from us at most once every {cooldown} days.",
+    "reengagementEligible": "haven't signed in for {days} days",
+    "reengagementSendAll": "Send to all",
+    "reengagementConfirm": "A reminder email will be sent to {count} users. This cannot be undone.",
+    "reengagementBatchSent": "Reminder email sent to {count} people.",
+    "reengagementPartial": "{sent} sent, {failed} failed.",
+    "reengagementEmailPlaceholder": "user@example.com",
+    "reengagementSendOne": "Send to one person",
+    "reengagementSentTo": "Sent to {email}.",
+    "reengagementSentToGuest": "Sent to {email} (not a registered user).",
+    "reengagementOptedOut": "This user has turned off reminder emails.",
+    "reengagementManualHint": "Sends the reminder email to the address you type right away, registered or not."
   },
   "error": {
     "title": "Something went wrong",
@@ -711,5 +724,18 @@
     "saving": "Saving...",
     "errUserNameLen": "Username must be 3-16 characters.",
     "errUserNameChars": "Username can only contain letters, numbers and underscores."
+  },
+  "unsubscribe": {
+    "title": "Turn off reminder emails",
+    "text": "If you confirm, you won't get any more \"we miss you\" reminder emails from Languruu. Account emails (password reset, email verification) will still arrive.",
+    "confirm": "Yes, turn them off",
+    "pending": "Turning off...",
+    "cancel": "Never mind",
+    "doneTitle": "Turned off",
+    "doneText": "We won't send reminder emails to {email} anymore.",
+    "errorTitle": "Invalid link",
+    "errorText": "This link looks invalid or expired. Make sure you copied the whole link from the email into your browser.",
+    "goSettings": "Go to settings",
+    "backHome": "Back to home"
   }
 }

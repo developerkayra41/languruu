@@ -19,6 +19,8 @@ export const users = pgTable("users", {
     discovery_source: text("discovery_source"),
     needs_profile_setup: boolean("needs_profile_setup").notNull().default(false),
     presence_visibility: text("presence_visibility").notNull().default('off'),
+    reengaged_at: timestamp("reengaged_at"),
+    reengagement_opt_out: boolean("reengagement_opt_out").notNull().default(false),
     // İstatistikler
     study_streak: integer("study_streak").notNull().default(0),      // güncel günlük seri
     last_study_date: date("last_study_date"),                        // son "tamamlandı" günü (YYYY-MM-DD)
