@@ -35,3 +35,28 @@ export async function addWordEntry(group: WordColumn, newEntry: WordPool): Promi
         }
     }
 }
+
+type SaveSongResult =
+    | { success: true; data: WordColumn }
+    | { success: false; error: string };
+
+export async function saveSongLines(group: WordColumn, lines: WordPool[]): Promise<SaveSongResult> {
+    try {
+        const updatedGroup: WordColumn = {
+            ...group,
+            wordPool: lines,
+        };
+
+        const saved = await upsertWord(updatedGroup);
+        revalidatePath("/study");
+        revalidatePath("/words");
+        revalidatePath("/add");
+
+        return { success: true, data: saved };
+    } catch (err) {
+        return {
+            success: false,
+            error: err instanceof Error ? err.message : "Bilinmeyen bir hata",
+        };
+    }
+}

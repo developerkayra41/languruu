@@ -13,6 +13,7 @@ import Logo from "../components/ui/Logo";
 import Reveal from "../components/ui/Reveal";
 import ThemeToggle from "../components/ui/ThemeToggle";
 import DiscoverySourceModal from "../components/onboarding/DiscoverySourceModal";
+import ProfileSetupModal from "../components/onboarding/ProfileSetupModal";
 import NotificationBell from "../components/social/NotificationBell";
 import MessagesMenuItem from "../components/social/MessagesMenuItem";
 import GlobalChat from "../components/social/GlobalChat";
@@ -46,6 +47,7 @@ interface DashboardShellProps {
     unread_notifications?: number;
     unread_messages?: number;
     needs_discovery_prompt?: boolean;
+    needs_profile_setup?: boolean;
   } | null;
 }
 
@@ -312,7 +314,14 @@ export default function DashboardShell({
 
       {profile && <GlobalChat />}
 
-      {profile?.needs_discovery_prompt && <DiscoverySourceModal />}
+      {profile?.needs_profile_setup ? (
+        <ProfileSetupModal
+          initialAvatarUrl={profile.avatar_url}
+          fallbackName={profile.user_name}
+        />
+      ) : (
+        profile?.needs_discovery_prompt && <DiscoverySourceModal />
+      )}
     </div>
   );
 }

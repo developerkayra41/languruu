@@ -40,6 +40,7 @@ export default function GroupsClient({ groups }: GroupsClientProps) {
 
   const [newGroupLang1, setNewGroupLang1] = useState<string | null>(null);
   const [newGroupLang2, setNewGroupLang2] = useState<string | null>(null);
+  const [newGroupIsSong, setNewGroupIsSong] = useState(false);
 
   const handleStudy = (groupId: number) => {
     startTransition(() => {
@@ -67,10 +68,12 @@ export default function GroupsClient({ groups }: GroupsClientProps) {
     }
 
     startTransition(async () => {
-      const result = await createGroup(newGroupName, newGroupDescription, [
-        newGroupLang1,
-        newGroupLang2,
-      ]);
+      const result = await createGroup(
+        newGroupName,
+        newGroupDescription,
+        [newGroupLang1, newGroupLang2],
+        newGroupIsSong,
+      );
       if (!result.success) {
         toast.error(result.error);
         return;
@@ -80,6 +83,7 @@ export default function GroupsClient({ groups }: GroupsClientProps) {
       setNewGroupDescription("");
       setNewGroupLang1(null);
       setNewGroupLang2(null);
+      setNewGroupIsSong(false);
       toast.success(t("created", { name: result.createdGroup.name }));
       router.refresh();
     });
@@ -152,6 +156,12 @@ export default function GroupsClient({ groups }: GroupsClientProps) {
                       languages={group.languages}
                       className="text-blue-100"
                     />
+                  )}
+                  {group.isSong && (
+                    <i
+                      className="fas fa-music text-blue-100"
+                      title={t("songBadge")}
+                    ></i>
                   )}
                   {group.isShared && (
                     <i
@@ -288,6 +298,36 @@ export default function GroupsClient({ groups }: GroupsClientProps) {
                   excludeCode={newGroupLang1}
                 />
               </div>
+
+              <button
+                type="button"
+                role="switch"
+                aria-checked={newGroupIsSong}
+                onClick={() => setNewGroupIsSong((prev) => !prev)}
+                className="w-full flex items-start gap-3 text-left cursor-pointer"
+              >
+                <span
+                  className={`mt-0.5 shrink-0 w-10 h-6 rounded-full p-0.5 transition-colors ${
+                    newGroupIsSong ? "bg-purple-600" : "bg-gray-300"
+                  }`}
+                >
+                  <span
+                    className={`block w-5 h-5 bg-white rounded-full shadow transition-transform ${
+                      newGroupIsSong ? "translate-x-4" : "translate-x-0"
+                    }`}
+                  ></span>
+                </span>
+                <span>
+                  <span className="block text-sm font-medium text-gray-700">
+                    <i className="fas fa-music text-purple-500 mr-1.5"></i>
+                    {t("songMode")}
+                  </span>
+                  <span className="block text-xs text-gray-500 mt-0.5">
+                    {t("songModeHint")}
+                  </span>
+                </span>
+              </button>
+
               <div className="flex justify-end space-x-3 mt-6">
                 <button
                   onClick={() => setIsCreateModalOpen(false)}

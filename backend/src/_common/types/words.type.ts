@@ -19,6 +19,7 @@ export type WordColumn = {
     languages: string[];
     createdAt: Date;
     isShared: boolean;
+    isSong?: boolean;
     sourceShareId?: string;
     sourceAuthorUsername?: string;
 }

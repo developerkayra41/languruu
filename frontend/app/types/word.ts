@@ -19,6 +19,7 @@ export interface WordColumn {
   languages?: string[];
   createdAt: string;
   isShared: boolean;
+  isSong?: boolean;
   sourceShareId?: string;
   sourceAuthorUsername?: string;
 }

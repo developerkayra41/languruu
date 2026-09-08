@@ -22,7 +22,8 @@ type CreateGroupResult = { success: true; createdGroup: WordColumn } | { success
 export async function createGroup(
     name: string,
     description: string,
-    languages: string[]
+    languages: string[],
+    isSong: boolean = false
 ): Promise<CreateGroupResult> {
     try {
         if (!name.trim()) {
@@ -39,6 +40,7 @@ export async function createGroup(
             languages,
             createdAt: new Date().toISOString(),
             isShared: false,
+            isSong,
         };
 
         const createdGroup = await upsertWord(newGroup);

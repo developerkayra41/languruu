@@ -59,7 +59,7 @@
     "register": {
       "title": "Hesap oluştur",
       "subtitle": "Bir dakikadan az sürer.",
-      "fullName": "Ad Soyad",
+      "fullName": "İsim",
       "userName": "Kullanıcı Adı",
       "email": "E-posta",
       "password": "Şifre",
@@ -72,7 +72,7 @@
       "or": "veya",
       "haveAccount": "Zaten hesabın var mı?",
       "signIn": "Giriş yap",
-      "errFullName": "Ad soyad en az 2 karakter olmalı.",
+      "errFullName": "İsim en az 2 karakter olmalı.",
       "errUserNameLen": "Kullanıcı adı 3-16 karakter arasında olmalı.",
       "errUserNameChars": "Kullanıcı adı boşluk içeremez; sadece harf, rakam ve alt çizgi kullanılabilir.",
       "errEmail": "Geçerli bir e-posta adresi girin.",
@@ -80,7 +80,7 @@
       "errMatch": "Şifreler eşleşmiyor.",
       "errTerms": "Devam etmek için şartları kabul etmelisin.",
       "failed": "Kayıt başarısız",
-      "placeholderFullName": "İsim Soyisim",
+      "placeholderFullName": "İsim",
       "placeholderUsername": "kullanici_adi",
       "placeholderEmail": "ornek@mail.com"
     },
@@ -182,7 +182,9 @@
     "didntKnow": "Bilemedim",
     "sentenceAnswerPlaceholder": "Cümlenin çevirisini yaz",
     "correctSentence": "Doğru cevap",
-    "shortcutHint": "Enter: bildim · Esc: bilemedim"
+    "shortcutHint": "Enter: bildim · Esc: bilemedim",
+    "lineProgress": "{current} / {total}. mısra",
+    "lineCount": "{count} mısra"
   },
   "add": {
     "title": "Kelime Ekle",
@@ -209,7 +211,34 @@
     "exampleTranslationPlaceholder": "Örn: Her gün zıplarım",
     "exampleHint": "Cümle ve çevirisi birlikte girilmeli. Cümle modunda bu cümle sorulur.",
     "removeExample": "Kaldır",
-    "errExampleIncomplete": "Örnek cümle ve çevirisinin ikisi de dolu olmalı."
+    "errExampleIncomplete": "Örnek cümle ve çevirisinin ikisi de dolu olmalı.",
+    "song": {
+      "title": "Şarkı Sözleri",
+      "editingIn": "<b>{name}</b> grubunun mısraları",
+      "lineCount": "{count} mısra",
+      "colLine": "Mısra",
+      "colMeaning": "Anlamı",
+      "linePlaceholder": "Mısra'yı girin",
+      "meaningPlaceholder": "Anlamını girin",
+      "addLine": "Mısra Ekle",
+      "addNote": "Not ekle",
+      "notePlaceholder": "Bu mısrayla ilgili hatırlatıcı",
+      "removeNote": "Notu kaldır",
+      "removeLine": "Mısrayı sil",
+      "save": "Kaydet",
+      "saving": "Kaydediliyor...",
+      "saved": "Şarkı sözleri kaydedildi",
+      "unsaved": "Kaydedilmemiş değişiklikler var",
+      "orderHint": "Çalışırken mısralar buradaki sırayla, baştan sona sorulur.",
+      "errEmpty": "En az bir mısra girin.",
+      "errPair": "{line}. mısranın hem kendisi hem anlamı dolu olmalı.",
+      "errMaxLines": "Bir şarkıda en fazla {max} mısra olabilir.",
+      "leaveTitle": "Kaydedilmemiş mısralar",
+      "leaveMessage": "Girdiğin mısralar henüz kaydedilmedi. Kaydedilsin mi?",
+      "saveAndLeave": "Kaydet ve çık",
+      "leaveWithoutSaving": "Kaydetmeden çık",
+      "stay": "Vazgeç"
+    }
   },
   "groups": {
     "wordCount": "{count} kelime",
@@ -243,7 +272,10 @@
     "deleteConfirm": "\"{name}\" grubunu silmek istediğinize emin misiniz?",
     "deleteSharedWarning": "Bu grup marketplace'te paylaşıldığı için oradan da kaldırılacak. Grubu daha önce kendine kopyalayan kişilerde kalmaya devam eder.",
     "deleted": "\"{name}\" grubu silindi.",
-    "deleteUndone": "\"{name}\" grubu geri alındı."
+    "deleteUndone": "\"{name}\" grubu geri alındı.",
+    "songMode": "Şarkı sözü grubu",
+    "songModeHint": "Mısralar sırayla girilir, çalışırken baştan sona sorulur.",
+    "songBadge": "Şarkı sözü"
   },
   "marketplace": {
     "title": "Kelime Grupları Kütüphane",
@@ -664,5 +696,20 @@
     "today": "Bugün",
     "yesterday": "Dün",
     "profanity": "Mesajın uygunsuz ifade içeriyor."
+  },
+  "profileSetup": {
+    "title": "Profilini tamamla",
+    "subtitle": "Fotoğrafını düzenleyebilir ve sana özel bir kullanıcı adı seçebilirsin.",
+    "userName": "Kullanıcı Adı",
+    "userNamePlaceholder": "kullaniciadi",
+    "userNameHint": "3-16 karakter; harf, rakam ve alt çizgi kullanabilirsin.",
+    "addPhoto": "Fotoğraf ekle",
+    "changePhoto": "Fotoğrafı değiştir",
+    "removePhoto": "Fotoğrafı kaldır",
+    "uploadFailed": "Fotoğraf yüklenemedi.",
+    "save": "Kaydet",
+    "saving": "Kaydediliyor...",
+    "errUserNameLen": "Kullanıcı adı 3-16 karakter olmalı.",
+    "errUserNameChars": "Kullanıcı adı yalnızca harf, rakam ve alt çizgi içerebilir."
   }
 }

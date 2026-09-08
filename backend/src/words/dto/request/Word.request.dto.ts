@@ -50,6 +50,11 @@ export class WordRequestDTO {
 
     @ApiProperty({ required: false })
     @IsOptional()
+    @IsBoolean({ message: 'Şarkı modu bilgisi geçersiz.' })
+    isSong?: boolean;
+
+    @ApiProperty({ required: false })
+    @IsOptional()
     @IsString()
     sourceShareId?: string;
 
