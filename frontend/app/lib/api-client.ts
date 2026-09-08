@@ -15,7 +15,7 @@ async function getAuthHeaders(): Promise<HeadersInit> {
 
 // lib/api-client.ts
 import { redirect } from "next/navigation";
-import { AdminDiscoverySource, AdminError, AdminSecurityEvent, AdminStats, AdminUsersPage } from "../types/admin";
+import { AdminDiscoverySource, AdminError, AdminReengagement, AdminReengagementRun, AdminReengagementSend, AdminSecurityEvent, AdminStats, AdminUsersPage } from "../types/admin";
 import { GameRoomSummary, GameTicket } from "../types/game";
 import { ConversationSummary, FriendCounts, FriendRelation, FriendRequestSummary, FriendSummary, GlobalChatFeed, GlobalMessageItem, MessageItem, MessageThread, NotificationsPage, PresenceVisibility } from "../types/social";
 
@@ -313,6 +313,19 @@ export async function resolveReport(id: number, status: string) {
 }
 export async function adminDeleteGlobalMessage(id: number) {
     return apiPost(`/admin/global-messages/${id}/delete`);
+}
+
+export async function getAdminReengagement(): Promise<AdminReengagement> {
+    return apiGet("/admin/reengagement");
+}
+export async function runAdminReengagement(): Promise<AdminReengagementRun> {
+    return apiPost("/admin/reengagement/run");
+}
+export async function sendAdminReengagement(email: string): Promise<AdminReengagementSend> {
+    return apiPost("/admin/reengagement/send", { email });
+}
+export async function unsubscribeReengagement(token: string): Promise<{ email: string }> {
+    return apiPost("/reengagement/unsubscribe", { token });
 }
 export async function getNotifications(params?: { limit?: number; offset?: number }): Promise<NotificationsPage> {
     return apiPost<NotificationsPage>("/notifications/list", params ?? {});

@@ -4,3 +4,6 @@ export interface AdminError { id: number; message: string; path: string; method:
 export interface AdminUsersPage { items: AdminUser[]; total: number; }
 export interface AdminSecurityEvent { id: number; event_type: string; user_id: number | null; email: string | null; ip_address: string | null; created_at: string; }
 export interface AdminDiscoverySource { source: string; count: number }
+export interface AdminReengagement { eligible: number; inactive_days: number; cooldown_days: number; batch_limit: number }
+export interface AdminReengagementRun { sent: number; failed: number; eligible: number }
+export interface AdminReengagementSend { sent: boolean; matched_user: boolean; opted_out: boolean }

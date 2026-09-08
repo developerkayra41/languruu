@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Param, ParseIntPipe, Post, Query, Req, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
 import { BaseController } from "src/_base/base.controller";
 import { JwtAuthGuard } from "src/_common/guards/JwtAuthGuard";
 import { AdminGuard } from "src/_common/guards/AdminGuard";
@@ -6,6 +6,8 @@ import { AdminRepository } from "./admin.repository";
 import { AdminService } from "./admin.service";
 import { ReportRepository } from "src/reports/repository/report.repository";
 import { GlobalChatService } from "src/global-chat/global-chat.service";
+import { ReengagementService } from "src/reengagement/reengagement.service";
+import { SendReengagementRequestDTO } from "src/reengagement/dto/SendReengagement.request.dto";
 
 @Controller('admin')
 @UseGuards(JwtAuthGuard, AdminGuard)
@@ -15,6 +17,7 @@ export class AdminController extends BaseController {
         private readonly adminService: AdminService,
         private readonly reportRepo: ReportRepository,
         private readonly globalChatService: GlobalChatService,
+        private readonly reengagementService: ReengagementService,
     ) { super('AdminController'); }
 
     @Get('stats')
@@ -76,6 +79,25 @@ export class AdminController extends BaseController {
     async deleteGlobalMessage(@Param('id', ParseIntPipe) id: number, @Req() req: any) {
         await this.globalChatService.deleteMessage(req.user.id, id);
         return this.createSuccessResponse({ data: { success: true }, message: 'success', success: true }, req);
+    }
+
+    @Get('reengagement')
+    async reengagementPreview(@Req() req: any) {
+        const data = await this.reengagementService.preview();
+        return this.createSuccessResponse({ data, message: 'success', success: true }, req);
+    }
+
+    @Post('reengagement/run')
+    async reengagementRun(@Req() req: any) {
+        const data = await this.reengagementService.runBatch();
+        return this.createSuccessResponse({ data, message: 'success', success: true }, req);
+    }
+
+    @Post('reengagement/send')
+    @UsePipes(new ValidationPipe({ whitelist: true }))
+    async reengagementSend(@Body() body: SendReengagementRequestDTO, @Req() req: any) {
+        const data = await this.reengagementService.sendToEmail(body.email);
+        return this.createSuccessResponse({ data, message: 'success', success: true }, req);
     }
 
     @Post('reports/:id/resolve')

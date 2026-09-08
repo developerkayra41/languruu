@@ -5,9 +5,11 @@ import {
   getAdminSecurityEvents,
   getAdminReports,
   getAdminDiscoverySources,
+  getAdminReengagement,
 } from "@/app/lib/api-client";
 import AdminUsersPanel from "./AdminUsersPanel";
 import AdminReports from "./AdminReports";
+import AdminReengagement from "./AdminReengagement";
 import { getTranslations, getLocale } from "next-intl/server";
 
 export async function generateMetadata() {
@@ -18,15 +20,16 @@ export async function generateMetadata() {
 export default async function AdminPage() {
   const t = await getTranslations("admin");
   const locale = await getLocale();
-  let stats, users, errors, events, reports, discovery;
+  let stats, users, errors, events, reports, discovery, reengagement;
   try {
-    [stats, users, errors, events, reports, discovery] = await Promise.all([
+    [stats, users, errors, events, reports, discovery, reengagement] = await Promise.all([
       getAdminStats(),
       getAdminUsers({ page: 1 }),
       getAdminErrors(),
       getAdminSecurityEvents(),
       getAdminReports(),
       getAdminDiscoverySources(),
+      getAdminReengagement(),
     ]);
   } catch {
     return (
@@ -65,6 +68,7 @@ export default async function AdminPage() {
 
       <AdminUsersPanel stats={stats} initial={users} />
       <AdminReports initial={reports} />
+      <AdminReengagement initial={reengagement} />
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
         {contentCards.map((c) => (
           <div

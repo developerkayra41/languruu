@@ -277,6 +277,63 @@ export class UserRepository {
             ));
     };
 
+    findInactiveForReengagement = async (params: { inactiveDays: number; cooldownDays: number; limit: number }): Promise<{ id: number; email: string; full_name: string }[]> => {
+        const result = await this.db.execute(sql`
+            SELECT id, email, full_name
+            FROM users
+            WHERE ${this.reengagementEligible(params.inactiveDays, params.cooldownDays)}
+            ORDER BY COALESCE(last_seen_at, created_at) ASC
+            LIMIT ${params.limit}
+        `);
+        return result.rows;
+    };
+
+    countInactiveForReengagement = async (params: { inactiveDays: number; cooldownDays: number }): Promise<number> => {
+        const result = await this.db.execute(sql`
+            SELECT count(*)::int AS total
+            FROM users
+            WHERE ${this.reengagementEligible(params.inactiveDays, params.cooldownDays)}
+        `);
+        return result.rows[0].total;
+    };
+
+    private reengagementEligible = (inactiveDays: number, cooldownDays: number) => sql`
+        deleted_at IS NULL
+        AND is_banned = false
+        AND email_verified = true
+        AND reengagement_opt_out = false
+        AND COALESCE(last_seen_at, created_at) < now() - make_interval(days => ${inactiveDays})
+        AND (reengaged_at IS NULL OR reengaged_at < now() - make_interval(days => ${cooldownDays}))
+    `;
+
+    markReengaged = async (ids: number[]): Promise<void> => {
+        if (ids.length === 0) return;
+        await this.db.update(users).set({ reengaged_at: new Date() }).where(inArray(users.id, ids));
+    };
+
+    findReengagementTargetByEmail = async (email: string): Promise<{ id: number; email: string; full_name: string; reengagement_opt_out: boolean } | null> => {
+        const [user] = await this.db
+            .select({
+                id: users.id,
+                email: users.email,
+                full_name: users.full_name,
+                reengagement_opt_out: users.reengagement_opt_out,
+            })
+            .from(users)
+            .where(and(eq(users.email, email), isNull(users.deleted_at)))
+            .limit(1);
+        return user ?? null;
+    };
+
+    setReengagementOptOut = async (userId: number, optOut: boolean): Promise<{ email: string } | null> => {
+        const [user] = await this.db
+            .update(users)
+            .set({ reengagement_opt_out: optOut })
+            .where(and(eq(users.id, userId), isNull(users.deleted_at)))
+            .returning({ email: users.email });
+        return user ?? null;
+    };
+
     listAvatarOwners = async (ids: number[]): Promise<{ id: number; avatar_url: string | null; is_banned: boolean; deleted: boolean }[]> => {
         if (ids.length === 0) return [];
         return await this.db
