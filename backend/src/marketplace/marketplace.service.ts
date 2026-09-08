@@ -83,6 +83,7 @@ export class MarketplaceService {
             languages: column.languages,
             createdAt: column.createdAt,
             isShared: false,
+            isSong: column.isSong,
             sourceShareId: column.sourceShareId,
             sourceAuthorUsername: column.sourceAuthorUsername,
         } as any);
@@ -105,6 +106,7 @@ export class MarketplaceService {
             author_name: entry.author_name,
             author_username: entry.author_username,
             wordPool: sourceColumn.wordPool,
+            isSong: sourceColumn.isSong ?? false,
         };
     };
 
@@ -131,6 +133,7 @@ export class MarketplaceService {
             languages: sourceColumn.languages,
             createdAt: existingCopy ? existingCopy.createdAt : new Date(),
             isShared: false,
+            isSong: sourceColumn.isSong,
             sourceShareId: shareId,
             sourceAuthorUsername: entry.author_username,
         };

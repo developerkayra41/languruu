@@ -9,6 +9,7 @@ import { UpdatePasswordRequestDTO } from './dto/request/UpdatePassword.request.d
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { GetPublicProfileRequestDTO } from './dto/request/GetPublicProfile.request.dto';
 import { SetDiscoverySourceRequestDTO } from './dto/request/SetDiscoverySource.request.dto';
+import { CompleteProfileSetupRequestDTO } from './dto/request/CompleteProfileSetup.request.dto';
 import { AwardXpRequestDTO } from './dto/request/AwardXp.request.dto';
 import { UpdatePresenceVisibilityRequestDTO } from './dto/request/UpdatePresenceVisibility.request.dto';
 
@@ -45,6 +46,16 @@ export class UsersController extends BaseController {
   @UsePipes(new ValidationPipe({ whitelist: true }))
   async setDiscoverySource(@Req() req, @Body() body: SetDiscoverySourceRequestDTO) {
     const result = await this.usersService.setDiscoverySource(req.user.id, body.source);
+    return this.createSuccessResponse({ data: result, message: 'success', success: true }, req);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('profile/complete-setup')
+  @ApiBody({ type: CompleteProfileSetupRequestDTO })
+  @ApiOperation({ summary: 'profile/complete-setup API', description: 'Google ile kaydolan kullanıcının seçtiği kullanıcı adını kaydeder ve kurulum modalını kapatır' })
+  @UsePipes(new ValidationPipe({ whitelist: true }))
+  async completeProfileSetup(@Req() req, @Body() body: CompleteProfileSetupRequestDTO) {
+    const result = await this.usersService.completeProfileSetup(req.user.id, body.user_name);
     return this.createSuccessResponse({ data: result, message: 'success', success: true }, req);
   }
 

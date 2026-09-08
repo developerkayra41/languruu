@@ -50,10 +50,13 @@ export default function StudyClient({ group }: StudyClientProps) {
       >
         <div className="text-center mb-4 px-8 w-full">
           <h2 className="text-xl sm:text-2xl font-bold text-gray-800 break-words">
+            {group.isSong && <i className="fas fa-music text-purple-500 mr-2"></i>}
             {group.name}
           </h2>
           <p className="text-gray-600 mt-1">
-            {t("wordCount", { count: group.wordPool.length })}
+            {group.isSong
+              ? t("lineCount", { count: group.wordPool.length })
+              : t("wordCount", { count: group.wordPool.length })}
           </p>
         </div>
 

@@ -94,9 +94,14 @@ export default function ClassicMode({ group }: StudyModeProps) {
     });
   };
 
-  const [queue, setQueue] = useState<number[]>(() =>
-    shuffle(quizItems.map((_, i) => i)),
-  );
+  const isOrdered = Boolean(currentGroup.isSong);
+
+  const buildQueue = () => {
+    const indexes = quizItems.map((_, i) => i);
+    return isOrdered ? indexes : shuffle(indexes);
+  };
+
+  const [queue, setQueue] = useState<number[]>(buildQueue);
   const [pointer, setPointer] = useState(0);
   const currentItem = quizItems[queue[pointer]];
 
@@ -105,6 +110,12 @@ export default function ClassicMode({ group }: StudyModeProps) {
   useEffect(() => {
     const restored = loadProgress(currentGroup.id, MODE_ID, itemKeys);
     if (!restored) return;
+    if (isOrdered) {
+      const ordered = quizItems.map((_, i) => i);
+      setQueue(ordered);
+      setPointer(Math.min(restored.pointer, Math.max(ordered.length - 1, 0)));
+      return;
+    }
     setQueue(restored.queue);
     setPointer(restored.pointer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -122,11 +133,11 @@ export default function ClassicMode({ group }: StudyModeProps) {
       setTimeout(() => setRoundCompleted(false), 2500);
       void recordStudyCompleteAction();
 
-      let reshuffled = shuffle(quizItems.map((_, i) => i));
-      if (reshuffled[0] === queue[pointer] && reshuffled.length > 1) {
-        [reshuffled[0], reshuffled[1]] = [reshuffled[1], reshuffled[0]];
+      const nextQueue = buildQueue();
+      if (!isOrdered && nextQueue[0] === queue[pointer] && nextQueue.length > 1) {
+        [nextQueue[0], nextQueue[1]] = [nextQueue[1], nextQueue[0]];
       }
-      setQueue(reshuffled);
+      setQueue(nextQueue);
       setPointer(0);
     } else {
       setPointer((p) => p + 1);
@@ -305,7 +316,22 @@ export default function ClassicMode({ group }: StudyModeProps) {
         ))}
       </div>
 
-      <div className="w-full text-4xl font-bold text-center break-words mb-0">
+      {isOrdered && (
+        <p className="text-xs font-medium text-purple-500 mb-2">
+          <i className="fas fa-music mr-1"></i>
+          {t("lineProgress", { current: pointer + 1, total: queue.length })}
+        </p>
+      )}
+
+      <div
+        className={`w-full font-bold text-center break-words mb-0 ${
+          activeQuestion.displayWord.length > 60
+            ? "text-xl sm:text-2xl"
+            : activeQuestion.displayWord.length > 30
+              ? "text-2xl sm:text-3xl"
+              : "text-4xl"
+        }`}
+      >
         {activeQuestion.displayWord}
         {speakEnabled && (
           <button

@@ -2,7 +2,7 @@
 import { buildRefreshCookieHeader } from "@/app/lib/auth-utils";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { resendVerification, setDiscoverySource } from "@/app/lib/api-client";
+import { completeProfileSetup, resendVerification, setDiscoverySource } from "@/app/lib/api-client";
 
 export async function logout() {
   const cookieStore = await cookies();
@@ -34,6 +34,15 @@ export async function saveDiscoverySourceAction(source: string) {
   try {
     await setDiscoverySource(source);
     return { success: true as const };
+  } catch (e: any) {
+    return { success: false as const, error: e?.message ?? "Kaydedilemedi." };
+  }
+}
+
+export async function completeProfileSetupAction(userName: string) {
+  try {
+    const result = await completeProfileSetup(userName);
+    return { success: true as const, data: result };
   } catch (e: any) {
     return { success: false as const, error: e?.message ?? "Kaydedilemedi." };
   }

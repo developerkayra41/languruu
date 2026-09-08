@@ -59,7 +59,7 @@
     "register": {
       "title": "Create account",
       "subtitle": "It takes less than a minute.",
-      "fullName": "Full Name",
+      "fullName": "Name",
       "userName": "Username",
       "email": "Email",
       "password": "Password",
@@ -72,7 +72,7 @@
       "or": "or",
       "haveAccount": "Already have an account?",
       "signIn": "Log in",
-      "errFullName": "Full name must be at least 2 characters.",
+      "errFullName": "Name must be at least 2 characters.",
       "errUserNameLen": "Username must be between 3 and 16 characters.",
       "errUserNameChars": "Username cannot contain spaces; only letters, numbers and underscores are allowed.",
       "errEmail": "Please enter a valid email address.",
@@ -80,7 +80,7 @@
       "errMatch": "Passwords do not match.",
       "errTerms": "You must accept the terms to continue.",
       "failed": "Registration failed",
-      "placeholderFullName": "Name Surname",
+      "placeholderFullName": "Name",
       "placeholderUsername": "user_name",
       "placeholderEmail": "example@email.com"
     },
@@ -182,7 +182,9 @@
     "didntKnow": "I didn't know",
     "sentenceAnswerPlaceholder": "Type the translation",
     "correctSentence": "Correct answer",
-    "shortcutHint": "Enter: I knew it · Esc: I didn't know"
+    "shortcutHint": "Enter: I knew it · Esc: I didn't know",
+    "lineProgress": "Line {current} / {total}",
+    "lineCount": "{count} lines"
   },
   "add": {
     "title": "Add Word",
@@ -209,7 +211,34 @@
     "exampleTranslationPlaceholder": "e.g. Her gün zıplarım",
     "exampleHint": "The sentence and its translation must be filled in together. Sentence mode asks this sentence.",
     "removeExample": "Remove",
-    "errExampleIncomplete": "Both the example sentence and its translation are required."
+    "errExampleIncomplete": "Both the example sentence and its translation are required.",
+    "song": {
+      "title": "Song Lyrics",
+      "editingIn": "Lines of <b>{name}</b>",
+      "lineCount": "{count} lines",
+      "colLine": "Line",
+      "colMeaning": "Meaning",
+      "linePlaceholder": "Enter the line",
+      "meaningPlaceholder": "Enter its meaning",
+      "addLine": "Add Line",
+      "addNote": "Add note",
+      "notePlaceholder": "A reminder about this line",
+      "removeNote": "Remove note",
+      "removeLine": "Delete line",
+      "save": "Save",
+      "saving": "Saving...",
+      "saved": "Lyrics saved",
+      "unsaved": "You have unsaved changes",
+      "orderHint": "While studying, lines are asked in this order, from first to last.",
+      "errEmpty": "Enter at least one line.",
+      "errPair": "Line {line} needs both the line and its meaning.",
+      "errMaxLines": "A song can have at most {max} lines.",
+      "leaveTitle": "Unsaved lines",
+      "leaveMessage": "Your lines haven't been saved yet. Save them?",
+      "saveAndLeave": "Save and leave",
+      "leaveWithoutSaving": "Leave without saving",
+      "stay": "Cancel"
+    }
   },
   "groups": {
     "wordCount": "{count} words",
@@ -243,7 +272,10 @@
     "deleteConfirm": "Are you sure you want to delete the group \"{name}\"?",
     "deleteSharedWarning": "Since this group is shared on the marketplace, it will also be removed from there. It stays with anyone who already copied it.",
     "deleted": "Group \"{name}\" deleted.",
-    "deleteUndone": "Group \"{name}\" restored."
+    "deleteUndone": "Group \"{name}\" restored.",
+    "songMode": "Song lyrics group",
+    "songModeHint": "Lines are entered in order and asked from first to last while studying.",
+    "songBadge": "Song lyrics"
   },
   "marketplace": {
     "title": "Word Groups Library",
@@ -664,5 +696,20 @@
     "today": "Today",
     "yesterday": "Yesterday",
     "profanity": "Your message contains inappropriate language."
+  },
+  "profileSetup": {
+    "title": "Complete your profile",
+    "subtitle": "You can adjust your photo and pick a username of your own.",
+    "userName": "Username",
+    "userNamePlaceholder": "username",
+    "userNameHint": "3-16 characters; letters, numbers and underscores.",
+    "addPhoto": "Add photo",
+    "changePhoto": "Change photo",
+    "removePhoto": "Remove photo",
+    "uploadFailed": "Photo could not be uploaded.",
+    "save": "Save",
+    "saving": "Saving...",
+    "errUserNameLen": "Username must be 3-16 characters.",
+    "errUserNameChars": "Username can only contain letters, numbers and underscores."
   }
 }

@@ -18,6 +18,7 @@ import { FriendRepository } from 'src/friends/repository/friend.repository';
 import { NotificationRepository } from 'src/notifications/repository/notification.repository';
 import { MessageRepository } from 'src/messages/repository/message.repository';
 import { isAdminEmail } from 'src/_common/utils/admin-emails';
+import { containsProfanity } from 'src/_common/moderation/profanity';
 import { PresenceService } from 'src/_common/presence/presence.service';
 import { DEFAULT_PRESENCE_VISIBILITY } from 'src/_common/utils/presence';
 import { AVATAR_BUCKET, stampAvatarVersion, stripAvatarVersion, withAvatarVersion } from 'src/_common/utils/avatar-url';
@@ -109,10 +110,28 @@ export class UsersService {
       presence_visibility: user.presence_visibility ?? DEFAULT_PRESENCE_VISIBILITY,
       is_online: (user.presence_visibility ?? DEFAULT_PRESENCE_VISIBILITY) !== 'off',
       needs_discovery_prompt: this.needsDiscoveryPrompt(user),
+      needs_profile_setup: !!user.needs_profile_setup,
     };
   };
 
   private needsDiscoveryPrompt = (user: { discovery_source?: string | null }): boolean => !user.discovery_source;
+
+  completeProfileSetup = async (userId: number, userName: string) => {
+    const user = await this.userRepo.findById(userId);
+    if (!user) throw new NotFoundException();
+
+    if (containsProfanity(userName)) {
+      throw new BadRequestException('Kullanıcı adı uygunsuz içerik barındırıyor.');
+    }
+
+    const existing = await this.userRepo.findByUsername(userName);
+    if (existing && existing.id !== userId) {
+      throw new BadRequestException('Bu kullanıcı adı zaten kullanılıyor.');
+    }
+
+    await this.userRepo.completeProfileSetup(userId, userName);
+    return { user_name: userName };
+  };
 
   setDiscoverySource = async (userId: number, source: string): Promise<{ discovery_source: string }> => {
     const user = await this.userRepo.findById(userId);

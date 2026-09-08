@@ -20,6 +20,8 @@ export class WordColumnDTO {
     createdAt: Date;
     @ApiProperty()
     isShared: boolean;
+    @ApiProperty({ required: false })
+    isSong?: boolean;
 }
 
 export class WordRowDTO {

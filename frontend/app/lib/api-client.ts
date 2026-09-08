@@ -157,6 +157,10 @@ export async function setDiscoverySource(source: string) {
     return apiPost<{ discovery_source: string }>("/users/discovery-source", { source });
 }
 
+export async function completeProfileSetup(user_name: string) {
+    return apiPost<{ user_name: string }>("/users/profile/complete-setup", { user_name });
+}
+
 export async function recordStudyComplete() {
     return apiPost("/users/study/complete");
 }

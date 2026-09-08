@@ -100,12 +100,20 @@ export class UserRepository {
                 updated_at: users.updated_at,
                 email_verified: users.email_verified,
                 discovery_source: users.discovery_source,
+                needs_profile_setup: users.needs_profile_setup,
                 presence_visibility: users.presence_visibility
             })
             .from(users)
             .where(and(eq(users.id, userId), isNull(users.deleted_at)))
             .limit(1);
         return user ?? null;
+    };
+
+    completeProfileSetup = async (userId: number, userName: string): Promise<void> => {
+        await this.db
+            .update(users)
+            .set({ user_name: userName, needs_profile_setup: false })
+            .where(and(eq(users.id, userId), isNull(users.deleted_at)));
     };
 
     setDiscoverySource = async (userId: number, source: string): Promise<void> => {
@@ -218,7 +226,7 @@ export class UserRepository {
     }): Promise<AuthUser | null> => {
         const [user] = await this.db
             .insert(users)
-            .values({ ...data, password: null, email_verified: true, verified_at: new Date() })
+            .values({ ...data, password: null, email_verified: true, verified_at: new Date(), needs_profile_setup: true })
             .returning({
                 id: users.id, user_name: users.user_name, email: users.email,
                 full_name: users.full_name, password: users.password,
